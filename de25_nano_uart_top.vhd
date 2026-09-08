@@ -58,6 +58,19 @@
 --   bit  24    : init_done  - configuration sequence completed
 --   bit  25    : i2c_error  - sticky, a write went unacknowledged
 --   bit  26    : FAN_ALERT_n pin level (active low, straight from the pad)
+--
+-- HPS (see hps/README.md): hps_min is the Agilex 5 hard processor system
+-- plus its LPDDR4 EMIF, generated from the DE25-Nano GHRD's own
+-- agilex_hps.ip / emif_io96b_hps.ip with every FPGA<->HPS bridge disabled -
+-- it is a standalone ARM host with no memory-mapped path into this
+-- entity's register file, entirely independent of the fabric UART/fan
+-- logic above. It clocks and resets itself (HPS_CLK_25 in, its own POR),
+-- so it needs no generic or port from the rest of this design.
+--
+-- HPS_UART_TX/RX (IOB15/IOB16 in the HPS pin-mux table) are HPS UART1,
+-- the HPS's own console - a second, independent UART from FPGA_UART_TX/RX
+-- above, reachable only from software running on the ARM cores (bare-metal
+-- or Linux), never from the register interface.
 ------------------------------------------------------------------------
 library ieee;
     use ieee.std_logic_1164.all;
@@ -92,12 +105,121 @@ entity de25_nano_uart_top is
         ;HDMI_I2C_SCL  : inout std_logic                      -- PIN_BT1
         ;HDMI_I2C_SDA  : inout std_logic                      -- PIN_BW2
         ;FAN_ALERT_n   : in  std_logic                        -- PIN_DK32
+
+        -- ---- HPS (hps_min - see hps/README.md) ----
+        -- 'in' ports default to '0'/all-zero so existing testbenches that
+        -- instantiate this entity without driving them (hps_min is a
+        -- separate, self-clocking subsystem no simulation here touches)
+        -- still elaborate; real hardware always drives every physical pin
+        -- regardless of these defaults.
+        ;HPS_CLK_25        : in    std_logic := '0'
+        ;HPS_SD_CLK        : out   std_logic
+        ;HPS_SD_CMD        : inout std_logic
+        ;HPS_SD_DATA       : inout std_logic_vector(3 downto 0)
+        ;HPS_USB_CLK       : in    std_logic := '0'
+        ;HPS_USB_STP       : out   std_logic
+        ;HPS_USB_DIR       : in    std_logic := '0'
+        ;HPS_USB_NXT       : in    std_logic := '0'
+        ;HPS_USB_DATA      : inout std_logic_vector(7 downto 0)
+        ;HPS_ENET_TX_CLK   : out   std_logic
+        ;HPS_ENET_TX_CTL   : out   std_logic
+        ;HPS_ENET_RX_CLK   : in    std_logic := '0'
+        ;HPS_ENET_RX_CTL   : in    std_logic := '0'
+        ;HPS_ENET_TX_DATA  : out   std_logic_vector(3 downto 0)
+        ;HPS_ENET_RX_DATA  : in    std_logic_vector(3 downto 0) := (others => '0')
+        ;HPS_ENET_MDIO     : inout std_logic
+        ;HPS_ENET_MDC      : out   std_logic
+        ;HPS_UART_TX       : out   std_logic                  -- HPS UART1 TX (IOB15)
+        ;HPS_UART_RX       : in    std_logic := '0'            -- HPS UART1 RX (IOB16)
+        ;HPS_I2C_SDA       : inout std_logic
+        ;HPS_I2C_SCL       : inout std_logic
+        ;HPS_GSENSOR_INT   : inout std_logic
+        ;HPS_GSENSOR_I2C_EN: inout std_logic
+        ;HPS_KEY           : inout std_logic
+        ;HPS_LED           : inout std_logic
+
+        -- ---- HPS LPDDR4 EMIF (hps_min) ----
+        ;LPDDR4A_REFCLK_p : in    std_logic := '0'
+        ;LPDDR4A_CS_n     : out   std_logic
+        ;LPDDR4A_CA       : out   std_logic_vector(5 downto 0)
+        ;LPDDR4A_CK       : out   std_logic
+        ;LPDDR4A_CKE      : out   std_logic
+        ;LPDDR4A_CK_n     : out   std_logic
+        ;LPDDR4A_DM       : inout std_logic_vector(3 downto 0)
+        ;LPDDR4A_DQ       : inout std_logic_vector(31 downto 0)
+        ;LPDDR4A_DQS      : inout std_logic_vector(3 downto 0)
+        ;LPDDR4A_DQS_n    : inout std_logic_vector(3 downto 0)
+        ;LPDDR4A_RESET_n  : out   std_logic
+        ;LPDDR4A_RZQ      : in    std_logic := '0'
     );
 end entity de25_nano_uart_top;
 
 architecture rtl of de25_nano_uart_top is
 
     use work.fpga_interconnect_pkg.all;
+
+    -- Agilex 5 HPS + LPDDR4 EMIF (Verilog, GENERATED - see hps/hps_min.v /
+    -- hps/README.md). Quartus mixed-language: a VHDL top instantiating a
+    -- Verilog module needs a matching component declaration.
+    component hps_min is
+        port (
+            h2f_reset_reset        : out   std_logic
+            ;emac0_app_rst_reset_n : out   std_logic
+            ;hps_io_hps_osc_clk    : in    std_logic
+            ;hps_io_sdmmc_data0    : inout std_logic
+            ;hps_io_sdmmc_data1    : inout std_logic
+            ;hps_io_sdmmc_cclk     : out   std_logic
+            ;hps_io_sdmmc_data2    : inout std_logic
+            ;hps_io_sdmmc_data3    : inout std_logic
+            ;hps_io_sdmmc_cmd      : inout std_logic
+            ;hps_io_usb0_clk       : in    std_logic
+            ;hps_io_usb0_stp       : out   std_logic
+            ;hps_io_usb0_dir       : in    std_logic
+            ;hps_io_usb0_data0     : inout std_logic
+            ;hps_io_usb0_data1     : inout std_logic
+            ;hps_io_usb0_nxt       : in    std_logic
+            ;hps_io_usb0_data2     : inout std_logic
+            ;hps_io_usb0_data3     : inout std_logic
+            ;hps_io_usb0_data4     : inout std_logic
+            ;hps_io_usb0_data5     : inout std_logic
+            ;hps_io_usb0_data6     : inout std_logic
+            ;hps_io_usb0_data7     : inout std_logic
+            ;hps_io_emac0_tx_clk   : out   std_logic
+            ;hps_io_emac0_tx_ctl   : out   std_logic
+            ;hps_io_emac0_rx_clk   : in    std_logic
+            ;hps_io_emac0_rx_ctl   : in    std_logic
+            ;hps_io_emac0_txd0     : out   std_logic
+            ;hps_io_emac0_txd1     : out   std_logic
+            ;hps_io_emac0_rxd0     : in    std_logic
+            ;hps_io_emac0_rxd1     : in    std_logic
+            ;hps_io_emac0_txd2     : out   std_logic
+            ;hps_io_emac0_txd3     : out   std_logic
+            ;hps_io_emac0_rxd2     : in    std_logic
+            ;hps_io_emac0_rxd3     : in    std_logic
+            ;hps_io_mdio0_mdio     : inout std_logic
+            ;hps_io_mdio0_mdc      : out   std_logic
+            ;hps_io_uart1_tx       : out   std_logic
+            ;hps_io_uart1_rx       : in    std_logic
+            ;hps_io_i2c1_sda       : inout std_logic
+            ;hps_io_i2c1_scl       : inout std_logic
+            ;hps_io_gpio28         : inout std_logic           -- HPS_GSENSOR_INT
+            ;hps_io_gpio34         : inout std_logic           -- HPS_GSENSOR_I2C_EN
+            ;hps_io_gpio40         : inout std_logic           -- HPS_KEY
+            ;hps_io_gpio41         : inout std_logic           -- HPS_LED
+            ;mem_0_cs              : out   std_logic
+            ;mem_0_ca              : out   std_logic_vector(5 downto 0)
+            ;mem_0_cke             : out   std_logic
+            ;mem_0_dq              : inout std_logic_vector(31 downto 0)
+            ;mem_0_dqs_t           : inout std_logic_vector(3 downto 0)
+            ;mem_0_dqs_c           : inout std_logic_vector(3 downto 0)
+            ;mem_0_dmi             : inout std_logic_vector(3 downto 0)
+            ;mem_0_ck_t            : out   std_logic
+            ;mem_0_ck_c            : out   std_logic
+            ;mem_0_reset_n         : out   std_logic
+            ;oct_rzqin_0           : in    std_logic
+            ;ref_clk               : in    std_logic
+        );
+    end component hps_min;
 
     signal core_clock : std_logic;
 
@@ -279,6 +401,69 @@ begin
         ,uart_tx                 => FPGA_UART_TX
         ,bus_to_communications   => bus_to_communications
         ,bus_from_communications => bus_from_communications
+    );
+
+------------------------------------------------------------------------
+-- Agilex 5 HPS + LPDDR4 EMIF - standalone (bridges disabled), clocks and
+-- resets itself. See hps/README.md.
+------------------------------------------------------------------------
+    u_hps_min : hps_min
+    port map (
+        h2f_reset_reset        => open
+        ,emac0_app_rst_reset_n => open
+        ,hps_io_hps_osc_clk    => HPS_CLK_25
+        ,hps_io_sdmmc_data0    => HPS_SD_DATA(0)
+        ,hps_io_sdmmc_data1    => HPS_SD_DATA(1)
+        ,hps_io_sdmmc_cclk     => HPS_SD_CLK
+        ,hps_io_sdmmc_data2    => HPS_SD_DATA(2)
+        ,hps_io_sdmmc_data3    => HPS_SD_DATA(3)
+        ,hps_io_sdmmc_cmd      => HPS_SD_CMD
+        ,hps_io_usb0_clk       => HPS_USB_CLK
+        ,hps_io_usb0_stp       => HPS_USB_STP
+        ,hps_io_usb0_dir       => HPS_USB_DIR
+        ,hps_io_usb0_data0     => HPS_USB_DATA(0)
+        ,hps_io_usb0_data1     => HPS_USB_DATA(1)
+        ,hps_io_usb0_nxt       => HPS_USB_NXT
+        ,hps_io_usb0_data2     => HPS_USB_DATA(2)
+        ,hps_io_usb0_data3     => HPS_USB_DATA(3)
+        ,hps_io_usb0_data4     => HPS_USB_DATA(4)
+        ,hps_io_usb0_data5     => HPS_USB_DATA(5)
+        ,hps_io_usb0_data6     => HPS_USB_DATA(6)
+        ,hps_io_usb0_data7     => HPS_USB_DATA(7)
+        ,hps_io_emac0_tx_clk   => HPS_ENET_TX_CLK
+        ,hps_io_emac0_tx_ctl   => HPS_ENET_TX_CTL
+        ,hps_io_emac0_rx_clk   => HPS_ENET_RX_CLK
+        ,hps_io_emac0_rx_ctl   => HPS_ENET_RX_CTL
+        ,hps_io_emac0_txd0     => HPS_ENET_TX_DATA(0)
+        ,hps_io_emac0_txd1     => HPS_ENET_TX_DATA(1)
+        ,hps_io_emac0_rxd0     => HPS_ENET_RX_DATA(0)
+        ,hps_io_emac0_rxd1     => HPS_ENET_RX_DATA(1)
+        ,hps_io_emac0_txd2     => HPS_ENET_TX_DATA(2)
+        ,hps_io_emac0_txd3     => HPS_ENET_TX_DATA(3)
+        ,hps_io_emac0_rxd2     => HPS_ENET_RX_DATA(2)
+        ,hps_io_emac0_rxd3     => HPS_ENET_RX_DATA(3)
+        ,hps_io_mdio0_mdio     => HPS_ENET_MDIO
+        ,hps_io_mdio0_mdc      => HPS_ENET_MDC
+        ,hps_io_uart1_tx       => HPS_UART_TX
+        ,hps_io_uart1_rx       => HPS_UART_RX
+        ,hps_io_i2c1_sda       => HPS_I2C_SDA
+        ,hps_io_i2c1_scl       => HPS_I2C_SCL
+        ,hps_io_gpio28         => HPS_GSENSOR_INT
+        ,hps_io_gpio34         => HPS_GSENSOR_I2C_EN
+        ,hps_io_gpio40         => HPS_KEY
+        ,hps_io_gpio41         => HPS_LED
+        ,mem_0_cs              => LPDDR4A_CS_n
+        ,mem_0_ca              => LPDDR4A_CA
+        ,mem_0_cke             => LPDDR4A_CKE
+        ,mem_0_dq              => LPDDR4A_DQ
+        ,mem_0_dqs_t           => LPDDR4A_DQS
+        ,mem_0_dqs_c           => LPDDR4A_DQS_n
+        ,mem_0_dmi             => LPDDR4A_DM
+        ,mem_0_ck_t            => LPDDR4A_CK
+        ,mem_0_ck_c            => LPDDR4A_CK_n
+        ,mem_0_reset_n         => LPDDR4A_RESET_n
+        ,oct_rzqin_0           => LPDDR4A_RZQ
+        ,ref_clk               => LPDDR4A_REFCLK_p
     );
 
 end rtl;

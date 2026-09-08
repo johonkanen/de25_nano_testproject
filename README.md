@@ -45,16 +45,25 @@ The `.tcl` writes `de25_nano_uart.qpf` / `de25_nano_uart.qsf` (both
 git-ignored) and sets every device / pin / config-scheme assignment.
 
 **Verified end to end through `quartus_asm` with Quartus Prime Pro 26.1.0**
-(the DE25-Nano demos themselves ship for 25.1). Results:
+(the DE25-Nano demos themselves ship for 25.1), with the HPS (`hps_min`,
+see [HPS](#hps)) present. Results:
 
 | stage | result |
 |---|---|
 | `quartus_syn` | 0 errors, 1 warning (Critical Warning 20759, see [Note](#note)) |
-| `quartus_fit` | 0 errors — all 20 pins placed, 600 / 46,800 ALMs (1 %) |
-| `quartus_sta` | fully constrained; worst-case setup slack **+17.310 ns**, hold **+0.094 ns** |
+| `quartus_fit` | 0 errors — 133 pins placed, 639 / 46,800 ALMs (1 %), HSSI HPS 1/1 |
+| `quartus_sta` | fully constrained; worst-case setup slack **+17.098 ns**, hold **+0.096 ns** |
 | `quartus_asm` | 0 errors, 0 warnings → `output_files/de25_nano_uart.sof` |
 
-Not yet programmed onto hardware.
+The fabric register interface (UART + fan control, unaffected by the HPS —
+same register map) has been repeatedly loaded and exercised on real
+hardware, most recently without the HPS present; see [Talk to
+it](#talk-to-it) and [Fan](#fan). The current HPS-inclusive `.sof` has
+**not yet been loaded onto hardware** — Quartus requires an HPS boot
+payload embedded via `quartus_pfg -o hps_path=...` before it will program a
+design that contains an HPS at all (confirmed directly: `quartus_pgm`
+refuses this `.sof` with "HPS is present but bootloader information is
+missing" until one is embedded). See [docs/de25_nano_hps.md](docs/de25_nano_hps.md).
 
 ## Program (volatile JTAG load)
 
@@ -170,6 +179,44 @@ FPGA, register 9 just holds what it was given. Details, the register-by-
 register configuration and how to trim the minimum are in
 [docs/de25_nano_fan.md](docs/de25_nano_fan.md).
 
+## HPS
+
+`de25_nano_uart_top.vhd` also instantiates `hps_min` (see
+[hps/README.md](hps/README.md)): the Agilex 5 hard processor system plus
+its LPDDR4 EMIF, generated from the DE25-Nano GHRD's own `agilex_hps.ip` /
+`emif_io96b_hps.ip` with every FPGA↔HPS bridge disabled. It shares the die
+and the pins with the fabric register block above but is otherwise
+independent — no memory-mapped path between the two, so nothing in the
+register map above changed by adding it.
+
+`HPS_UART_TX`/`HPS_UART_RX` are HPS UART1, on IOB15/IOB16 in the HPS's own
+pin-mux table — confirmed directly from `agilex_hps.ip`'s pin-mux array,
+not hand-derived. This is a **second, independent** UART from
+`FPGA_UART_TX`/`FPGA_UART_RX` above: reachable only from software running
+on the HPS ARM cores, never from the `test_uart.py` register interface.
+
+Synthesizes/fits/times cleanly as part of this same build (see the table
+above). **HPS UART1 is confirmed working on real hardware** — a
+from-scratch bare-metal program ([hps/baremetal_uart1_test/](hps/baremetal_uart1_test/),
+no ATF, no U-Boot, no Linux, no SD card) brings up pin-mux and clock-manager
+PLLs from the same SDM-provided handoff data Quartus already computes, then
+banners and byte-perfect echoes over `/dev/ttyUSB0`:
+
+```
+=== de25_nano_testproject HPS bare-metal UART1 test (v3) ===
+IOB15 (UART1 TX) pinmux sel = 0x00000005
+IOB16 (UART1 RX) pinmux sel = 0x00000005
+clkmgr_bringup() rc = 0x00000000
+measured UART (L4_SP) clock = 100000000 Hz
+divisor programmed = 54
+```
+
+Full detail — including the clock-manager PLL bring-up ported from
+`arm-trusted-firmware` (Altera's own official bare-metal example doesn't do
+this step, so it wasn't reused from a working reference) and a UART driver
+byte-order bug found along the way — is in
+[docs/de25_nano_hps.md](docs/de25_nano_hps.md).
+
 ## Simulate
 
 Two [VUnit](https://vunit.github.io/) testbenches, both run by
@@ -209,11 +256,13 @@ Expected: `pass 2 of 2` — 16 checks in `de25_nano_uart_top_tb`, 21 in
 | AS config clock | `AS_FREQ_100MHZ` | **`AS_FREQ_125MHZ`** |
 | `USE_INIT_DONE` | `SDM_IO13` | *not set* |
 | fan | not addressed in that project | **AMC6821 on the HDMI I2C bus**, duty + RPM on registers 9..12 |
-| SoC / Linux variant | `de25_soc` + `linux/` (HPS + DDR4) | **not included** — see below |
+| HPS | separate `de25_soc_top` + `linux/` (HPS + DDR4) | **`hps_min` instantiated directly in `de25_nano_uart_top`** (HPS + LPDDR4, bridges disabled) — see below |
 
-There is deliberately **no `de25_soc` equivalent here**. The Nano's HPS
-memory is LPDDR4 (two interfaces) plus a discrete SDRAM rather than DDR4, so
-the HPS-EMIF work is a separate project rather than a pin swap.
+Unlike the DE25-Standard, where the HPS lives in a separate `de25_soc`
+build, the DE25-Nano's HPS (`hps_min`, LPDDR4 instead of DDR4) is
+instantiated straight into `de25_nano_uart_top` — one bitstream, one top
+level, both the fabric register block and the HPS present together. See
+[HPS](#hps) below.
 
 ## Pinout
 

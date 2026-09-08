@@ -60,6 +60,7 @@ set_global_assignment -name ORIGINAL_QUARTUS_VERSION 25.1.0
 set_global_assignment -name LAST_QUARTUS_VERSION "26.1.0 Pro Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name VHDL_INPUT_VERSION VHDL_2019
+set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name OPTIMIZATION_MODE BALANCED
 set_global_assignment -name BOARD default
 
@@ -73,6 +74,11 @@ set_global_assignment -name ACTIVE_SERIAL_CLOCK AS_FREQ_125MHZ
 set_global_assignment -name DEVICE_INITIALIZATION_CLOCK OSC_CLK_1_125MHZ
 set_global_assignment -name PWRMGT_VOLTAGE_OUTPUT_FORMAT "LINEAR FORMAT"
 set_global_assignment -name PWRMGT_LINEAR_FORMAT_N "-12"
+
+# HPS-specific assignments (matches de25_std_testproject/build_de25_soc.tcl)
+set_global_assignment -name HPS_DAP_NO_CERTIFICATE on
+set_global_assignment -name HPS_DAP_SPLIT_MODE DISABLED
+set_global_assignment -name POWER_APPLY_THERMAL_MARGIN ADDITIONAL
 
 # ------------------------------------------------------------ source set
 # fpga_interconnect protocol (generic package + 32 data / 16 address instance)
@@ -94,6 +100,20 @@ set_global_assignment -name VHDL_FILE $this_file_path/git_hash_pkg.vhd
 
 # bring-up top level
 set_global_assignment -name VHDL_FILE $this_file_path/de25_nano_uart_top.vhd
+
+# ------------------------------------------------------------ HPS + IP
+# Agilex 5 HPS + LPDDR4 EMIF (hps_min, GENERATED - see hps/README.md).
+# Instantiated from de25_nano_uart_top.vhd; every FPGA<->HPS bridge is
+# disabled, so it is a standalone ARM host independent of the fabric logic.
+#
+# Generate once (or after re-vendoring the .ip files):
+#     python3 hps/disable_bridges.py
+#     qsys-generate hps/ip/hps_subsys/agilex_hps.ip   --synthesis=VHDL --part=A5EB013BB23BE4SCS
+#     qsys-generate hps/ip/qsys_top/emif_io96b_hps.ip --synthesis=VHDL --part=A5EB013BB23BE4SCS
+#     python3 hps/gen_hps_min.py
+set_global_assignment -name VERILOG_FILE $this_file_path/hps/hps_min.v
+set_global_assignment -name QIP_FILE $this_file_path/hps/ip/hps_subsys/agilex_hps/agilex_hps.qip
+set_global_assignment -name QIP_FILE $this_file_path/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps.qip
 
 # ---------------------------------------------------------- constraints
 set_global_assignment -name SDC_FILE $this_file_path/de25_nano_uart.sdc
@@ -152,6 +172,11 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to HDMI_I2C_SDA -entit
 set_instance_assignment -name IO_STANDARD "1.1-V"        -to FAN_ALERT_n  -entity de25_nano_uart_top
 
 set_instance_assignment -name CURRENT_STRENGTH_NEW 6MA -to FPGA_UART_TX -entity de25_nano_uart_top
+
+# ------------------------------------------------ HPS + LPDDR4A pins (GHRD)
+# 196 pins x {location, IO_STANDARD}, incl. HPS_CLK_25 / LPDDR4A_REFCLK_p /
+# LPDDR4A_RZQ - see hps/README.md.
+source $this_file_path/hps/hps_pins.tcl
 
 # --------------------------------------------------------------- commit
 export_assignments
