@@ -135,20 +135,52 @@ For reference, Terasic's automatic fan curve for this board ramps between
 ## Trimming the minimum
 
 `g_fan_min_duty` in `de25_nano_uart_top.vhd` is the reset value of register
-9, and the single place the minimum speed is defined. It ships at **51/255
-(~20 %)**, a common four-wire fan minimum, but the lowest duty at which a
-particular fan still turns is fan-specific and has not been measured on
-hardware.
+9, and the single place the minimum speed is defined. It ships at **30/255
+(~11.8 %, ≈430 rpm)**, measured on hardware (see below). Register 9 accepts
+0, which stops the fan — the design will happily do that if asked.
 
-To trim it, walk register 9 down and watch register 10:
+To trim it yourself, walk register 9 down and watch register 10:
 
 ```
 python test_uart.py --fan-sweep      # confirms speed follows the register
 ```
 
 then set `g_fan_min_duty` to the lowest value that still reports a stable
-non-zero RPM, with some margin, and rebuild. Register 9 accepts 0, which
-stops the fan — the design will happily do that if asked.
+non-zero RPM, with some margin, and rebuild.
+
+### What was measured
+
+Walking duty down live over the UART (this particular board's fan, not
+necessarily true of every unit) while watching registers 10/11:
+
+| duty | duty % | behaviour |
+|-----:|-------:|-----------|
+| 28-51 | 11-20 % | steady, valid TACH, RPM scales linearly with duty |
+| 24 | 9.4 % | borderline — settles, but noisier and slower to stabilise |
+| 18-22 | 7-9 % | **unreliable** — TACH alternates between a real reading and `0xFFFF` (over-range/no-count), and occasionally reports an implausible spike (RPM > 2000) between saturated reads. That is the AMC6821 losing and re-catching valid tach pulses, not a real, controllable speed. |
+| ≤ 16 | ≤ 6 % | TACH pinned at `0xFFFF` (reads as 91 rpm, the datasheet's over-range floor) |
+
+**30/255 (11.8 %) was then soak-tested from a cold stop** — duty forced to 0,
+fan given time to fully stop, then written directly to 30 with no kick:
+
+```
+stopped: rpm=91 (over-range - not turning)
+duty=30:  t+1.5s rpm=458 ... settles to 419-429 rpm, holds there for 30 s
+```
+
+It started on its own without the design's kick sequence and held a steady
+±10 rpm band for the full 30 s soak — comfortable margin above the ~18-22
+zone where the AMC6821 starts losing lock on the tach signal. That margin,
+not the bare lowest-duty-that-moves-at-all number, is what `g_fan_min_duty`
+should track: 24 "worked" in the sense of producing a number, but was
+visibly less settled than 28 and up.
+
+This was done live against the running design (writing register 9 directly)
+rather than by rebuilding for every candidate — the real POR + kick path
+only needs to be exercised once, for the final chosen value, since the kick
+(`g_kick_duty` for `g_kick_cycles`) always spins the fan up to full speed
+before dropping to `g_fan_min_duty`; a value that sustains cleanly once
+already spinning will start fine after that kick.
 
 ## Debugging the I2C link
 

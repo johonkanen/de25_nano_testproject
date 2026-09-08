@@ -70,9 +70,11 @@ entity de25_nano_uart_top is
         -- power-on reset length in core-clock cycles (~21 ms at 50 MHz).
         ;g_por_cycles   : natural := 1_048_575
         -- fan duty cycle after reset: minimum speed.  0..255 maps to 0..100 %
-        -- PWM. The true lowest duty a fan will still turn at is fan-specific
-        -- - watch register 10 (RPM) and trim this on hardware.
-        ;g_fan_min_duty : natural range 0 to 255 := 51            -- ~20 %
+        -- PWM. Trimmed on hardware (docs/de25_nano_fan.md): the fan gets
+        -- erratic (saturated/spiking TACH readings) below ~18-22, so 30
+        -- (~430 rpm) is the lowest duty that soaked cleanly - cold-starts
+        -- without the kick and holds steady for 30 s.
+        ;g_fan_min_duty : natural range 0 to 255 := 30            -- ~11.8 %
         -- fan controller timing, exposed so simulation can shrink it
         ;g_fan_scl_hz      : natural := 100_000
         ;g_fan_kick_cycles : natural := 25_000_000                -- 0.5 s

@@ -140,7 +140,8 @@ AMC6821 sequencer; the FPGA does not PWM the fan itself.
 
 **The fan comes up at minimum speed** and stays there until something writes
 register 9. That minimum is `g_fan_min_duty` in `de25_nano_uart_top.vhd`,
-the reset value of register 9 — 51/255 (~20 %) as shipped. Because a fan may
+the reset value of register 9 — 30/255 (~11.8 %, ≈430 rpm measured on
+hardware) as shipped. Because a fan may
 not start from rest at a low duty cycle, the controller holds 100 % for
 ~0.5 s first and then drops to the setpoint, so minimum speed means *turning
 slowly*, not stalled.
