@@ -65,7 +65,16 @@ compensating for a byte-order bug in someone else's driver.
 ## Build
 
 ```
-export PATH=<path-to>/gcc-arm/bin:$PATH        # aarch64-none-elf-*, ARM GNU Toolchain 13.2.Rel1
+# ARM GNU Toolchain 13.2.Rel1, aarch64-none-elf (bare-metal, not -linux-gnu)
+curl -LO https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz
+tar xf arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz
+export PATH="$PWD/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf/bin:$PATH"
+
+# CMakeLists.txt's FetchContent_Declare(esw_bare SOURCE_DIR ...) points at
+# ../baremetal-drivers, i.e. hps/baremetal-drivers - a sibling of this
+# directory, NOT of hps/ itself:
+git clone -b QPDS25.1_REL_GSRD_PR https://github.com/altera-fpga/baremetal-drivers ../baremetal-drivers
+
 cmake -GNinja -B build .
 cmake --build build
 # objcopy in generate_bin_file() resolves to the *system* objcopy due to a
@@ -75,15 +84,14 @@ aarch64-none-elf-objcopy -O binary build/hps_uart1_test.elf build/hps_uart1_test
 aarch64-none-elf-objcopy -I binary -O ihex --change-address 0x0 build/hps_uart1_test.bin build/hps_uart1_test.hex
 ```
 
-Needs `github.com/altera-fpga/baremetal-drivers` (tag
-`QPDS25.1_REL_GSRD_PR`) checked out as a sibling directory (this
-`CMakeLists.txt`'s `FetchContent_Declare(esw_bare SOURCE_DIR ...)` points
-at `../../baremetal-drivers` - adjust the path, or `git clone` it there).
-
 ## Embed and load
 
+Run from the repo root (`output_files/de25_nano_uart.sof` comes from
+building the main project first - see the top-level README's Build
+section):
+
 ```
-quartus_pfg -c output_files/de25_nano_uart.sof out.sof -o hps_path=build/hps_uart1_test.hex
+quartus_pfg -c output_files/de25_nano_uart.sof out.sof -o hps_path=hps/baremetal_uart1_test/build/hps_uart1_test.hex
 quartus_pgm -c 1 -m jtag -o "p;out.sof@1"
 python3 -c "
 import serial, time
