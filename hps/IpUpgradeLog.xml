@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip name="altera_iopll">
+ <timestamp>2026-09-08T15:48:03.924044675</timestamp>
+ <file>ip/hps_subsys/hps_subsys_iopll_0.ip</file>
+ <old_version>21.0.0</old_version>
+ <new_version>21.1.0</new_version>
+</ip>

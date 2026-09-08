@@ -102,18 +102,20 @@ set_global_assignment -name VHDL_FILE $this_file_path/git_hash_pkg.vhd
 set_global_assignment -name VHDL_FILE $this_file_path/de25_nano_uart_top.vhd
 
 # ------------------------------------------------------------ HPS + IP
-# Agilex 5 HPS + LPDDR4 EMIF (hps_min, GENERATED - see hps/README.md).
-# Instantiated from de25_nano_uart_top.vhd; every FPGA<->HPS bridge is
-# disabled, so it is a standalone ARM host independent of the fabric logic.
+# Agilex 5 HPS + LPDDR4 EMIF (hps_min, a real Platform Designer system -
+# see hps/hps_min.qsys / hps/README.md). Instantiated from
+# de25_nano_uart_top.vhd; every FPGA<->HPS bridge is disabled, so it is a
+# standalone ARM host independent of the fabric logic.
 #
-# Generate once (or after re-vendoring the .ip files):
-#     python3 hps/disable_bridges.py
-#     qsys-generate hps/ip/hps_subsys/agilex_hps.ip   --synthesis=VHDL --part=A5EB013BB23BE4SCS
-#     qsys-generate hps/ip/qsys_top/emif_io96b_hps.ip --synthesis=VHDL --part=A5EB013BB23BE4SCS
-#     python3 hps/gen_hps_min.py
-set_global_assignment -name VERILOG_FILE $this_file_path/hps/hps_min.v
-set_global_assignment -name QIP_FILE $this_file_path/hps/ip/hps_subsys/agilex_hps/agilex_hps.qip
-set_global_assignment -name QIP_FILE $this_file_path/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps.qip
+# Generate once (or after editing hps/hps_subsys.qsys):
+#     qsys-generate hps/hps_subsys.qsys --synthesis=VHDL --part=A5EB013BB23BE4SCS
+set_global_assignment -name QSYS_FILE $this_file_path/hps/hps_subsys.qsys
+
+# sub-IP referenced by hps_subsys.vhd's library/use clauses - Quartus Pro's
+# IP-first flow needs each one added explicitly alongside the .qsys.
+set_global_assignment -name IP_FILE $this_file_path/hps/ip/hps_subsys/agilex_hps.ip
+set_global_assignment -name IP_FILE $this_file_path/hps/ip/hps_subsys/hps_subsys_s10_user_rst_clkgate_0.ip
+set_global_assignment -name IP_FILE $this_file_path/hps/ip/qsys_top/emif_io96b_hps.ip
 
 # ---------------------------------------------------------- constraints
 set_global_assignment -name SDC_FILE $this_file_path/de25_nano_uart.sdc

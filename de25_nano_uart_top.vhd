@@ -59,10 +59,9 @@
 --   bit  25    : i2c_error  - sticky, a write went unacknowledged
 --   bit  26    : FAN_ALERT_n pin level (active low, straight from the pad)
 --
--- HPS (see hps/README.md): hps_min is the Agilex 5 hard processor system
--- plus its LPDDR4 EMIF, generated from the DE25-Nano GHRD's own
--- agilex_hps.ip / emif_io96b_hps.ip with every FPGA<->HPS bridge disabled -
--- it is a standalone ARM host with no memory-mapped path into this
+-- HPS (see hps/README.md): hps_min is a Platform Designer system (agilex
+-- HPS + its LPDDR4 EMIF, see hps/hps_min.qsys) with every FPGA<->HPS bridge
+-- disabled - it is a standalone ARM host with no memory-mapped path into this
 -- entity's register file, entirely independent of the fabric UART/fan
 -- logic above. It clocks and resets itself (HPS_CLK_25 in, its own POR),
 -- so it needs no generic or port from the rest of this design.
@@ -116,11 +115,6 @@ entity de25_nano_uart_top is
         ;HPS_SD_CLK        : out   std_logic
         ;HPS_SD_CMD        : inout std_logic
         ;HPS_SD_DATA       : inout std_logic_vector(3 downto 0)
-        ;HPS_USB_CLK       : in    std_logic := '0'
-        ;HPS_USB_STP       : out   std_logic
-        ;HPS_USB_DIR       : in    std_logic := '0'
-        ;HPS_USB_NXT       : in    std_logic := '0'
-        ;HPS_USB_DATA      : inout std_logic_vector(7 downto 0)
         ;HPS_ENET_TX_CLK   : out   std_logic
         ;HPS_ENET_TX_CTL   : out   std_logic
         ;HPS_ENET_RX_CLK   : in    std_logic := '0'
@@ -131,10 +125,6 @@ entity de25_nano_uart_top is
         ;HPS_ENET_MDC      : out   std_logic
         ;HPS_UART_TX       : out   std_logic                  -- HPS UART1 TX (IOB15)
         ;HPS_UART_RX       : in    std_logic := '0'            -- HPS UART1 RX (IOB16)
-        ;HPS_I2C_SDA       : inout std_logic
-        ;HPS_I2C_SCL       : inout std_logic
-        ;HPS_GSENSOR_INT   : inout std_logic
-        ;HPS_GSENSOR_I2C_EN: inout std_logic
         ;HPS_KEY           : inout std_logic
         ;HPS_LED           : inout std_logic
 
@@ -157,69 +147,6 @@ end entity de25_nano_uart_top;
 architecture rtl of de25_nano_uart_top is
 
     use work.fpga_interconnect_pkg.all;
-
-    -- Agilex 5 HPS + LPDDR4 EMIF (Verilog, GENERATED - see hps/hps_min.v /
-    -- hps/README.md). Quartus mixed-language: a VHDL top instantiating a
-    -- Verilog module needs a matching component declaration.
-    component hps_min is
-        port (
-            h2f_reset_reset        : out   std_logic
-            ;emac0_app_rst_reset_n : out   std_logic
-            ;hps_io_hps_osc_clk    : in    std_logic
-            ;hps_io_sdmmc_data0    : inout std_logic
-            ;hps_io_sdmmc_data1    : inout std_logic
-            ;hps_io_sdmmc_cclk     : out   std_logic
-            ;hps_io_sdmmc_data2    : inout std_logic
-            ;hps_io_sdmmc_data3    : inout std_logic
-            ;hps_io_sdmmc_cmd      : inout std_logic
-            ;hps_io_usb0_clk       : in    std_logic
-            ;hps_io_usb0_stp       : out   std_logic
-            ;hps_io_usb0_dir       : in    std_logic
-            ;hps_io_usb0_data0     : inout std_logic
-            ;hps_io_usb0_data1     : inout std_logic
-            ;hps_io_usb0_nxt       : in    std_logic
-            ;hps_io_usb0_data2     : inout std_logic
-            ;hps_io_usb0_data3     : inout std_logic
-            ;hps_io_usb0_data4     : inout std_logic
-            ;hps_io_usb0_data5     : inout std_logic
-            ;hps_io_usb0_data6     : inout std_logic
-            ;hps_io_usb0_data7     : inout std_logic
-            ;hps_io_emac0_tx_clk   : out   std_logic
-            ;hps_io_emac0_tx_ctl   : out   std_logic
-            ;hps_io_emac0_rx_clk   : in    std_logic
-            ;hps_io_emac0_rx_ctl   : in    std_logic
-            ;hps_io_emac0_txd0     : out   std_logic
-            ;hps_io_emac0_txd1     : out   std_logic
-            ;hps_io_emac0_rxd0     : in    std_logic
-            ;hps_io_emac0_rxd1     : in    std_logic
-            ;hps_io_emac0_txd2     : out   std_logic
-            ;hps_io_emac0_txd3     : out   std_logic
-            ;hps_io_emac0_rxd2     : in    std_logic
-            ;hps_io_emac0_rxd3     : in    std_logic
-            ;hps_io_mdio0_mdio     : inout std_logic
-            ;hps_io_mdio0_mdc      : out   std_logic
-            ;hps_io_uart1_tx       : out   std_logic
-            ;hps_io_uart1_rx       : in    std_logic
-            ;hps_io_i2c1_sda       : inout std_logic
-            ;hps_io_i2c1_scl       : inout std_logic
-            ;hps_io_gpio28         : inout std_logic           -- HPS_GSENSOR_INT
-            ;hps_io_gpio34         : inout std_logic           -- HPS_GSENSOR_I2C_EN
-            ;hps_io_gpio40         : inout std_logic           -- HPS_KEY
-            ;hps_io_gpio41         : inout std_logic           -- HPS_LED
-            ;mem_0_cs              : out   std_logic
-            ;mem_0_ca              : out   std_logic_vector(5 downto 0)
-            ;mem_0_cke             : out   std_logic
-            ;mem_0_dq              : inout std_logic_vector(31 downto 0)
-            ;mem_0_dqs_t           : inout std_logic_vector(3 downto 0)
-            ;mem_0_dqs_c           : inout std_logic_vector(3 downto 0)
-            ;mem_0_dmi             : inout std_logic_vector(3 downto 0)
-            ;mem_0_ck_t            : out   std_logic
-            ;mem_0_ck_c            : out   std_logic
-            ;mem_0_reset_n         : out   std_logic
-            ;oct_rzqin_0           : in    std_logic
-            ;ref_clk               : in    std_logic
-        );
-    end component hps_min;
 
     signal core_clock : std_logic;
 
@@ -263,6 +190,105 @@ architecture rtl of de25_nano_uart_top is
 
     signal i2c_sda_low : std_logic;
     signal i2c_scl_low : std_logic;
+    component hps_subsys is
+        port (
+            h2f_reset_reset                       : out   std_logic;                                        -- reset
+            lwhps2fpga_axi_clock_clk              : in    std_logic                     := 'X';             -- clk
+            lwhps2fpga_axi_reset_reset            : in    std_logic                     := 'X';             -- reset
+            lwhps2fpga_awid                       : out   std_logic_vector(3 downto 0);                     -- awid
+            lwhps2fpga_awaddr                     : out   std_logic_vector(28 downto 0);                    -- awaddr
+            lwhps2fpga_awlen                      : out   std_logic_vector(7 downto 0);                     -- awlen
+            lwhps2fpga_awsize                     : out   std_logic_vector(2 downto 0);                     -- awsize
+            lwhps2fpga_awburst                    : out   std_logic_vector(1 downto 0);                     -- awburst
+            lwhps2fpga_awlock                     : out   std_logic;                                        -- awlock
+            lwhps2fpga_awcache                    : out   std_logic_vector(3 downto 0);                     -- awcache
+            lwhps2fpga_awprot                     : out   std_logic_vector(2 downto 0);                     -- awprot
+            lwhps2fpga_awvalid                    : out   std_logic;                                        -- awvalid
+            lwhps2fpga_awready                    : in    std_logic                     := 'X';             -- awready
+            lwhps2fpga_wdata                      : out   std_logic_vector(31 downto 0);                    -- wdata
+            lwhps2fpga_wstrb                      : out   std_logic_vector(3 downto 0);                     -- wstrb
+            lwhps2fpga_wlast                      : out   std_logic;                                        -- wlast
+            lwhps2fpga_wvalid                     : out   std_logic;                                        -- wvalid
+            lwhps2fpga_wready                     : in    std_logic                     := 'X';             -- wready
+            lwhps2fpga_bid                        : in    std_logic_vector(3 downto 0)  := (others => 'X'); -- bid
+            lwhps2fpga_bresp                      : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- bresp
+            lwhps2fpga_bvalid                     : in    std_logic                     := 'X';             -- bvalid
+            lwhps2fpga_bready                     : out   std_logic;                                        -- bready
+            lwhps2fpga_arid                       : out   std_logic_vector(3 downto 0);                     -- arid
+            lwhps2fpga_araddr                     : out   std_logic_vector(28 downto 0);                    -- araddr
+            lwhps2fpga_arlen                      : out   std_logic_vector(7 downto 0);                     -- arlen
+            lwhps2fpga_arsize                     : out   std_logic_vector(2 downto 0);                     -- arsize
+            lwhps2fpga_arburst                    : out   std_logic_vector(1 downto 0);                     -- arburst
+            lwhps2fpga_arlock                     : out   std_logic;                                        -- arlock
+            lwhps2fpga_arcache                    : out   std_logic_vector(3 downto 0);                     -- arcache
+            lwhps2fpga_arprot                     : out   std_logic_vector(2 downto 0);                     -- arprot
+            lwhps2fpga_arvalid                    : out   std_logic;                                        -- arvalid
+            lwhps2fpga_arready                    : in    std_logic                     := 'X';             -- arready
+            lwhps2fpga_rid                        : in    std_logic_vector(3 downto 0)  := (others => 'X'); -- rid
+            lwhps2fpga_rdata                      : in    std_logic_vector(31 downto 0) := (others => 'X'); -- rdata
+            lwhps2fpga_rresp                      : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rresp
+            lwhps2fpga_rlast                      : in    std_logic                     := 'X';             -- rlast
+            lwhps2fpga_rvalid                     : in    std_logic                     := 'X';             -- rvalid
+            lwhps2fpga_rready                     : out   std_logic;                                        -- rready
+            hps_uart0_cts_n                       : in    std_logic                     := 'X';             -- cts_n
+            hps_uart0_dcd_n                       : in    std_logic                     := 'X';             -- dcd_n
+            hps_uart0_dsr_n                       : in    std_logic                     := 'X';             -- dsr_n
+            hps_uart0_dtr_n                       : out   std_logic;                                        -- dtr_n
+            hps_uart0_out1_n                      : out   std_logic;                                        -- out1_n
+            hps_uart0_out2_n                      : out   std_logic;                                        -- out2_n
+            hps_uart0_ri_n                        : in    std_logic                     := 'X';             -- ri_n
+            hps_uart0_rts_n                       : out   std_logic;                                        -- rts_n
+            hps_uart0_rx                          : in    std_logic                     := 'X';             -- rx
+            hps_uart0_tx                          : out   std_logic;                                        -- tx
+            hps_io_hps_osc_clk                    : in    std_logic                     := 'X';             -- hps_osc_clk
+            hps_io_sdmmc_data0                    : inout std_logic                     := 'X';             -- sdmmc_data0
+            hps_io_sdmmc_data1                    : inout std_logic                     := 'X';             -- sdmmc_data1
+            hps_io_sdmmc_cclk                     : out   std_logic;                                        -- sdmmc_cclk
+            hps_io_sdmmc_data2                    : inout std_logic                     := 'X';             -- sdmmc_data2
+            hps_io_sdmmc_data3                    : inout std_logic                     := 'X';             -- sdmmc_data3
+            hps_io_sdmmc_cmd                      : inout std_logic                     := 'X';             -- sdmmc_cmd
+            hps_io_emac0_tx_clk                   : out   std_logic;                                        -- emac0_tx_clk
+            hps_io_emac0_tx_ctl                   : out   std_logic;                                        -- emac0_tx_ctl
+            hps_io_emac0_rx_clk                   : in    std_logic                     := 'X';             -- emac0_rx_clk
+            hps_io_emac0_rx_ctl                   : in    std_logic                     := 'X';             -- emac0_rx_ctl
+            hps_io_emac0_txd0                     : out   std_logic;                                        -- emac0_txd0
+            hps_io_emac0_txd1                     : out   std_logic;                                        -- emac0_txd1
+            hps_io_emac0_rxd0                     : in    std_logic                     := 'X';             -- emac0_rxd0
+            hps_io_emac0_rxd1                     : in    std_logic                     := 'X';             -- emac0_rxd1
+            hps_io_emac0_txd2                     : out   std_logic;                                        -- emac0_txd2
+            hps_io_emac0_txd3                     : out   std_logic;                                        -- emac0_txd3
+            hps_io_emac0_rxd2                     : in    std_logic                     := 'X';             -- emac0_rxd2
+            hps_io_emac0_rxd3                     : in    std_logic                     := 'X';             -- emac0_rxd3
+            hps_io_mdio0_mdio                     : inout std_logic                     := 'X';             -- mdio0_mdio
+            hps_io_mdio0_mdc                      : out   std_logic;                                        -- mdio0_mdc
+            hps_io_uart1_tx                       : out   std_logic;                                        -- uart1_tx
+            hps_io_uart1_rx                       : in    std_logic                     := 'X';             -- uart1_rx
+            hps_io_gpio40                         : inout std_logic                     := 'X';             -- gpio40
+            hps_io_gpio41                         : inout std_logic                     := 'X';             -- gpio41
+            f2h_irq1_in_irq                       : in    std_logic_vector(31 downto 0) := (others => 'X'); -- irq
+            f2h_irq0_in_irq                       : in    std_logic_vector(31 downto 0) := (others => 'X'); -- irq
+            emif_hps_emif_mem_0_mem_cs            : out   std_logic_vector(0 downto 0);                     -- mem_cs
+            emif_hps_emif_mem_0_mem_ca            : out   std_logic_vector(5 downto 0);                     -- mem_ca
+            emif_hps_emif_mem_0_mem_cke           : out   std_logic_vector(0 downto 0);                     -- mem_cke
+            emif_hps_emif_mem_0_mem_dq            : inout std_logic_vector(31 downto 0) := (others => 'X'); -- mem_dq
+            emif_hps_emif_mem_0_mem_dqs_t         : inout std_logic_vector(3 downto 0)  := (others => 'X'); -- mem_dqs_t
+            emif_hps_emif_mem_0_mem_dqs_c         : inout std_logic_vector(3 downto 0)  := (others => 'X'); -- mem_dqs_c
+            emif_hps_emif_mem_0_mem_dmi           : inout std_logic_vector(3 downto 0)  := (others => 'X'); -- mem_dmi
+            emif_hps_emif_mem_ck_0_mem_ck_t       : out   std_logic_vector(0 downto 0);                     -- mem_ck_t
+            emif_hps_emif_mem_ck_0_mem_ck_c       : out   std_logic_vector(0 downto 0);                     -- mem_ck_c
+            emif_hps_emif_mem_reset_n_mem_reset_n : out   std_logic;                                        -- mem_reset_n
+            emif_hps_emif_oct_0_oct_rzqin         : in    std_logic                     := 'X';             -- oct_rzqin
+            emif_hps_emif_ref_clk_clk             : in    std_logic                     := 'X';             -- clk
+            ninit_done_reset                      : out   std_logic                                         -- reset
+        );
+    end component hps_subsys;
+
+    -- hps_subsys emits these EMIF signals as 1-bit vectors; the top-level
+    -- LPDDR4A_* pins are scalars, so bridge through a signal.
+    signal ddr_cs_vec   : std_logic_vector(0 downto 0);
+    signal ddr_cke_vec  : std_logic_vector(0 downto 0);
+    signal ddr_ck_t_vec : std_logic_vector(0 downto 0);
+    signal ddr_ck_c_vec : std_logic_vector(0 downto 0);
 
 begin
 
@@ -407,63 +433,107 @@ begin
 -- Agilex 5 HPS + LPDDR4 EMIF - standalone (bridges disabled), clocks and
 -- resets itself. See hps/README.md.
 ------------------------------------------------------------------------
-    u_hps_min : hps_min
-    port map (
-        h2f_reset_reset        => open
-        ,emac0_app_rst_reset_n => open
-        ,hps_io_hps_osc_clk    => HPS_CLK_25
-        ,hps_io_sdmmc_data0    => HPS_SD_DATA(0)
-        ,hps_io_sdmmc_data1    => HPS_SD_DATA(1)
-        ,hps_io_sdmmc_cclk     => HPS_SD_CLK
-        ,hps_io_sdmmc_data2    => HPS_SD_DATA(2)
-        ,hps_io_sdmmc_data3    => HPS_SD_DATA(3)
-        ,hps_io_sdmmc_cmd      => HPS_SD_CMD
-        ,hps_io_usb0_clk       => HPS_USB_CLK
-        ,hps_io_usb0_stp       => HPS_USB_STP
-        ,hps_io_usb0_dir       => HPS_USB_DIR
-        ,hps_io_usb0_data0     => HPS_USB_DATA(0)
-        ,hps_io_usb0_data1     => HPS_USB_DATA(1)
-        ,hps_io_usb0_nxt       => HPS_USB_NXT
-        ,hps_io_usb0_data2     => HPS_USB_DATA(2)
-        ,hps_io_usb0_data3     => HPS_USB_DATA(3)
-        ,hps_io_usb0_data4     => HPS_USB_DATA(4)
-        ,hps_io_usb0_data5     => HPS_USB_DATA(5)
-        ,hps_io_usb0_data6     => HPS_USB_DATA(6)
-        ,hps_io_usb0_data7     => HPS_USB_DATA(7)
-        ,hps_io_emac0_tx_clk   => HPS_ENET_TX_CLK
-        ,hps_io_emac0_tx_ctl   => HPS_ENET_TX_CTL
-        ,hps_io_emac0_rx_clk   => HPS_ENET_RX_CLK
-        ,hps_io_emac0_rx_ctl   => HPS_ENET_RX_CTL
-        ,hps_io_emac0_txd0     => HPS_ENET_TX_DATA(0)
-        ,hps_io_emac0_txd1     => HPS_ENET_TX_DATA(1)
-        ,hps_io_emac0_rxd0     => HPS_ENET_RX_DATA(0)
-        ,hps_io_emac0_rxd1     => HPS_ENET_RX_DATA(1)
-        ,hps_io_emac0_txd2     => HPS_ENET_TX_DATA(2)
-        ,hps_io_emac0_txd3     => HPS_ENET_TX_DATA(3)
-        ,hps_io_emac0_rxd2     => HPS_ENET_RX_DATA(2)
-        ,hps_io_emac0_rxd3     => HPS_ENET_RX_DATA(3)
-        ,hps_io_mdio0_mdio     => HPS_ENET_MDIO
-        ,hps_io_mdio0_mdc      => HPS_ENET_MDC
-        ,hps_io_uart1_tx       => HPS_UART_TX
-        ,hps_io_uart1_rx       => HPS_UART_RX
-        ,hps_io_i2c1_sda       => HPS_I2C_SDA
-        ,hps_io_i2c1_scl       => HPS_I2C_SCL
-        ,hps_io_gpio28         => HPS_GSENSOR_INT
-        ,hps_io_gpio34         => HPS_GSENSOR_I2C_EN
-        ,hps_io_gpio40         => HPS_KEY
-        ,hps_io_gpio41         => HPS_LED
-        ,mem_0_cs              => LPDDR4A_CS_n
-        ,mem_0_ca              => LPDDR4A_CA
-        ,mem_0_cke             => LPDDR4A_CKE
-        ,mem_0_dq              => LPDDR4A_DQ
-        ,mem_0_dqs_t           => LPDDR4A_DQS
-        ,mem_0_dqs_c           => LPDDR4A_DQS_n
-        ,mem_0_dmi             => LPDDR4A_DM
-        ,mem_0_ck_t            => LPDDR4A_CK
-        ,mem_0_ck_c            => LPDDR4A_CK_n
-        ,mem_0_reset_n         => LPDDR4A_RESET_n
-        ,oct_rzqin_0           => LPDDR4A_RZQ
-        ,ref_clk               => LPDDR4A_REFCLK_p
-    );
+
+    -- lwhps2fpga_* is Not wired up yet, will be used later. Everything the
+    -- component drives is left open; everything it needs driven back is
+    -- tied to a safe idle value.
+    -- hps_uart0_* has no board pins (only uart1 is routed - see HPS_UART_TX/RX
+    -- above), so it's tied off inactive/idle rather than wired anywhere.
+    u0 : component hps_subsys
+        port map (
+            h2f_reset_reset                       => open,                                --                 h2f_reset.reset
+            lwhps2fpga_axi_clock_clk              => core_clock,                           --      lwhps2fpga_axi_clock.clk
+            lwhps2fpga_axi_reset_reset            => system_reset,                         --      lwhps2fpga_axi_reset.reset
+            lwhps2fpga_awid                       => open,                                 --                lwhps2fpga.awid
+            lwhps2fpga_awaddr                     => open,                                 --                          .awaddr
+            lwhps2fpga_awlen                      => open,                                 --                          .awlen
+            lwhps2fpga_awsize                     => open,                                 --                          .awsize
+            lwhps2fpga_awburst                    => open,                                 --                          .awburst
+            lwhps2fpga_awlock                     => open,                                 --                          .awlock
+            lwhps2fpga_awcache                    => open,                                 --                          .awcache
+            lwhps2fpga_awprot                     => open,                                 --                          .awprot
+            lwhps2fpga_awvalid                    => open,                                 --                          .awvalid
+            lwhps2fpga_awready                    => '0',                                  --                          .awready
+            lwhps2fpga_wdata                      => open,                                 --                          .wdata
+            lwhps2fpga_wstrb                      => open,                                 --                          .wstrb
+            lwhps2fpga_wlast                      => open,                                 --                          .wlast
+            lwhps2fpga_wvalid                     => open,                                 --                          .wvalid
+            lwhps2fpga_wready                     => '0',                                  --                          .wready
+            lwhps2fpga_bid                        => (others => '0'),                      --                          .bid
+            lwhps2fpga_bresp                      => (others => '0'),                      --                          .bresp
+            lwhps2fpga_bvalid                     => '0',                                  --                          .bvalid
+            lwhps2fpga_bready                     => open,                                 --                          .bready
+            lwhps2fpga_arid                       => open,                                 --                          .arid
+            lwhps2fpga_araddr                     => open,                                 --                          .araddr
+            lwhps2fpga_arlen                      => open,                                 --                          .arlen
+            lwhps2fpga_arsize                     => open,                                 --                          .arsize
+            lwhps2fpga_arburst                    => open,                                 --                          .arburst
+            lwhps2fpga_arlock                     => open,                                 --                          .arlock
+            lwhps2fpga_arcache                    => open,                                 --                          .arcache
+            lwhps2fpga_arprot                     => open,                                 --                          .arprot
+            lwhps2fpga_arvalid                    => open,                                 --                          .arvalid
+            lwhps2fpga_arready                    => '0',                                  --                          .arready
+            lwhps2fpga_rid                        => (others => '0'),                      --                          .rid
+            lwhps2fpga_rdata                      => (others => '0'),                      --                          .rdata
+            lwhps2fpga_rresp                      => (others => '0'),                      --                          .rresp
+            lwhps2fpga_rlast                      => '0',                                  --                          .rlast
+            lwhps2fpga_rvalid                     => '0',                                  --                          .rvalid
+            lwhps2fpga_rready                     => open,                                 --                          .rready
+            hps_uart0_cts_n                       => '0',                                  --                 hps_uart0.cts_n
+            hps_uart0_dcd_n                       => '0',                                  --                          .dcd_n
+            hps_uart0_dsr_n                       => '0',                                  --                          .dsr_n
+            hps_uart0_dtr_n                       => open,                                 --                          .dtr_n
+            hps_uart0_out1_n                      => open,                                 --                          .out1_n
+            hps_uart0_out2_n                      => open,                                 --                          .out2_n
+            hps_uart0_ri_n                        => '1',                                  --                          .ri_n
+            hps_uart0_rts_n                       => open,                                 --                          .rts_n
+            hps_uart0_rx                          => '1',                                  --                          .rx
+            hps_uart0_tx                          => open,                                 --                          .tx
+            hps_io_hps_osc_clk                    => HPS_CLK_25,                           --                    hps_io.hps_osc_clk
+            hps_io_sdmmc_data0                    => HPS_SD_DATA(0),                       --                          .sdmmc_data0
+            hps_io_sdmmc_data1                    => HPS_SD_DATA(1),                       --                          .sdmmc_data1
+            hps_io_sdmmc_cclk                     => HPS_SD_CLK,                           --                          .sdmmc_cclk
+            hps_io_sdmmc_data2                    => HPS_SD_DATA(2),                       --                          .sdmmc_data2
+            hps_io_sdmmc_data3                    => HPS_SD_DATA(3),                       --                          .sdmmc_data3
+            hps_io_sdmmc_cmd                      => HPS_SD_CMD,                           --                          .sdmmc_cmd
+            hps_io_emac0_tx_clk                   => HPS_ENET_TX_CLK,                      --                          .emac0_tx_clk
+            hps_io_emac0_tx_ctl                   => HPS_ENET_TX_CTL,                      --                          .emac0_tx_ctl
+            hps_io_emac0_rx_clk                   => HPS_ENET_RX_CLK,                      --                          .emac0_rx_clk
+            hps_io_emac0_rx_ctl                   => HPS_ENET_RX_CTL,                      --                          .emac0_rx_ctl
+            hps_io_emac0_txd0                     => HPS_ENET_TX_DATA(0),                  --                          .emac0_txd0
+            hps_io_emac0_txd1                     => HPS_ENET_TX_DATA(1),                  --                          .emac0_txd1
+            hps_io_emac0_rxd0                     => HPS_ENET_RX_DATA(0),                  --                          .emac0_rxd0
+            hps_io_emac0_rxd1                     => HPS_ENET_RX_DATA(1),                  --                          .emac0_rxd1
+            hps_io_emac0_txd2                     => HPS_ENET_TX_DATA(2),                  --                          .emac0_txd2
+            hps_io_emac0_txd3                     => HPS_ENET_TX_DATA(3),                  --                          .emac0_txd3
+            hps_io_emac0_rxd2                     => HPS_ENET_RX_DATA(2),                  --                          .emac0_rxd2
+            hps_io_emac0_rxd3                     => HPS_ENET_RX_DATA(3),                  --                          .emac0_rxd3
+            hps_io_mdio0_mdio                     => HPS_ENET_MDIO,                        --                          .mdio0_mdio
+            hps_io_mdio0_mdc                      => HPS_ENET_MDC,                         --                          .mdio0_mdc
+            hps_io_uart1_tx                       => HPS_UART_TX,                          --                          .uart1_tx
+            hps_io_uart1_rx                       => HPS_UART_RX,                          --                          .uart1_rx
+            hps_io_gpio40                         => HPS_KEY,                              --                          .gpio40
+            hps_io_gpio41                         => HPS_LED,                              --                          .gpio41
+            f2h_irq1_in_irq                       => (others => '0'),                      --               f2h_irq1_in.irq
+            f2h_irq0_in_irq                       => (others => '0'),                      --               f2h_irq0_in.irq
+            emif_hps_emif_mem_0_mem_cs            => ddr_cs_vec,                           --       emif_hps_emif_mem_0.mem_cs
+            emif_hps_emif_mem_0_mem_ca            => LPDDR4A_CA,                           --                          .mem_ca
+            emif_hps_emif_mem_0_mem_cke           => ddr_cke_vec,                          --                          .mem_cke
+            emif_hps_emif_mem_0_mem_dq            => LPDDR4A_DQ,                           --                          .mem_dq
+            emif_hps_emif_mem_0_mem_dqs_t         => LPDDR4A_DQS,                          --                          .mem_dqs_t
+            emif_hps_emif_mem_0_mem_dqs_c         => LPDDR4A_DQS_n,                        --                          .mem_dqs_c
+            emif_hps_emif_mem_0_mem_dmi           => LPDDR4A_DM,                           --                          .mem_dmi
+            emif_hps_emif_mem_ck_0_mem_ck_t       => ddr_ck_t_vec,                         --    emif_hps_emif_mem_ck_0.mem_ck_t
+            emif_hps_emif_mem_ck_0_mem_ck_c       => ddr_ck_c_vec,                         --                          .mem_ck_c
+            emif_hps_emif_mem_reset_n_mem_reset_n => LPDDR4A_RESET_n,                      -- emif_hps_emif_mem_reset_n.mem_reset_n
+            emif_hps_emif_oct_0_oct_rzqin         => LPDDR4A_RZQ,                          --       emif_hps_emif_oct_0.oct_rzqin
+            emif_hps_emif_ref_clk_clk             => LPDDR4A_REFCLK_p,                     --     emif_hps_emif_ref_clk.clk
+            ninit_done_reset                      => open                                 --                ninit_done.reset
+        );
+
+    LPDDR4A_CS_n <= ddr_cs_vec(0);
+    LPDDR4A_CKE  <= ddr_cke_vec(0);
+    LPDDR4A_CK   <= ddr_ck_t_vec(0);
+    LPDDR4A_CK_n <= ddr_ck_c_vec(0);
 
 end rtl;

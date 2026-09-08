@@ -1,0 +1,50 @@
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TOOL_NAME "QsysPrimePro"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TOOL_VERSION "26.1"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TOOL_ENV "QsysPrimePro"
+set_global_assignment -library "hps_subsys" -name SOPCINFO_FILE [file join $::quartus(qip_path) "hps_subsys.sopcinfo"]
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name SLD_INFO "QSYS_NAME hps_subsys HAS_SOPCINFO 1 GENERATION_ID 0"
+set_global_assignment -library "hps_subsys" -name MISC_FILE [file join $::quartus(qip_path) "hps_subsys.cmp"]
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TARGETED_DEVICE_FAMILY "Agilex 5"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TARGETED_PART_TRAIT "BASE_DEVICE::SM4REVB"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TARGETED_PART_TRAIT "part.DEVICE_IOBANK_REVISION::IO96B_REVB1"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TARGETED_PART_TRAIT "part.DEVICE_POWER_MODEL::STANDARD_POWER_FIXED"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TARGETED_PART_TRAIT "part.DEVICE_TEMPERATURE_GRADE::EXTENDED"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_TARGETED_PART_TRAIT "part.SUPPORTS_VID::0"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_GENERATED_DEVICE_FAMILY "{Agilex 5}"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_QSYS_MODE "SYSTEM"
+set_global_assignment -name SYNTHESIS_ONLY_QIP ON
+set_global_assignment -library "hps_subsys" -name MISC_FILE [file join $::quartus(qip_path) "../hps_subsys.qsys"]
+
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_NAME "YWdpbGV4X2hwcw=="
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_DISPLAY_NAME "R2VuZXJpYyBDb21wb25lbnQ="
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_VERSION "MS4w"
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_DESCRIPTION "QSBkeW5hbWljIGNvbXBvbmVudCB3aGVyZSB5b3UgY2FuIGFkZCwgbW9kaWZ5IG9yIHJlbW92ZSBpbnRlcmZhY2VzIGFuZCBwb3J0cyBvbiB0aGUgZmx5"
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_GROUP "R2VuZXJpYyBDb21wb25lbnQ="
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_NAME "ZW1pZl9pbzk2Yl9ocHM="
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_DISPLAY_NAME "R2VuZXJpYyBDb21wb25lbnQ="
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_VERSION "MS4w"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_DESCRIPTION "QSBkeW5hbWljIGNvbXBvbmVudCB3aGVyZSB5b3UgY2FuIGFkZCwgbW9kaWZ5IG9yIHJlbW92ZSBpbnRlcmZhY2VzIGFuZCBwb3J0cyBvbiB0aGUgZmx5"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_GROUP "R2VuZXJpYyBDb21wb25lbnQ="
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_NAME "aHBzX3N1YnN5c19zMTBfdXNlcl9yc3RfY2xrZ2F0ZV8w"
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_DISPLAY_NAME "R2VuZXJpYyBDb21wb25lbnQ="
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_VERSION "MS4w"
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_DESCRIPTION "QSBkeW5hbWljIGNvbXBvbmVudCB3aGVyZSB5b3UgY2FuIGFkZCwgbW9kaWZ5IG9yIHJlbW92ZSBpbnRlcmZhY2VzIGFuZCBwb3J0cyBvbiB0aGUgZmx5"
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_COMPONENT_GROUP "R2VuZXJpYyBDb21wb25lbnQ="
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_COMPONENT_NAME "aHBzX3N1YnN5cw=="
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_COMPONENT_DISPLAY_NAME "aHBzX3N1YnN5cw=="
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_COMPONENT_REPORT_HIERARCHY "On"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "hps_subsys" -library "hps_subsys" -name IP_COMPONENT_VERSION "MS4w"
+
+
+set_global_assignment -library "hps_subsys" -name VHDL_FILE [file join $::quartus(qip_path) "synth/hps_subsys.vhd"]
+

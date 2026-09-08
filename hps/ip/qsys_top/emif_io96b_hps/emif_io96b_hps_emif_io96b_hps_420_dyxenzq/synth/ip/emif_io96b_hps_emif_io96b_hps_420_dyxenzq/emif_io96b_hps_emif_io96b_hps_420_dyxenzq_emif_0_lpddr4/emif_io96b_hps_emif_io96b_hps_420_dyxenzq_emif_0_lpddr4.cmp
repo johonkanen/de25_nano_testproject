@@ -1,0 +1,79 @@
+	component emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4 is
+		port (
+			s0_noc_axi4lite_clock   : out   std_logic;                                         -- ch0_axil_clk
+			s0_noc_axi4lite_reset_n : out   std_logic;                                         -- ch0_axil_reset_n
+			s0_noc_axi4lite_awaddr  : in    std_logic_vector(26 downto 0)  := (others => 'X'); -- ch0_axil_awaddr
+			s0_noc_axi4lite_awvalid : in    std_logic                      := 'X';             -- ch0_axil_awvalid
+			s0_noc_axi4lite_awready : out   std_logic;                                         -- ch0_axil_awready
+			s0_noc_axi4lite_araddr  : in    std_logic_vector(26 downto 0)  := (others => 'X'); -- ch0_axil_araddr
+			s0_noc_axi4lite_arvalid : in    std_logic                      := 'X';             -- ch0_axil_arvalid
+			s0_noc_axi4lite_arready : out   std_logic;                                         -- ch0_axil_arready
+			s0_noc_axi4lite_wdata   : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- ch0_axil_wdata
+			s0_noc_axi4lite_wvalid  : in    std_logic                      := 'X';             -- ch0_axil_wvalid
+			s0_noc_axi4lite_wready  : out   std_logic;                                         -- ch0_axil_wready
+			s0_noc_axi4lite_rresp   : out   std_logic_vector(1 downto 0);                      -- ch0_axil_rresp
+			s0_noc_axi4lite_rdata   : out   std_logic_vector(31 downto 0);                     -- ch0_axil_rdata
+			s0_noc_axi4lite_rvalid  : out   std_logic;                                         -- ch0_axil_rvalid
+			s0_noc_axi4lite_rready  : in    std_logic                      := 'X';             -- ch0_axil_rready
+			s0_noc_axi4lite_bresp   : out   std_logic_vector(1 downto 0);                      -- ch0_axil_bresp
+			s0_noc_axi4lite_bvalid  : out   std_logic;                                         -- ch0_axil_bvalid
+			s0_noc_axi4lite_bready  : in    std_logic                      := 'X';             -- ch0_axil_bready
+			s0_noc_axi4lite_awprot  : in    std_logic_vector(2 downto 0)   := (others => 'X'); -- ch0_axil_awprot
+			s0_noc_axi4lite_arprot  : in    std_logic_vector(2 downto 0)   := (others => 'X'); -- ch0_axil_arprot
+			s0_noc_axi4lite_wstrb   : in    std_logic_vector(3 downto 0)   := (others => 'X'); -- ch0_axil_wstrb
+			s0_axi4_awaddr          : in    std_logic_vector(39 downto 0)  := (others => 'X'); -- axi4_ch0_awaddr
+			s0_axi4_awburst         : in    std_logic_vector(1 downto 0)   := (others => 'X'); -- axi4_ch0_awburst
+			s0_axi4_awid            : in    std_logic_vector(6 downto 0)   := (others => 'X'); -- axi4_ch0_awid
+			s0_axi4_awlen           : in    std_logic_vector(7 downto 0)   := (others => 'X'); -- axi4_ch0_awlen
+			s0_axi4_awlock          : in    std_logic                      := 'X';             -- axi4_ch0_awlock
+			s0_axi4_awqos           : in    std_logic_vector(3 downto 0)   := (others => 'X'); -- axi4_ch0_awqos
+			s0_axi4_awsize          : in    std_logic_vector(2 downto 0)   := (others => 'X'); -- axi4_ch0_awsize
+			s0_axi4_awvalid         : in    std_logic                      := 'X';             -- axi4_ch0_awvalid
+			s0_axi4_awuser          : in    std_logic_vector(13 downto 0)  := (others => 'X'); -- axi4_ch0_awuser
+			s0_axi4_awprot          : in    std_logic_vector(2 downto 0)   := (others => 'X'); -- axi4_ch0_awprot
+			s0_axi4_awready         : out   std_logic;                                         -- axi4_ch0_awready
+			s0_axi4_araddr          : in    std_logic_vector(39 downto 0)  := (others => 'X'); -- axi4_ch0_araddr
+			s0_axi4_arburst         : in    std_logic_vector(1 downto 0)   := (others => 'X'); -- axi4_ch0_arburst
+			s0_axi4_arid            : in    std_logic_vector(6 downto 0)   := (others => 'X'); -- axi4_ch0_arid
+			s0_axi4_arlen           : in    std_logic_vector(7 downto 0)   := (others => 'X'); -- axi4_ch0_arlen
+			s0_axi4_arlock          : in    std_logic                      := 'X';             -- axi4_ch0_arlock
+			s0_axi4_arqos           : in    std_logic_vector(3 downto 0)   := (others => 'X'); -- axi4_ch0_arqos
+			s0_axi4_arsize          : in    std_logic_vector(2 downto 0)   := (others => 'X'); -- axi4_ch0_arsize
+			s0_axi4_arvalid         : in    std_logic                      := 'X';             -- axi4_ch0_arvalid
+			s0_axi4_aruser          : in    std_logic_vector(13 downto 0)  := (others => 'X'); -- axi4_ch0_aruser
+			s0_axi4_arprot          : in    std_logic_vector(2 downto 0)   := (others => 'X'); -- axi4_ch0_arprot
+			s0_axi4_arready         : out   std_logic;                                         -- axi4_ch0_arready
+			s0_axi4_wdata           : in    std_logic_vector(255 downto 0) := (others => 'X'); -- axi4_ch0_wdata
+			s0_axi4_wstrb           : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- axi4_ch0_wstrb
+			s0_axi4_wlast           : in    std_logic                      := 'X';             -- axi4_ch0_wlast
+			s0_axi4_wvalid          : in    std_logic                      := 'X';             -- axi4_ch0_wvalid
+			s0_axi4_wready          : out   std_logic;                                         -- axi4_ch0_wready
+			s0_axi4_bready          : in    std_logic                      := 'X';             -- axi4_ch0_bready
+			s0_axi4_bid             : out   std_logic_vector(6 downto 0);                      -- axi4_ch0_bid
+			s0_axi4_bresp           : out   std_logic_vector(1 downto 0);                      -- axi4_ch0_bresp
+			s0_axi4_bvalid          : out   std_logic;                                         -- axi4_ch0_bvalid
+			s0_axi4_rready          : in    std_logic                      := 'X';             -- axi4_ch0_rready
+			s0_axi4_rdata           : out   std_logic_vector(255 downto 0);                    -- axi4_ch0_rdata
+			s0_axi4_rid             : out   std_logic_vector(6 downto 0);                      -- axi4_ch0_rid
+			s0_axi4_rlast           : out   std_logic;                                         -- axi4_ch0_rlast
+			s0_axi4_rresp           : out   std_logic_vector(1 downto 0);                      -- axi4_ch0_rresp
+			s0_axi4_rvalid          : out   std_logic;                                         -- axi4_ch0_rvalid
+			noc_aclk_0              : out   std_logic;                                         -- axi4_ch0_clk
+			noc_rst_n_0             : out   std_logic;                                         -- axi4_ch0_reset_n
+			s0_axi4_wuser           : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- axi4_ch0_wuser
+			s0_axi4_ruser           : out   std_logic_vector(31 downto 0);                     -- axi4_ch0_ruser
+			mem_0_cs                : out   std_logic_vector(0 downto 0);                      -- mem_cs
+			mem_0_ca                : out   std_logic_vector(5 downto 0);                      -- mem_ca
+			mem_0_cke               : out   std_logic_vector(0 downto 0);                      -- mem_cke
+			mem_0_dq                : inout std_logic_vector(31 downto 0)  := (others => 'X'); -- mem_dq
+			mem_0_dqs_t             : inout std_logic_vector(3 downto 0)   := (others => 'X'); -- mem_dqs_t
+			mem_0_dqs_c             : inout std_logic_vector(3 downto 0)   := (others => 'X'); -- mem_dqs_c
+			mem_0_dmi               : inout std_logic_vector(3 downto 0)   := (others => 'X'); -- mem_dmi
+			mem_0_ck_t              : out   std_logic_vector(0 downto 0);                      -- mem_ck_t
+			mem_0_ck_c              : out   std_logic_vector(0 downto 0);                      -- mem_ck_c
+			mem_0_reset_n           : out   std_logic;                                         -- mem_reset_n
+			oct_rzqin_0             : in    std_logic                      := 'X';             -- oct_rzqin
+			ref_clk                 : in    std_logic                      := 'X'              -- clk
+		);
+	end component emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4;
+

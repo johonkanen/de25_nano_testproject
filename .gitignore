@@ -32,9 +32,9 @@ sim/*.ghw
 __pycache__/
 *.pyc
 
-# generated HPS/EMIF IP trees - keep the .ip source + scripts, drop the rest
-hps/ip/hps_subsys/agilex_hps/
-hps/ip/qsys_top/emif_io96b_hps/
+# hps/hps_min.qsys (source) and hps/hps_min/ (generated output) are tracked
+# so the project builds after qsys-generate without re-running Platform
+# Designer - see hps/README.md.
 hps/**/*.qpf
 hps/**/*.qsf
 
