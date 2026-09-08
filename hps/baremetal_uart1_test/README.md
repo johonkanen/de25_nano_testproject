@@ -75,6 +75,16 @@ export PATH="$PWD/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf/bin:$PATH"
 # directory, NOT of hps/ itself:
 git clone -b QPDS25.1_REL_GSRD_PR https://github.com/altera-fpga/baremetal-drivers ../baremetal-drivers
 
+# baremetal-drivers' generate_bin_file() (used by this test's CMakeLists.txt)
+# unconditionally adds a dependency on an `atf` FetchContent target, even
+# though this test itself needs no ATF (no BL2/BL31, no ATF-built anything -
+# see the top of this file). target_aarch64.cmake's default ATF_GIT_TAG
+# (socfpga_v2.10.1) no longer exists as a ref in altera-opensource's repo,
+# so a plain `cmake -GNinja -B build .` clones the *entire* history before
+# failing to check it out - observed at ~9 KB/s, i.e. hours, not minutes.
+# Point FetchContent at an already-cloned ATF checkout instead (any ref is
+# fine - nothing in this test actually builds or links against it):
+#     cmake -GNinja -B build . -DFETCHCONTENT_SOURCE_DIR_ATF=/path/to/existing/arm-trusted-firmware
 cmake -GNinja -B build .
 cmake --build build
 # objcopy in generate_bin_file() resolves to the *system* objcopy due to a
