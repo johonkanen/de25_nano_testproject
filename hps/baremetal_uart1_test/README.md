@@ -79,13 +79,27 @@ git clone -b QPDS25.1_REL_GSRD_PR https://github.com/altera-fpga/baremetal-drive
 # unconditionally adds a dependency on an `atf` FetchContent target, even
 # though this test itself needs no ATF (no BL2/BL31, no ATF-built anything -
 # see the top of this file). target_aarch64.cmake's default ATF_GIT_TAG
-# (socfpga_v2.10.1) no longer exists as a ref in altera-opensource's repo,
-# so a plain `cmake -GNinja -B build .` clones the *entire* history before
-# failing to check it out - observed at ~9 KB/s, i.e. hours, not minutes.
-# Point FetchContent at an already-cloned ATF checkout instead (any ref is
-# fine - nothing in this test actually builds or links against it):
+# (socfpga_v2.10.1) no longer exists as a ref in altera-opensource's repo, so
+# a plain `cmake -GNinja -B build .` clones the *entire* history before
+# failing to check it out - this is a real bug in that ref, independent of
+# connection speed (a fast connection just fails faster, after transferring
+# more data first). Point it at a tag that actually exists instead - pick
+# any from `git ls-remote --tags
+# https://github.com/altera-opensource/arm-trusted-firmware.git`, e.g.:
+cmake -GNinja -B build . \
+    -DATF_GIT_TAG=rel_socfpga_v2.10.1_24.11.03_pr
+# Nothing in this test actually builds or links against ATF, so the exact
+# tag doesn't matter - any valid ref unblocks the fetch. If you already have
+# a local arm-trusted-firmware checkout (any ref), skip the network fetch
+# entirely instead:
 #     cmake -GNinja -B build . -DFETCHCONTENT_SOURCE_DIR_ATF=/path/to/existing/arm-trusted-firmware
-cmake -GNinja -B build .
+#
+# In one heavily bandwidth-throttled sandbox this was hit in, even a --depth 1
+# clone of a real tag stalled under 3 MB/minute - almost certainly specific
+# to that environment's network, not this repo or baremetal-drivers, but
+# worth knowing if `cmake` seems to hang here: check actual transfer
+# progress (`--debug-find` or watching `du -sh build/_deps/atf-src`) before
+# assuming something is broken.
 cmake --build build
 # objcopy in generate_bin_file() resolves to the *system* objcopy due to a
 # CMake variable-scoping quirk in baremetal-drivers' target_aarch64.cmake -
