@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="agilex_hps" kind="agilex_hps" version="1.0" fabric="QSYS">
  <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
- <!-- 2026.09.09.10:45:59 -->
+ <!-- 2026.09.09.11:00:13 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
@@ -148,7 +148,7 @@
    name="agilex_hps"
    kind="intel_agilex_5_soc"
    version="14.0.0"
-   entity="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"
+   entity="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"
    library="intel_agilex_5_soc_1400"
    path="agilex_hps"
    hpath="agilex_hps"
@@ -773,7 +773,7 @@ reg {
 }
 reg {
   reg_name: "ctl.s2fuser0ctr.cnt"
-  reg_value: 0
+  reg_value: 9
 }
 reg {
   reg_name: "ctl.s2fuser1ctr.src"
@@ -1916,7 +1916,7 @@ reg {
   </parameter>
   <parameter name="User0_clk_enable">
    <type>boolean</type>
-   <value>false</value>
+   <value>true</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -1940,7 +1940,7 @@ reg {
   </parameter>
   <parameter name="User0_clk_freq">
    <type>double</type>
-   <value>500.0</value>
+   <value>50.0</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -5460,7 +5460,7 @@ reg {
   </parameter>
   <parameter name="REG_s2fuser0ctr_cnt">
    <type>int</type>
-   <value>0</value>
+   <value>9</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -6666,6 +6666,76 @@ parameters are a RESULT of the module parameters. -->
     <role>tx</role>
    </port>
   </interface>
+  <interface name="h2f_user0_clk" kind="clock_source" version="26.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedDirectClock">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="clockRate">
+    <type>long</type>
+    <value>0</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="clockRateKnown">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="externallyDriven">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="ptfSchematicName">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>clock</type>
+   <span>0</span>
+   <isStart>true</isStart>
+   <port>
+    <name>h2f_user0_clk_clk</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>clk</role>
+   </port>
+  </interface>
   <interface name="hps_io" kind="conduit_end" version="26.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
@@ -7477,6 +7547,14 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
   <displayName>Conduit</displayName>
+  <version>26.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>clock_source</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Clock Output</displayName>
   <version>26.1</version>
  </plugin>
  <plugin>

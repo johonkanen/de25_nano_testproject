@@ -12,7 +12,7 @@
 
 
 
-module agilex_hps_intel_sundancemesa_hps_100_uakysza(
+module agilex_hps_intel_sundancemesa_hps_100_znzlgdq(
   output wire [0 : 0 ] h2f_reset
  ,input wire [0 : 0 ] lwhps2fpga_clk
  ,input wire [0 : 0 ] lwhps2fpga_rst
@@ -62,6 +62,7 @@ module agilex_hps_intel_sundancemesa_hps_100_uakysza(
  ,output wire [0 : 0 ] uart0_rts_n
  ,input wire [0 : 0 ] uart0_rx
  ,output wire [0 : 0 ] uart0_tx
+ ,output wire [0 : 0 ] user0_clk
  ,input wire [0 : 0 ] hps_osc_clk
  ,inout wire [0 : 0 ] sdmmc_data0
  ,inout wire [0 : 0 ] sdmmc_data1
@@ -1748,6 +1749,9 @@ tennm_soc_hps #(
   })
  ,.ccu_dmi0_arqos({
      hps2mpfe_dmi0_arqos[3:0]
+  })
+ ,.s2f_user_clk0_hio({
+     user0_clk[0:0]
   })
  ,.uart0_dsr_n({
      uart0_dsr_n[0:0]

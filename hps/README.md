@@ -75,6 +75,33 @@ for how to actually get software running on the HPS to talk on it, and
 [`baremetal_lwh2f_regs/`](baremetal_lwh2f_regs/) for reaching the same
 fabric register file over LWH2F instead, from the ARM cores directly.
 
+## H2F User0 clock (HPS-generated free-running clock to fabric) - .ip ready, one GUI step left
+
+`User0_clk_enable`/`User0_clk_freq` in `ip/hps_subsys/agilex_hps.ip` are
+set to `true`/`50.0` MHz - the same HPS-generated, board-oscillator-
+independent free-running clock feature de25_std_testproject wired up (see
+that project's own `hps/README.md` "H2F User0 clock" section for the full
+account, including a gotcha worth reading before touching the GUI: it's
+easy to enable the similarly-named but opposite-direction "Enable
+FPGA-to-HPS Free Clock" by mistake instead).
+
+Confirmed headlessly (safe, done): regenerating `agilex_hps.ip` directly
+produces a real `h2f_user0_clk_clk` port on that sub-component, and the
+whole project still synthesizes clean (0 errors, 0 warnings) with this
+change in place - inert, since `hps_subsys.qsys` doesn't see the new
+interface yet.
+
+**What's left needs the Platform Designer GUI** (a real tooling
+limitation, not a preference - see de25_std_testproject's own
+`hps/README.md` for why `intel_agilex_5_soc`/`agilex_hps`'s "Generic
+Component" wrapper can't be refreshed headlessly): open
+`hps_subsys.qsys`, let it re-import `agilex_hps.ip`, export the new
+`h2f_user0_clk` interface at the system level (same way `lwhps2fpga`
+etc. already are), save. Then wire the new `h2f_user0_clock_clk` port
+into `de25_nano_uart_top.vhd` - an isolated test module
+(`h2f_user0_clk_heartbeat.vhd`, ported from de25_std_testproject) driving
+a spare pin, not the register file, exactly as done there.
+
 ## Status
 
 ✅ Hardware-confirmed, both interfaces: HPS UART1 (bare-metal, see

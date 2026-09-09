@@ -48,6 +48,7 @@
 		.uart0_rts_n                    (_connected_to_uart0_rts_n_),                    //  output,    width = 1,                        .rts_n
 		.uart0_rx                       (_connected_to_uart0_rx_),                       //   input,    width = 1,                        .rx
 		.uart0_tx                       (_connected_to_uart0_tx_),                       //  output,    width = 1,                        .tx
+		.h2f_user0_clk_clk              (_connected_to_h2f_user0_clk_clk_),              //  output,    width = 1,           h2f_user0_clk.clk
 		.hps_io_hps_osc_clk             (_connected_to_hps_io_hps_osc_clk_),             //   input,    width = 1,                  hps_io.hps_osc_clk
 		.hps_io_sdmmc_data0             (_connected_to_hps_io_sdmmc_data0_),             //   inout,    width = 1,                        .sdmmc_data0
 		.hps_io_sdmmc_data1             (_connected_to_hps_io_sdmmc_data1_),             //   inout,    width = 1,                        .sdmmc_data1

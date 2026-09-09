@@ -951,7 +951,7 @@ reg {
 }
 reg {
   reg_name: "ctl.s2fuser0ctr.cnt"
-  reg_value: 0
+  reg_value: 9
 }
 reg {
   reg_name: "ctl.s2fuser1ctr.src"
@@ -2773,7 +2773,7 @@ reg {
           </parameter>
           <parameter>
             <name>REG_s2fuser0ctr_cnt</name>
-            <value>0</value>
+            <value>9</value>
           </parameter>
           <parameter>
             <name>REG_s2fuser0ctr_src</name>
@@ -2901,11 +2901,11 @@ reg {
           </parameter>
           <parameter>
             <name>User0_clk_enable</name>
-            <value>false</value>
+            <value>true</value>
           </parameter>
           <parameter>
             <name>User0_clk_freq</name>
-            <value>500.0</value>
+            <value>50.0</value>
           </parameter>
           <parameter>
             <name>User0_clk_src_select</name>
@@ -3164,7 +3164,7 @@ reg {
         <className>intel_agilex_5_soc</className>
         <version>14.0.0</version>
         <name>agilex_hps</name>
-        <uniqueName>agilex_hps_intel_agilex_5_soc_1400_5qvkj5y</uniqueName>
+        <uniqueName>agilex_hps_intel_agilex_5_soc_1400_7zw7mqq</uniqueName>
         <nonce>0</nonce>
         <incidentConnections></incidentConnections>
         <path>agilex_hps.agilex_hps</path>
@@ -3993,7 +3993,7 @@ reg {
 }
 reg {
   reg_name: "ctl.s2fuser0ctr.cnt"
-  reg_value: 0
+  reg_value: 9
 }
 reg {
   reg_name: "ctl.s2fuser1ctr.src"
@@ -4999,11 +4999,11 @@ reg {
               </parameter>
               <parameter>
                 <name>User0_clk_enable</name>
-                <value>false</value>
+                <value>true</value>
               </parameter>
               <parameter>
                 <name>User0_clk_freq</name>
-                <value>500.0</value>
+                <value>50.0</value>
               </parameter>
               <parameter>
                 <name>User0_clk_src_select</name>
@@ -5234,7 +5234,7 @@ reg {
             <className>intel_sundancemesa_hps</className>
             <version>1.0.0</version>
             <name>sm_hps</name>
-            <uniqueName>agilex_hps_intel_sundancemesa_hps_100_uakysza</uniqueName>
+            <uniqueName>agilex_hps_intel_sundancemesa_hps_100_znzlgdq</uniqueName>
             <nonce>0</nonce>
             <incidentConnections>
               <incidentConnection>
@@ -6167,7 +6167,7 @@ reg {
 }
 reg {
   reg_name: "ctl.s2fuser0ctr.cnt"
-  reg_value: 0
+  reg_value: 9
 }
 reg {
   reg_name: "ctl.s2fuser1ctr.src"
@@ -6308,7 +6308,7 @@ reg {
             <className>intel_sundancemesa_mpfe</className>
             <version>1.0.0</version>
             <name>sm_mpfe</name>
-            <uniqueName>agilex_hps_intel_sundancemesa_mpfe_100_puhlmja</uniqueName>
+            <uniqueName>agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq</uniqueName>
             <nonce>0</nonce>
             <incidentConnections>
               <incidentConnection>

@@ -1,5 +1,5 @@
 # Frequency (User dependent)
-set s2f_user_clk0_period 2.0
+set s2f_user_clk0_period 20.0
 set s2f_user_clk1_period 2.0
 
 # (C) 2001-2026 Altera Corporation. All rights reserved.

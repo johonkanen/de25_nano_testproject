@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="hps_subsys" kind="hps_subsys" version="1.0" fabric="QSYS">
  <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
- <!-- 2026.09.09.10:45:49 -->
+ <!-- 2026.09.09.11:00:03 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>

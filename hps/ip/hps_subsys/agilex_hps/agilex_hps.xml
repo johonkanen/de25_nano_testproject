@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy
- date="2026.09.09.10:45:59"
+ date="2026.09.09.11:00:13"
  outputDirectory="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/">
  <perimeter>
   <parameter
@@ -195,6 +195,14 @@
    <port name="uart0_rts_n" direction="output" role="rts_n" width="1" />
    <port name="uart0_rx" direction="input" role="rx" width="1" />
    <port name="uart0_tx" direction="output" role="tx" width="1" />
+  </interface>
+  <interface name="h2f_user0_clk" kind="clock" start="1">
+   <property name="associatedDirectClock" value="" />
+   <property name="clockRate" value="0" />
+   <property name="clockRateKnown" value="false" />
+   <property name="externallyDriven" value="false" />
+   <property name="ptfSchematicName" value="" />
+   <port name="h2f_user0_clk_clk" direction="output" role="clk" width="1" />
   </interface>
   <interface name="hps_io" kind="conduit" start="0">
    <property name="associatedClock" value="" />
@@ -848,15 +856,15 @@
   </childSourceFiles>
   <messages>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_uakysza"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_puhlmja"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_znzlgdq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq"</message>
   </messages>
  </entity>
  <entity
    kind="intel_agilex_5_soc"
    version="14.0.0"
-   name="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y">
+   name="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq">
   <parameter
      name="HPS_HANDOFF_OPTION_STRING"
      value="    HPS_PRESENT: true
@@ -1547,7 +1555,7 @@ reg {
 }
 reg {
   reg_name: &quot;ctl.s2fuser0ctr.cnt&quot;
-  reg_value: 0
+  reg_value: 9
 }
 reg {
   reg_name: &quot;ctl.s2fuser1ctr.src&quot;
@@ -1732,7 +1740,7 @@ reg {
   <parameter name="FPGA_EMAC2_gtx_clk_mhz" value="125.0" />
   <parameter name="REG_pin15_sel" value="0" />
   <parameter name="REG_io20_input_delay" value="0" />
-  <parameter name="User0_clk_freq" value="500.0" />
+  <parameter name="User0_clk_freq" value="50.0" />
   <parameter name="ED_en_vcsmx" value="true" />
   <parameter name="REG_io22_input_delay" value="0" />
   <parameter name="REG_io23_input_delay" value="0" />
@@ -1825,7 +1833,7 @@ reg {
   <parameter name="MPLL_C0_Override_mhz" value="800.0" />
   <parameter name="REG_pinmux_i3c0_usefpga_sel" value="0" />
   <parameter name="H2F_IRQ_I2CEMAC1_Enable" value="false" />
-  <parameter name="User0_clk_enable" value="false" />
+  <parameter name="User0_clk_enable" value="true" />
   <parameter name="FPGA_I3C1_sclk_mhz" value="125.0" />
   <parameter name="REG_io37_output_delay" value="0" />
   <parameter name="Pwr_a76_core2_on" value="false" />
@@ -1991,7 +1999,7 @@ reg {
   <parameter name="REG_io21_output_delay" value="0" />
   <parameter name="hps_iob19_opd_en" value="false" />
   <parameter name="REG_pinmux_spim1_usefpga_sel" value="0" />
-  <parameter name="REG_s2fuser0ctr_cnt" value="0" />
+  <parameter name="REG_s2fuser0ctr_cnt" value="9" />
   <parameter name="FPGA_EMAC0_tx_clk_en" value="true" />
   <parameter name="REG_io40_input_delay" value="0" />
   <parameter name="REG_io44_input_delay" value="0" />
@@ -2111,12 +2119,12 @@ reg {
   <parameter name="REG_emacactr_cnt" value="1" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_5qvkj5y.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_7zw7mqq.v"
        attributes="CONTAINS_INLINE_CONFIGURATION" />
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_5qvkj5y.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_7zw7mqq.v"
        attributes="CONTAINS_INLINE_CONFIGURATION" />
   </childGeneratedFiles>
   <sourceFiles>
@@ -2299,15 +2307,15 @@ reg {
   </childSourceFiles>
   <instantiator instantiator="agilex_hps" as="agilex_hps" />
   <messages>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_uakysza"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_puhlmja"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_znzlgdq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq"</message>
   </messages>
  </entity>
  <entity
    kind="intel_sundancemesa_hps"
    version="1.0.0"
-   name="agilex_hps_intel_sundancemesa_hps_100_uakysza">
+   name="agilex_hps_intel_sundancemesa_hps_100_znzlgdq">
   <parameter
      name="HPS_HANDOFF_OPTION_STRING"
      value="    HPS_PRESENT: true
@@ -2318,7 +2326,7 @@ reg {
     l3_cache_size: HALF_ON
     f2soc_intfcsel: DISABLE
     f2sdram_intfcsel: DISABLE" />
-  <parameter name="User0_clk_freq" value="500.0" />
+  <parameter name="User0_clk_freq" value="50.0" />
   <parameter name="NOC_clk_periph_l4_div" value="2" />
   <parameter name="PPLL_C1_Override_mhz" value="600.0" />
   <parameter
@@ -2414,7 +2422,7 @@ reg {
   <parameter name="MPLL_C0_Override_mhz" value="800.0" />
   <parameter name="USB0_PinMuxing" value="Unused" />
   <parameter name="H2F_IRQ_I2CEMAC1_Enable" value="false" />
-  <parameter name="User0_clk_enable" value="false" />
+  <parameter name="User0_clk_enable" value="true" />
   <parameter name="MPU_clk_ccu_div" value="2" />
   <parameter name="FPGA_I3C1_sclk_mhz" value="125.0" />
   <parameter name="MPFE_f2s_mode" value="ace5lite" />
@@ -3022,7 +3030,7 @@ reg {
 }
 reg {
   reg_name: &quot;ctl.s2fuser0ctr.cnt&quot;
-  reg_value: 0
+  reg_value: 9
 }
 reg {
   reg_name: &quot;ctl.s2fuser1ctr.src&quot;
@@ -3286,7 +3294,7 @@ reg {
   <parameter name="hps_ioa16_opd_en" value="false" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_uakysza.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.v"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/hps_axi4_ready_latency_adapter.sv"
@@ -3322,12 +3330,12 @@ reg {
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/ready_latency_reset_synchronizer.sv"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_uakysza.sdc"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.sdc"
        attributes="" />
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_uakysza.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.v"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/hps_axi4_ready_latency_adapter.sv"
@@ -3363,7 +3371,7 @@ reg {
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/ready_latency_reset_synchronizer.sv"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_uakysza.sdc"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.sdc"
        attributes="" />
   </childGeneratedFiles>
   <sourceFiles>
@@ -3455,15 +3463,15 @@ reg {
        path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.tcl.interpreter.jar" />
   </sourceFiles>
   <childSourceFiles/>
-  <instantiator instantiator="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y" as="sm_hps" />
+  <instantiator instantiator="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" as="sm_hps" />
   <messages>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_uakysza"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_znzlgdq"</message>
   </messages>
  </entity>
  <entity
    kind="intel_sundancemesa_mpfe"
    version="1.0.0"
-   name="agilex_hps_intel_sundancemesa_mpfe_100_puhlmja">
+   name="agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq">
   <parameter
      name="HPS_HANDOFF_STRING"
      value="pinmux_select {
@@ -3984,7 +3992,7 @@ reg {
 }
 reg {
   reg_name: &quot;ctl.s2fuser0ctr.cnt&quot;
-  reg_value: 0
+  reg_value: 9
 }
 reg {
   reg_name: &quot;ctl.s2fuser1ctr.src&quot;
@@ -4080,7 +4088,7 @@ reg {
   <parameter name="MPFE_f2sdram_data_width" value="0" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_puhlmja.sv"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq.sv"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/ready_latency/mpfe_ready_latency_adapter.sv"
@@ -4118,7 +4126,7 @@ reg {
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_puhlmja.sv"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq.sv"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/ready_latency/mpfe_ready_latency_adapter.sv"
@@ -4160,10 +4168,10 @@ reg {
   </sourceFiles>
   <childSourceFiles/>
   <instantiator
-     instantiator="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"
+     instantiator="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"
      as="sm_mpfe" />
   <messages>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_puhlmja"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq"</message>
   </messages>
  </entity>
 </deploy>
