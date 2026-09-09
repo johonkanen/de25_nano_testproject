@@ -72,6 +72,23 @@ set_global_assignment -name USE_HPS_COLD_RESET SDM_IO11
 set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "ACTIVE SERIAL X4"
 set_global_assignment -name ACTIVE_SERIAL_CLOCK AS_FREQ_125MHZ
 set_global_assignment -name DEVICE_INITIALIZATION_CLOCK OSC_CLK_1_125MHZ
+
+# Both assignments below come from Intel/Altera's own official reference
+# design for this exact board (altera-fpga/agilex5e-ed-gsrd,
+# terasic-de25-nano-devkit/baseline-a55/baseline_a55.qsf) - found while
+# chasing a FreeRTOS-over-QSPI attempt that configured the fabric fine
+# (confirmed by fan/LEDs) but produced zero HPS UART output. Bisection via
+# instrumented ATF checkpoints showed BL2 hangs forever on its very first
+# register read of the Cadence QSPI controller (cad_qspi_idle()) - a
+# hardware bus stall, not a software timeout. QSPI_OWNERSHIP defaults away
+# from HPS, so the ARM cores never actually have a live bus path to that
+# peripheral's registers at all until this is set.
+#
+# HPS_CONFIG_ORDER (guessed initially) is not a real assignment name -
+# quartus_sh's get_all_assignment_names has no such entry. The real name
+# for that concept is HPS_INITIALIZATION.
+set_global_assignment -name QSPI_OWNERSHIP HPS
+set_global_assignment -name HPS_INITIALIZATION "HPS FIRST"
 set_global_assignment -name PWRMGT_VOLTAGE_OUTPUT_FORMAT "LINEAR FORMAT"
 set_global_assignment -name PWRMGT_LINEAR_FORMAT_N "-12"
 
