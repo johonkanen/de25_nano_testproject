@@ -121,6 +121,56 @@ setenv bootcmd 'fatload mmc 0:1 0x82000000 Image; fatload mmc 0:1 0x86000000 soc
 saveenv
 ```
 
+## Writing and running your own software
+
+The toybox rootfs has **no dynamic linker or shared libraries at all**
+(`/lib` doesn't exist — `/bin/sh` is a symlink straight to the static
+`toybox` binary). Anything you build **must be statically linked**, or it
+fails to run with a confusing "no such file or directory":
+
+```bash
+export PATH=/home/jari/dev/de25-nano.sdmmc/gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu/bin:$PATH
+aarch64-none-linux-gnu-gcc -static -o myprogram myprogram.c
+```
+(any `aarch64-none-linux-gnu-*` cross toolchain works — this is just the
+one already downloaded by `build_de25_nano_linux.sh`.)
+
+### Networking
+
+There's no DHCP client in this toybox build, and WSL2's own virtual
+network can't be reached *from* the LAN — so set a static IP on the
+board and push files *from* the host, not the other way around.
+
+Each boot, from the U-Boot-reached shell (or right after `booti`):
+```
+ifconfig eth0 <IP> netmask 255.255.255.0 up
+route add default gw <LAN gateway>
+```
+Pick `<IP>` free on your LAN (outside your router's DHCP range) - this
+was verified working with `192.168.1.222` / gateway `192.168.1.1` on a
+typical home LAN. Confirm from the host with `ping <IP>`.
+
+`toybox`'s rootfs has `nc`/`wget`/`ftpget`/`httpd` but no `scp`/`ssh`. The
+working transfer direction is host → board (the board can't reach WSL2's
+private NAT'd address): the board listens (`nc -l -p PORT > file`), the
+host connects and pushes (`nc <board-ip> PORT < file`).
+
+[`tools/push_to_nano.py`](tools/push_to_nano.py) automates this over the
+serial console (there's no other way to start the listener remotely) —
+verified end to end with a real cross-compiled binary:
+```bash
+python3 linux/tools/push_to_nano.py ./myprogram /tmp/myprogram --run
+```
+Drops the file at `/tmp/myprogram` on the board and (with `--run`) chmods
+it executable and runs it, streaming its output back over the same serial
+connection. Needs `pip install pyserial`. `--serial`, `--nano-ip`, and
+`--port` override the defaults if yours differ.
+
+**Not yet done**: the static IP doesn't persist across reboots (toybox's
+`mkroot` init doesn't run a network config step) - re-run the `ifconfig`/
+`route` commands each boot, or add them to a startup script if you rebuild
+the initramfs.
+
 ## Session status
 
 Real QSPI cold boot (SPL, confirmed via `Reset state: Cold`) through the
