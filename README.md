@@ -57,13 +57,21 @@ see [HPS](#hps)) present. Results:
 
 The fabric register interface (UART + fan control, unaffected by the HPS —
 same register map) has been repeatedly loaded and exercised on real
-hardware, most recently without the HPS present; see [Talk to
-it](#talk-to-it) and [Fan](#fan). The current HPS-inclusive `.sof` has
-**not yet been loaded onto hardware** — Quartus requires an HPS boot
-payload embedded via `quartus_pfg -o hps_path=...` before it will program a
-design that contains an HPS at all (confirmed directly: `quartus_pgm`
-refuses this `.sof` with "HPS is present but bootloader information is
-missing" until one is embedded). See [docs/de25_nano_hps.md](docs/de25_nano_hps.md).
+hardware; see [Talk to it](#talk-to-it) and [Fan](#fan). Quartus refuses to
+program an HPS-inclusive `.sof` at all until an HPS boot payload is
+embedded (confirmed directly: `quartus_pgm` errors "HPS is present but
+bootloader information is missing" otherwise), so that requires one extra
+step — embed the [`hps/baremetal_uart1_test`](hps/baremetal_uart1_test/)
+program via `quartus_pfg -o hps_path=...` — documented in
+[docs/de25_nano_hps.md](docs/de25_nano_hps.md).
+
+**This exact HPS-inclusive `.sof` (this build, this bitstream) has now been
+loaded onto hardware and verified end to end**, both halves at once:
+HPS UART1's bare-metal test banners and byte-echoes correctly over
+`/dev/ttyUSB0` (see [HPS](#hps)), and the fabric register interface still
+passes **20/20** over `/dev/ttyUSB1` via `test_uart.py` — including the fan
+controller — confirming the HPS and the fabric register block coexist
+correctly on one bitstream, not just individually.
 
 ## Program (volatile JTAG load)
 
@@ -210,6 +218,11 @@ clkmgr_bringup() rc = 0x00000000
 measured UART (L4_SP) clock = 100000000 Hz
 divisor programmed = 54
 ```
+
+Confirmed on **this project's own generated `de25_nano_uart.sof`** (HPS
+boot payload embedded via `quartus_pfg -o hps_path=...`, see [Build](#build)
+above) — running at the same time as, and without disturbing, the fabric
+register interface on `FPGA_UART_TX`/`FPGA_UART_RX`.
 
 Full detail — including the clock-manager PLL bring-up ported from
 `arm-trusted-firmware` (Altera's own official bare-metal example doesn't do

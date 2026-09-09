@@ -76,8 +76,13 @@ Synthesizes/fits/times/assembles cleanly as part of `de25_nano_uart_top` —
 0 errors at every stage. IO pin count grew from 20 (UART + fan build) to
 133 with the HPS + LPDDR4A ports added; the fabric-only register interface
 and fan control logic are otherwise unchanged (same source files, same
-register map) — verified separately on hardware with the HPS temporarily
-removed (see the top-level README).
+register map) — verified both separately on hardware with the HPS
+temporarily removed, and **with the HPS present**: the HPS-inclusive
+`.sof` (boot payload embedded via `quartus_pfg -o hps_path=...`, see
+[Embed and load](baremetal_uart1_test/README.md#embed-and-load)) has been
+JTAG-loaded and both halves checked at once — HPS UART1's bare-metal test
+(below) and the fabric register interface's full `test_uart.py` suite
+(20/20, including the fan controller) both pass on the same bitstream.
 
 ## HPS UART1: hardware-verified working
 
@@ -115,10 +120,13 @@ Full detail, including the driver bug found along the way
 `uart_init()`'s own use of the same registers), is in
 [`hps/baremetal_uart1_test/README.md`](baremetal_uart1_test/README.md).
 
-Not yet done: confirming LPDDR4 calibrates on **this project's own**
+Not yet done: confirming LPDDR4 **calibrates** on this project's own
 generated bitstream specifically (as opposed to Terasic's prebuilt
 `golden_top_hps.sof`, which is proven working) — the bare-metal UART1 test
-above never touches DDR, so it doesn't exercise that path.
+above never touches DDR, so it doesn't exercise that path. Everything else
+about the HPS-inclusive bitstream — JTAG-loading it at all, and both the
+HPS and fabric halves working simultaneously — is confirmed (see
+[Build status](#build-status) above).
 
 ## Prior art this vendors from
 
