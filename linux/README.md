@@ -104,11 +104,15 @@ booti 0x82000000 0x90000000:${filesize} 0x86000000
 ```
 
 **Use `${filesize}` literally** (U-Boot sets it after each `fatload` to the
-exact byte count read) — don't hardcode the initramfs size by hand, a
-slightly-wrong value produces a harmless-looking but confusing `Initramfs
-unpacking failed: invalid magic` warning during boot (the archive still
-unpacks almost entirely correctly if the size is only slightly too large,
-which is how this was first found — but don't rely on that).
+exact byte count read) — don't hardcode the initramfs size by hand, it's
+easy to mistype a hex value.
+
+You'll see `Initramfs unpacking failed: invalid magic at start of
+compressed archive` during every boot regardless — this `initramfs.cpio`
+is a plain, uncompressed cpio archive (toybox's `mkroot` doesn't gzip it),
+so the kernel's compression-format auto-detection fails to match any
+codec's magic bytes before falling back to unpacking it directly as raw
+cpio, which succeeds. Harmless, not a sign anything's wrong.
 
 Default `bootargs` (`console=ttyS0,115200 initrd=0x90000000 root=/dev/ram0
 rw init=/sbin/init ramdisk_size=10000000 earlycon panic=-1 nosmp
@@ -138,17 +142,21 @@ one already downloaded by `build_de25_nano_linux.sh`.)
 ### Networking
 
 There's no DHCP client in this toybox build, and WSL2's own virtual
-network can't be reached *from* the LAN — so set a static IP on the
-board and push files *from* the host, not the other way around.
+network can't be reached *from* the LAN — so the board uses a static IP,
+and files get pushed *from* the host, not the other way around.
 
-Each boot, from the U-Boot-reached shell (or right after `booti`):
+**This is now baked into `/init`** (`build_de25_nano_linux.sh` patches
+mkroot's stock QEMU-oriented network setup automatically), so it comes up
+with a working IP on every boot with no manual steps:
 ```
-ifconfig eth0 <IP> netmask 255.255.255.0 up
-route add default gw <LAN gateway>
+ifconfig eth0 192.168.1.222 netmask 255.255.255.0 up
+route add default gw 192.168.1.1
 ```
-Pick `<IP>` free on your LAN (outside your router's DHCP range) - this
-was verified working with `192.168.1.222` / gateway `192.168.1.1` on a
-typical home LAN. Confirm from the host with `ping <IP>`.
+If your LAN's subnet differs, edit the two `sed` replacement lines in
+`build_de25_nano_linux.sh`'s toybox section (search for `192.168.1`) before
+building, or just re-run the same `ifconfig`/`route` commands by hand at
+the shell with your own values - confirm reachability from the host with
+`ping <IP>` either way.
 
 `toybox`'s rootfs has `nc`/`wget`/`ftpget`/`httpd` but no `scp`/`ssh`. The
 working transfer direction is host → board (the board can't reach WSL2's
@@ -165,11 +173,6 @@ Drops the file at `/tmp/myprogram` on the board and (with `--run`) chmods
 it executable and runs it, streaming its output back over the same serial
 connection. Needs `pip install pyserial`. `--serial`, `--nano-ip`, and
 `--port` override the defaults if yours differ.
-
-**Not yet done**: the static IP doesn't persist across reboots (toybox's
-`mkroot` init doesn't run a network config step) - re-run the `ifconfig`/
-`route` commands each boot, or add them to a startup script if you rebuild
-the initramfs.
 
 ## Session status
 

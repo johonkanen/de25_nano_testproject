@@ -118,6 +118,26 @@ pushd toybox >/dev/null
     gzip -dc root/aarch64/initramfs.cpio.gz > "${OUT}/initramfs.cpio"
 popd >/dev/null
 
+# mkroot's stock /init sets up networking for QEMU (ifconfig eth0 10.0.2.15,
+# gw 10.0.2.2) - useless on real hardware, and there's no DHCP client to
+# fall back on. Patch in a static IP on the real LAN instead (see
+# linux/README.md's "Networking" section for why this has to be static and
+# how to pick the address). Doesn't touch anything else in the archive.
+rm -rf "${OUT}/initramfs_patch"
+mkdir -p "${OUT}/initramfs_patch"
+pushd "${OUT}/initramfs_patch" >/dev/null
+    cpio -idm --no-absolute-filenames < "${OUT}/initramfs.cpio" >/dev/null 2>&1
+    sed -i \
+        -e 's/# Setup networking for QEMU (needs \/proc)/# Networking for the real DE25-Nano LAN (see linux\/README.md)/' \
+        -e 's/ifconfig eth0 10\.0\.2\.15/ifconfig eth0 192.168.1.222 netmask 255.255.255.0 up/' \
+        -e '/route add default gw 10\.0\.2\.2/c\  route add default gw 192.168.1.1' \
+        -e '/timeout 2 sntp -sq 10\.0\.2\.2/d' \
+        init
+    grep -q '192.168.1.222' init || { echo "ERROR: /init network patch didn't apply - mkroot's init changed, check by hand"; exit 1; }
+    find . | cpio -o -H newc -R 0:0 > "${OUT}/initramfs.cpio"
+popd >/dev/null
+rm -rf "${OUT}/initramfs_patch"
+
 # ---- SD card image (FAT32: u-boot.itb + Image + dtb + initramfs) --------
 cd "${OUT}"
 rm -f sdcard.img
