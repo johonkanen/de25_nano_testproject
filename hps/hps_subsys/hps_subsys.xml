@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy
- date="2026.09.08.16:16:52"
+ date="2026.09.09.10:45:49"
  outputDirectory="/home/jari/dev/de25_nano_testproject/hps/hps_subsys/">
  <perimeter>
   <parameter
@@ -142,6 +142,8 @@
    <property name="addressCheck" value="false" />
    <property name="securityAttribute" value="false" />
    <property name="userData" value="false" />
+   <property name="terminateWriteChannel" value="false" />
+   <property name="terminateReadChannel" value="false" />
    <property name="readIssuingCapability" value="16" />
    <property name="writeIssuingCapability" value="16" />
    <property name="combinedIssuingCapability" value="16" />
@@ -2553,6 +2555,14 @@
                         &lt;/entry&gt;
                         &lt;entry&gt;
                             &lt;key&gt;userData&lt;/key&gt;
+                            &lt;value&gt;false&lt;/value&gt;
+                        &lt;/entry&gt;
+                        &lt;entry&gt;
+                            &lt;key&gt;terminateWriteChannel&lt;/key&gt;
+                            &lt;value&gt;false&lt;/value&gt;
+                        &lt;/entry&gt;
+                        &lt;entry&gt;
+                            &lt;key&gt;terminateReadChannel&lt;/key&gt;
                             &lt;value&gt;false&lt;/value&gt;
                         &lt;/entry&gt;
                         &lt;entry&gt;
@@ -5572,7 +5582,7 @@
     &lt;cpuHashInfoMap/&gt;
 &lt;/cpuHashInfoDefinition&gt;" />
   <parameter name="SYSINFO_DEVICE_SPEEDGRADE" value="4" />
-  <parameter name="SYSINFO_DEVICE_DIE_REVISIONS" value="MAIN_SM4_REVB" />
+  <parameter name="SYSINFO_DEVICE_DIE_REVISIONS" value="MAIN_SM4_REVC" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Agilex 5" />
   <parameter name="bspCpu" value="" />
   <parameter name="logicalView" value="ip/qsys_top/emif_io96b_hps.ip" />

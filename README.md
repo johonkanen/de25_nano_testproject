@@ -189,13 +189,15 @@ register configuration and how to trim the minimum are in
 
 ## HPS
 
-`de25_nano_uart_top.vhd` also instantiates `hps_min` (see
+`de25_nano_uart_top.vhd` also instantiates `hps_subsys` (see
 [hps/README.md](hps/README.md)): the Agilex 5 hard processor system plus
 its LPDDR4 EMIF, generated from the DE25-Nano GHRD's own `agilex_hps.ip` /
-`emif_io96b_hps.ip` with every FPGA↔HPS bridge disabled. It shares the die
-and the pins with the fabric register block above but is otherwise
-independent — no memory-mapped path between the two, so nothing in the
-register map above changed by adding it.
+`emif_io96b_hps.ip`. `H2F`/`F2SDRAM` are disabled, but **`LWH2F` (the
+lightweight HPS-to-FPGA bridge) is enabled and wired** into the same
+fabric register block above via `axi_lwh2f_bridge.vhd` — reachable from
+the ARM cores as plain memory-mapped I/O, hardware-confirmed (see
+[hps/baremetal_lwh2f_regs/README.md](hps/baremetal_lwh2f_regs/README.md)),
+using the exact same register map `test_uart.py` reaches.
 
 `HPS_UART_TX`/`HPS_UART_RX` are HPS UART1, on IOB15/IOB16 in the HPS's own
 pin-mux table — confirmed directly from `agilex_hps.ip`'s pin-mux array,
@@ -229,6 +231,18 @@ Full detail — including the clock-manager PLL bring-up ported from
 this step, so it wasn't reused from a working reference) and a UART driver
 byte-order bug found along the way — is in
 [docs/de25_nano_hps.md](docs/de25_nano_hps.md).
+
+**LWH2F is also hardware-confirmed**: a second bare-metal program
+([hps/baremetal_lwh2f_regs/](hps/baremetal_lwh2f_regs/)) reads and writes
+the fabric register file above from the ARM cores over the HPS's
+lightweight bridge — the same registers `test_uart.py` reaches, now also
+reachable as plain memory-mapped I/O from HPS software. Worked on the
+first attempt, applying two fixes
+[`de25_std_testproject`](https://github.com/johonkanen/de25_std_testproject)
+found the hard way (a fabric RTL reset-polarity bug — not present here,
+checked first — and a missing Ncore CCU crossbar routing window, which
+is die-level and did apply here) — see that test's own README for the
+full account.
 
 ## Simulate
 
@@ -269,10 +283,10 @@ Expected: `pass 2 of 2` — 16 checks in `de25_nano_uart_top_tb`, 21 in
 | AS config clock | `AS_FREQ_100MHZ` | **`AS_FREQ_125MHZ`** |
 | `USE_INIT_DONE` | `SDM_IO13` | *not set* |
 | fan | not addressed in that project | **AMC6821 on the HDMI I2C bus**, duty + RPM on registers 9..12 |
-| HPS | separate `de25_soc_top` + `linux/` (HPS + DDR4) | **`hps_min` instantiated directly in `de25_nano_uart_top`** (HPS + LPDDR4, bridges disabled) — see below |
+| HPS | separate `de25_soc_top` + `linux/` (HPS + DDR4) | **`hps_subsys` instantiated directly in `de25_nano_uart_top`** (HPS + LPDDR4, LWH2F bridge wired) — see below |
 
 Unlike the DE25-Standard, where the HPS lives in a separate `de25_soc`
-build, the DE25-Nano's HPS (`hps_min`, LPDDR4 instead of DDR4) is
+build, the DE25-Nano's HPS (`hps_subsys`, LPDDR4 instead of DDR4) is
 instantiated straight into `de25_nano_uart_top` — one bitstream, one top
 level, both the fabric register block and the HPS present together. See
 [HPS](#hps) below.

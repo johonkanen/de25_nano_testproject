@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="agilex_hps" kind="agilex_hps" version="1.0" fabric="QSYS">
- <!-- Format version 26.1 110 (Future versions may contain additional information.) -->
- <!-- 2026.09.08.16:17:05 -->
+ <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
+ <!-- 2026.09.09.10:45:59 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
@@ -148,7 +148,7 @@
    name="agilex_hps"
    kind="intel_agilex_5_soc"
    version="14.0.0"
-   entity="agilex_hps_intel_agilex_5_soc_1400_2zbe3ky"
+   entity="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"
    library="intel_agilex_5_soc_1400"
    path="agilex_hps"
    hpath="agilex_hps"
@@ -5652,7 +5652,7 @@ reg {
   </parameter>
   <parameter name="REG_periph_pwrgate">
    <type>int</type>
-   <value>187</value>
+   <value>59</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -6179,6 +6179,22 @@ parameters are a RESULT of the module parameters. -->
     <valid>true</valid>
    </parameter>
    <parameter name="userData">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="terminateWriteChannel">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="terminateReadChannel">
     <type>boolean</type>
     <value>false</value>
     <derived>false</derived>
@@ -7471,6 +7487,6 @@ parameters are a RESULT of the module parameters. -->
   <displayName>Interrupt Receiver</displayName>
   <version>26.1</version>
  </plugin>
- <reportVersion>26.1 110</reportVersion>
+ <reportVersion>26.1.1 130</reportVersion>
  <uniqueIdentifier></uniqueIdentifier>
 </EnsembleReport>

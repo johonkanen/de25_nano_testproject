@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy
- date="2026.09.08.16:17:05"
+ date="2026.09.09.10:45:59"
  outputDirectory="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/">
  <perimeter>
   <parameter
@@ -124,6 +124,8 @@
    <property name="addressCheck" value="false" />
    <property name="securityAttribute" value="false" />
    <property name="userData" value="false" />
+   <property name="terminateWriteChannel" value="false" />
+   <property name="terminateReadChannel" value="false" />
    <property name="readIssuingCapability" value="16" />
    <property name="writeIssuingCapability" value="16" />
    <property name="combinedIssuingCapability" value="16" />
@@ -670,165 +672,183 @@
   </sourceFiles>
   <childSourceFiles>
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/intel_soc_sundancemesa/intel_soc_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/intel_soc_sundancemesa/intel_soc_sundancemesa_hw.tcl" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.generator.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.ddmwriter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.generator.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.ddmwriter.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcdocument.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlwriter.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.common.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.ngpd.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.shared.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jacl1.3.2a.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-text-1.10.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-lang3-3.12.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/guava-32.0.1-jre.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jfreechart-1.5.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-swing-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcdocument.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlwriter.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-jxc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-xjc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/codemodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/dtd-parser.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/FastInfoset.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-tools.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/javax.activation-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/relaxng-datatype.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/rngom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/stax-ex.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/txw2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/xsom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/failureaccess-1.0.1.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.ngpd.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.shared.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jacl1.3.2a.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-text-1.10.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-lang3-3.12.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/guava-32.0.1-jre.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jfreechart-1.5.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-swing-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jsr305-3.0.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/checker-qual-3.33.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/j2objc-annotations-2.8.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-core-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-io-2.13.0.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-jxc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-xjc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/codemodel.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/dtd-parser.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/FastInfoset.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.model.common.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-tools.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/javax.activation-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/relaxng-datatype.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/rngom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/stax-ex.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/txw2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/xsom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/failureaccess-1.0.1.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.privateinterfaces.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopclibrary.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jsr305-3.0.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/checker-qual-3.33.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/j2objc-annotations-2.8.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-core-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.dni.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-io-2.13.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.build.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.model.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.privateinterfaces.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopclibrary.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlcomponent.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.tcl.interpreter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/hps/intel_hps_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.dni.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.build.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.generator.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.ddmwriter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcdocument.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlwriter.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.common.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.ngpd.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.shared.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jacl1.3.2a.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-text-1.10.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-lang3-3.12.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/guava-32.0.1-jre.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jfreechart-1.5.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-swing-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-jxc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-xjc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/codemodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/dtd-parser.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/FastInfoset.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-tools.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/javax.activation-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/relaxng-datatype.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/rngom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/stax-ex.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/txw2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/xsom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/failureaccess-1.0.1.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.cmsis.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jsr305-3.0.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/checker-qual-3.33.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/j2objc-annotations-2.8.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-core-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlcomponent.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-io-2.13.0.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.tcl.interpreter.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.model.common.jar" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/hps/intel_hps_sundancemesa_hw.tcl" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.privateinterfaces.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopclibrary.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.dni.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.generator.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.ddmwriter.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.build.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcdocument.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlwriter.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.ngpd.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.shared.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jacl1.3.2a.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-text-1.10.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-lang3-3.12.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/guava-32.0.1-jre.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jfreechart-1.5.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-swing-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlcomponent.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-jxc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-xjc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/codemodel.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/dtd-parser.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/FastInfoset.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.tcl.interpreter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-tools.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/javax.activation-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/relaxng-datatype.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/rngom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/stax-ex.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/txw2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/xsom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/failureaccess-1.0.1.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/mpfe/intel_mpfe_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jsr305-3.0.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/checker-qual-3.33.0.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/j2objc-annotations-2.8.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-core-5.2.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-io-2.13.0.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.model.common.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.privateinterfaces.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopclibrary.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.dni.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.build.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlcomponent.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.tcl.interpreter.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/mpfe/intel_mpfe_sundancemesa_hw.tcl" />
   </childSourceFiles>
   <messages>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_2zbe3ky"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"</message>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_uakysza"</message>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_puhlmja"</message>
   </messages>
@@ -836,7 +856,7 @@
  <entity
    kind="intel_agilex_5_soc"
    version="14.0.0"
-   name="agilex_hps_intel_agilex_5_soc_1400_2zbe3ky">
+   name="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y">
   <parameter
      name="HPS_HANDOFF_OPTION_STRING"
      value="    HPS_PRESENT: true
@@ -1831,7 +1851,7 @@ reg {
   <parameter name="Periph_emac_ptp_src_override" value="7" />
   <parameter name="FPGA_I3C0_sclk_mhz" value="125.0" />
   <parameter name="FPGA_EMAC1_tx_clk_en" value="true" />
-  <parameter name="REG_periph_pwrgate" value="187" />
+  <parameter name="REG_periph_pwrgate" value="59" />
   <parameter name="PPLL_VCO_Override_mhz" value="3000.0" />
   <parameter name="REG_ppllglob_drefclkdiv" value="0" />
   <parameter name="OPT_corepwr_state" value="3" />
@@ -2091,177 +2111,195 @@ reg {
   <parameter name="REG_emacactr_cnt" value="1" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_2zbe3ky.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_5qvkj5y.v"
        attributes="CONTAINS_INLINE_CONFIGURATION" />
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_2zbe3ky.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_5qvkj5y.v"
        attributes="CONTAINS_INLINE_CONFIGURATION" />
   </childGeneratedFiles>
   <sourceFiles>
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/intel_soc_sundancemesa/intel_soc_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/intel_soc_sundancemesa/intel_soc_sundancemesa_hw.tcl" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.generator.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.ddmwriter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.generator.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.ddmwriter.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcdocument.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlwriter.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.common.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.ngpd.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.shared.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jacl1.3.2a.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-text-1.10.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-lang3-3.12.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/guava-32.0.1-jre.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jfreechart-1.5.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-swing-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcdocument.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlwriter.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-jxc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-xjc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/codemodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/dtd-parser.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/FastInfoset.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-tools.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/javax.activation-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/relaxng-datatype.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/rngom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/stax-ex.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/txw2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/xsom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/failureaccess-1.0.1.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.ngpd.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.shared.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jacl1.3.2a.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-text-1.10.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-lang3-3.12.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/guava-32.0.1-jre.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jfreechart-1.5.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-swing-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jsr305-3.0.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/checker-qual-3.33.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/j2objc-annotations-2.8.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-core-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-io-2.13.0.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-jxc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-xjc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/codemodel.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/dtd-parser.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/FastInfoset.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.model.common.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-tools.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/javax.activation-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/relaxng-datatype.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/rngom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/stax-ex.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/txw2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/xsom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/failureaccess-1.0.1.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.privateinterfaces.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopclibrary.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jsr305-3.0.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/checker-qual-3.33.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/j2objc-annotations-2.8.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-core-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.dni.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-io-2.13.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.build.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.model.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.privateinterfaces.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopclibrary.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlcomponent.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.tcl.interpreter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.dni.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.build.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlcomponent.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.tcl.interpreter.jar" />
   </sourceFiles>
   <childSourceFiles>
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/hps/intel_hps_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/hps/intel_hps_sundancemesa_hw.tcl" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.generator.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.ddmwriter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.generator.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.ddmwriter.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcdocument.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlwriter.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.common.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.ngpd.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.shared.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jacl1.3.2a.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-text-1.10.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-lang3-3.12.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/guava-32.0.1-jre.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jfreechart-1.5.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-swing-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcdocument.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlwriter.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-jxc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-xjc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/codemodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/dtd-parser.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/FastInfoset.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-tools.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/javax.activation-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/relaxng-datatype.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/rngom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/stax-ex.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/txw2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/xsom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/failureaccess-1.0.1.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.ngpd.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.shared.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jacl1.3.2a.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-text-1.10.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-lang3-3.12.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/guava-32.0.1-jre.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jfreechart-1.5.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-swing-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jsr305-3.0.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/checker-qual-3.33.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/j2objc-annotations-2.8.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-core-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-io-2.13.0.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-jxc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-xjc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/codemodel.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/dtd-parser.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/FastInfoset.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.model.common.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-tools.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/javax.activation-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/relaxng-datatype.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/rngom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/stax-ex.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/txw2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/xsom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/failureaccess-1.0.1.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.privateinterfaces.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopclibrary.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jsr305-3.0.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/checker-qual-3.33.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/j2objc-annotations-2.8.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-core-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.dni.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-io-2.13.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.build.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.model.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.privateinterfaces.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopclibrary.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlcomponent.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.tcl.interpreter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/mpfe/intel_mpfe_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.dni.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.build.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlcomponent.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.tcl.interpreter.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/mpfe/intel_mpfe_sundancemesa_hw.tcl" />
   </childSourceFiles>
   <instantiator instantiator="agilex_hps" as="agilex_hps" />
   <messages>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_2zbe3ky"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"</message>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_uakysza"</message>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_puhlmja"</message>
   </messages>
@@ -3330,85 +3368,94 @@ reg {
   </childGeneratedFiles>
   <sourceFiles>
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/hps/intel_hps_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/hps/intel_hps_sundancemesa_hw.tcl" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.hwtclvalidator.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.components.tclelement.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.generator.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.ddmwriter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.generator.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.ddmwriter.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcdocument.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlwriter.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.common.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.ngpd.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.shared.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jacl1.3.2a.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-text-1.10.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-lang3-3.12.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/guava-32.0.1-jre.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jfreechart-1.5.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-swing-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcdocument.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlwriter.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-jxc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jaxb-xjc.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/codemodel.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/dtd-parser.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/FastInfoset.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-runtime.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/istack-commons-tools.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/javax.activation-api.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/relaxng-datatype.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/rngom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/stax-ex.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/txw2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/xsom.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/failureaccess-1.0.1.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.ngpd.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.shared.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jacl1.3.2a.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-text-1.10.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-lang3-3.12.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/guava-32.0.1-jre.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jfreechart-1.5.0.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-swing-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/jsr305-3.0.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/checker-qual-3.33.0.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/j2objc-annotations-2.8.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/miglayout-core-5.2.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-common-1.1.2_20c.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/commons-io-2.13.0.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/bare-bones-browser-launch-3.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-jxc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jaxb-xjc.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/codemodel.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/dtd-parser.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/FastInfoset.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.model.common.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-runtime.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/istack-commons-tools.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/javax.activation-api.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/relaxng-datatype.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/rngom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/stax-ex.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/txw2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/xsom.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/failureaccess-1.0.1.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.privateinterfaces.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopclibrary.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/jsr305-3.0.2.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/checker-qual-3.33.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/j2objc-annotations-2.8.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/miglayout-core-5.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.intel.quartus.dni.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/docking-frames-core-1.1.2_20c.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/commons-io-2.13.0.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.build.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcreport.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.model.common.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.privateinterfaces.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.jar" />
+   <file path="/home/jari/altera_pro/26.1.1/qsys/lib/antlr4-runtime-4.7.2.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
-   <file path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopclibrary.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.hdlcomponent.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.atlantic.jar" />
    <file
-       path="/home/jari/altera_pro/26.1/qsys/lib/com.altera.tcl.interpreter.jar" />
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.ipxact.module.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.intel.quartus.dni.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.build.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcreport.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopc.qsymbol.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.sopcmodel.transforms.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.hypericonnect.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.qsys.cmsis.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.hdlcomponent.jar" />
+   <file
+       path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.tcl.interpreter.jar" />
   </sourceFiles>
   <childSourceFiles/>
-  <instantiator instantiator="agilex_hps_intel_agilex_5_soc_1400_2zbe3ky" as="sm_hps" />
+  <instantiator instantiator="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y" as="sm_hps" />
   <messages>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_uakysza"</message>
   </messages>
@@ -4109,11 +4156,11 @@ reg {
   </childGeneratedFiles>
   <sourceFiles>
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/intel_hps/sm/mpfe/intel_mpfe_sundancemesa_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/intel_hps/sm/mpfe/intel_mpfe_sundancemesa_hw.tcl" />
   </sourceFiles>
   <childSourceFiles/>
   <instantiator
-     instantiator="agilex_hps_intel_agilex_5_soc_1400_2zbe3ky"
+     instantiator="agilex_hps_intel_agilex_5_soc_1400_5qvkj5y"
      as="sm_mpfe" />
   <messages>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_puhlmja"</message>

@@ -1,5 +1,5 @@
 set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_TOOL_NAME "QsysPrimePro"
-set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_TOOL_VERSION "26.1"
+set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_TOOL_VERSION "26.1.1"
 set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_TOOL_ENV "QsysPrimePro"
 set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_TOOL_VENDOR_NAME "Altera"
 set_global_assignment -entity "hps_subsys_s10_user_rst_clkgate_0" -library "hps_subsys_s10_user_rst_clkgate_0" -name IP_TOP_LEVEL_COMPONENT_NAME "altera_s10_user_rst_clkgate"

@@ -1,17 +1,18 @@
 # hps/ — Agilex 5 HPS + HPS-EMIF for the DE25-Nano
 
-A minimal HPS subsystem instantiated directly in `de25_nano_uart_top.vhd`:
-the Agilex 5 hard processor system plus its LPDDR4 EMIF, with **every
-FPGA↔HPS bridge disabled**. Same pattern as
+A Platform Designer system, `hps/hps_subsys.qsys`, instantiated directly as
+a VHDL `component` in `de25_nano_uart_top.vhd` — the Agilex 5 hard
+processor system plus its LPDDR4 EMIF. Same pattern as
 [`de25_std_testproject/hps/`](https://github.com/johonkanen/de25_std_testproject/tree/main/hps)
-(DDR4 there, LPDDR4 here) — see that project's `hps/README.md` for more
-background on the approach.
+(DDR4 there, LPDDR4 here; `hps_subsystem.qsys` there, `hps_subsys.qsys`
+here) — see that project's `hps/README.md` for more background on the
+approach.
 
 ## What's vendored
 
 | file | origin (DE25-Nano GHRD `Demonstration/SoC_FPGA/GHRD/`) |
 |------|----------------------------------------------------------|
-| `ip/hps_subsys/agilex_hps.ip` | `hps_subsys/ip/hps_subsys/agilex_hps.ip`, **then patched** (see below) |
+| `ip/hps_subsys/agilex_hps.ip` | `hps_subsys/ip/hps_subsys/agilex_hps.ip`, vendored |
 | `ip/qsys_top/emif_io96b_hps.ip` | `hps_subsys/ip/qsys_top/emif_io96b_hps.ip`, verbatim |
 | `hps_pins.tcl` | the 196 `HPS_*` / `LPDDR4A_*` pin + IO-standard lines from `golden_top.qsf` |
 
@@ -23,58 +24,45 @@ index 38 (`IOB15`) = `UART1:TX`, index 39 (`IOB16`) = `UART1:RX` — the array
 is IOA01..24 at indices 0..23, IOB01..24 at indices 24..47, so `IOB15` =
 24 + (15−1) = 38.
 
-## The bridge patch
+## Bridges
 
-[`disable_bridges.py`](disable_bridges.py) flips five parameters in
-`agilex_hps.ip` so the HPS has no AXI ports into the fabric:
+| bridge | state |
+|---|---|
+| `H2F` (128-bit) | disabled |
+| `LWH2F` (32-bit, lightweight) | **enabled**, exported as `lwhps2fpga` — wired into `de25_nano_uart_top.vhd`'s fabric register file via `axi_lwh2f_bridge.vhd`, **hardware-confirmed working** (see [`baremetal_lwh2f_regs/README.md`](baremetal_lwh2f_regs/README.md)) |
+| `F2SDRAM` | disabled |
+| F2H interrupts | enabled, exported as `f2h_irq0_in`/`f2h_irq1_in`, tied to `0` (unused) |
 
-```
-H2F_Width          128 -> 0     LWH2F_Width        32 -> 0
-f2s_data_width     256 -> 0     f2sdram_data_width 256 -> 0
-F2H_IRQ_Enable    true -> false
-```
-
-This means `de25_nano_uart_top`'s own fabric register block (UART, fan
-control) is **not** reachable from the HPS, and the HPS's LPDDR4/peripherals
-are not reachable from the fabric — the two halves of the design coexist on
-one die but do not talk to each other. It also means this design **cannot
-use the stock Terasic GHRD Linux SD image** — that image's device tree maps
-the h2f / lwh2f bridge regions. Boot with your own device tree (no
-`soc/bridge@*` nodes) and your own U-Boot SPL handoff.
+This means this design **cannot use the stock Terasic GHRD Linux SD
+image** — that image's device tree assumes a different bridge/pin-mux
+configuration than this one. Boot with your own device tree and your own
+U-Boot SPL handoff (see
+[`de25_std_testproject/linux/`](https://github.com/johonkanen/de25_std_testproject/tree/main/linux)
+for how that project did it — nothing here yet).
 
 ## Regenerating
 
+Nothing to run by hand for a normal build: `build_de25_nano_uart.tcl` sets
+`PROJECT_IP_REGENERATION_POLICY ALWAYS_REGENERATE_IP`, so `quartus_syn`
+regenerates `hps_subsys` itself from the `QSYS_FILE`/`IP_FILE`
+assignments. To inspect the generated component port list (e.g. after
+re-vendoring or changing an `.ip` parameter), run once:
+
 ```
-python3 hps/disable_bridges.py          # idempotent; safe to re-run
-qsys-generate hps/ip/hps_subsys/agilex_hps.ip   --synthesis=VHDL --part=A5EB013BB23BE4SCS
-qsys-generate hps/ip/qsys_top/emif_io96b_hps.ip --synthesis=VHDL --part=A5EB013BB23BE4SCS
-python3 hps/gen_hps_min.py              # writes hps_min.v from the two *_inst.v
+cd hps
+qsys-generate hps_subsys.qsys --synthesis=VHDL --part=A5EB013BB23BE4SCS --search-path='ip/hps_subsys,$'
 ```
+which writes `hps_subsys/hps_subsys_inst.vhd` — the source for the
+`component hps_subsys` declaration in `de25_nano_uart_top.vhd`. Generated
+trees (`hps_subsys/`, `ip/hps_subsys/agilex_hps/`, etc.) are git-ignored;
+only the `.qsys` and `.ip` files are tracked.
 
-The generated IP trees (`ip/*/*/`) are git-ignored; only the `.ip` source
-and the scripts are tracked.
-
-## `hps_min.v`
-
-[`gen_hps_min.py`](gen_hps_min.py) generates [`hps_min.v`](hps_min.v): it
-instantiates `agilex_hps` + `emif_io96b_hps` and wires the internal
-`io96b0_to_hps` NoC bus (62 signals, AXI4 + AXI4-Lite) between them by
-matching the role names in each IP's `*_inst.v`. The EMIF supplies the NoC
-clock/reset, and the HPS clocks itself from `HPS_CLK_25`, so `hps_min`
-needs no fabric clock or reset — it exposes only the physical `HPS_*` /
-`LPDDR4A_*` pins plus `h2f_reset` / `emac0_app_rst` (left unconnected at
-the top, same as the sibling DDR4 project).
-
-`hps_min.v` is tracked so the project builds after `qsys-generate` without
-re-running the generator; re-run it only if an IP's port list changes.
-
-## Instantiated from VHDL
-
-`hps_min` is Verilog; `de25_nano_uart_top.vhd` declares a matching VHDL
-`component hps_min` and instantiates it directly (Quartus mixed-language
-support handles a VHDL top calling a Verilog module with no extra wrapper
-needed). See the `-- ---- HPS ----` port block and `u_hps_min` instance in
-`de25_nano_uart_top.vhd`.
+Editing an instance's *parameters* (e.g. bridge widths, or the H2F User0
+clock — see de25_std_testproject's own `hps/README.md` for a real
+tooling limitation hit doing exactly this there) requires editing the
+`.ip` file directly, not `hps_subsys.qsys` — the same "Generic Component"
+caveats documented in that project's `hps/README.md` apply here too, since
+this uses the same underlying HPS IP.
 
 ## Talking to HPS UART1
 
@@ -83,14 +71,17 @@ project's `FPGA_UART_TX`/`FPGA_UART_RX` (the fabric register interface
 `test_uart.py` talks to) — HPS UART1 is reachable only from software
 running on the ARM cores (bare-metal or Linux), never from the UART
 register interface. See [docs/de25_nano_hps.md](../docs/de25_nano_hps.md)
-for how to actually get software running on the HPS to talk on it.
+for how to actually get software running on the HPS to talk on it, and
+[`baremetal_lwh2f_regs/`](baremetal_lwh2f_regs/) for reaching the same
+fabric register file over LWH2F instead, from the ARM cores directly.
 
 ## Status
 
-Synthesizes as part of `de25_nano_uart_top` (see the top-level README's
-build log). **Not yet loaded onto hardware** — LPDDR4 calibration and the
-HPS coming up correctly have not been verified against a real board with
-this exact pin-mux/bridge configuration; the DE25-Nano GHRD's own
-`golden_top_hps.sof` (unmodified, bridges enabled) is the hardware-verified
-reference this vendors from (see the top-level README and
-`docs/de25_nano_hps.md`).
+✅ Hardware-confirmed, both interfaces: HPS UART1 (bare-metal, see
+[docs/de25_nano_hps.md](../docs/de25_nano_hps.md)) and LWH2F (see
+[`baremetal_lwh2f_regs/README.md`](baremetal_lwh2f_regs/README.md)), plus
+the fabric register interface's own `test_uart.py` suite, all confirmed
+working simultaneously on the same HPS-inclusive bitstream. LPDDR4
+calibration on this project's own generated bitstream specifically is
+still unconfirmed (nothing here exercises the DDR path yet) — see the
+top-level README.

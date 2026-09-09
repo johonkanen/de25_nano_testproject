@@ -158,6 +158,34 @@ architecture rtl of de25_nano_uart_top is
     signal bus_from_communications : fpga_interconnect_record := init_fpga_interconnect;
     signal bus_from_top            : fpga_interconnect_record := init_fpga_interconnect;
 
+    signal bus_to_axi     : fpga_interconnect_record := init_fpga_interconnect;
+    signal bus_from_axi   : fpga_interconnect_record := init_fpga_interconnect;
+    signal bus_from_top_axi : fpga_interconnect_record := init_fpga_interconnect;
+
+    -- lwhps2fpga AXI4, hps_subsys <-> axi_lwh2f_bridge
+    signal lwh2f_awid    : std_logic_vector(3 downto 0);
+    signal lwh2f_awaddr  : std_logic_vector(28 downto 0);
+    signal lwh2f_awvalid : std_logic;
+    signal lwh2f_awready : std_logic;
+    signal lwh2f_wdata   : std_logic_vector(31 downto 0);
+    signal lwh2f_wstrb   : std_logic_vector(3 downto 0);
+    signal lwh2f_wvalid  : std_logic;
+    signal lwh2f_wready  : std_logic;
+    signal lwh2f_bid     : std_logic_vector(3 downto 0);
+    signal lwh2f_bresp   : std_logic_vector(1 downto 0);
+    signal lwh2f_bvalid  : std_logic;
+    signal lwh2f_bready  : std_logic;
+    signal lwh2f_arid    : std_logic_vector(3 downto 0);
+    signal lwh2f_araddr  : std_logic_vector(28 downto 0);
+    signal lwh2f_arvalid : std_logic;
+    signal lwh2f_arready : std_logic;
+    signal lwh2f_rid     : std_logic_vector(3 downto 0);
+    signal lwh2f_rdata   : std_logic_vector(31 downto 0);
+    signal lwh2f_rresp   : std_logic_vector(1 downto 0);
+    signal lwh2f_rlast   : std_logic;
+    signal lwh2f_rvalid  : std_logic;
+    signal lwh2f_rready  : std_logic;
+
     signal loopback_register : std_logic_vector(31 downto 0) := (others => '0');
     signal read_counter      : std_logic_vector(31 downto 0) := (others => '0');
     signal led_register      : std_logic_vector(31 downto 0) := (others => '0');
@@ -338,7 +366,9 @@ begin
     begin
         if rising_edge(core_clock) then
             init_bus(bus_from_top);
+            init_bus(bus_from_top_axi);
 
+            -- ---- fabric UART master ----
             connect_read_only_data_to_address(bus_from_communications, bus_from_top, 1, x"0000DE25");
             connect_read_only_data_to_address(bus_from_communications, bus_from_top, 2, work.git_hash_pkg.git_hash);
             connect_data_to_address(bus_from_communications, bus_from_top, 3, loopback_register);
@@ -365,9 +395,35 @@ begin
             connect_read_only_data_to_address(bus_from_communications, bus_from_top, 12,
                 fan_status_word);
 
+            -- ---- LWH2F (AXI) master - same registers ----
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 1, x"0000DE25");
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 2, work.git_hash_pkg.git_hash);
+            connect_data_to_address(bus_from_axi, bus_from_top_axi, 3, loopback_register);
+
+            if data_is_requested_from_address(bus_from_axi, 4) then
+                read_counter <= std_logic_vector(unsigned(read_counter) + 1);
+                write_data_to_address(bus_from_top_axi, 0, read_counter);
+            end if;
+
+            connect_data_to_address(bus_from_axi, bus_from_top_axi, 5, led_register);
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 6,
+                std_logic_vector(resize(unsigned(sw_sync), 32)));
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 7,
+                std_logic_vector(resize(unsigned(not key_sync), 32)));
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 8,
+                std_logic_vector(uptime_counter));
+            connect_data_to_address(bus_from_axi, bus_from_top_axi, 9, fan_duty_register);
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 10,
+                std_logic_vector(resize(unsigned(fan_rpm), 32)));
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 11,
+                std_logic_vector(resize(unsigned(fan_tach), 32)));
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 12,
+                fan_status_word);
+
             uptime_counter <= uptime_counter + 1;
 
             bus_to_communications <= bus_from_top;
+            bus_to_axi            <= bus_from_top_axi;
 
             if system_reset = '1' then
                 loopback_register     <= (others => '0');
@@ -376,6 +432,7 @@ begin
                 uptime_counter        <= (others => '0');
                 fan_duty_register     <= c_fan_min_duty;
                 bus_to_communications <= init_fpga_interconnect;
+                bus_to_axi            <= init_fpga_interconnect;
             end if;
         end if;
     end process test_registers;
@@ -430,13 +487,51 @@ begin
     );
 
 ------------------------------------------------------------------------
+    u_axi_lwh2f_bridge : entity work.axi_lwh2f_bridge
+    generic map (
+        axi_interconnect_pkg => work.fpga_interconnect_pkg
+    )
+    port map (
+        clock   => core_clock
+        ,resetn => not system_reset
+
+        ,awid    => lwh2f_awid
+        ,awaddr  => lwh2f_awaddr
+        ,awvalid => lwh2f_awvalid
+        ,awready => lwh2f_awready
+        ,wdata   => lwh2f_wdata
+        ,wstrb   => lwh2f_wstrb
+        ,wvalid  => lwh2f_wvalid
+        ,wready  => lwh2f_wready
+        ,bid     => lwh2f_bid
+        ,bresp   => lwh2f_bresp
+        ,bvalid  => lwh2f_bvalid
+        ,bready  => lwh2f_bready
+        ,arid    => lwh2f_arid
+        ,araddr  => lwh2f_araddr
+        ,arvalid => lwh2f_arvalid
+        ,arready => lwh2f_arready
+        ,rid     => lwh2f_rid
+        ,rdata   => lwh2f_rdata
+        ,rresp   => lwh2f_rresp
+        ,rlast   => lwh2f_rlast
+        ,rvalid  => lwh2f_rvalid
+        ,rready  => lwh2f_rready
+
+        ,bus_from_lwh2f => bus_from_axi
+        ,bus_to_lwh2f   => bus_to_axi
+    );
+
+------------------------------------------------------------------------
 -- Agilex 5 HPS + LPDDR4 EMIF - standalone (bridges disabled), clocks and
 -- resets itself. See hps/README.md.
 ------------------------------------------------------------------------
 
-    -- lwhps2fpga_* is Not wired up yet, will be used later. Everything the
-    -- component drives is left open; everything it needs driven back is
-    -- tied to a safe idle value.
+    -- lwhps2fpga_* is wired into u_axi_lwh2f_bridge above, straight into
+    -- the same fpga_interconnect register file the fabric UART reaches
+    -- (see de25_std_testproject's hps/README.md and this project's own
+    -- hps/baremetal_lwh2f_regs/README.md for the full story of what it
+    -- took to get this working end to end).
     -- hps_uart0_* has no board pins (only uart1 is routed - see HPS_UART_TX/RX
     -- above), so it's tied off inactive/idle rather than wired anywhere.
     u0 : component hps_subsys
@@ -444,41 +539,41 @@ begin
             h2f_reset_reset                       => open,                                --                 h2f_reset.reset
             lwhps2fpga_axi_clock_clk              => core_clock,                           --      lwhps2fpga_axi_clock.clk
             lwhps2fpga_axi_reset_reset            => system_reset,                         --      lwhps2fpga_axi_reset.reset
-            lwhps2fpga_awid                       => open,                                 --                lwhps2fpga.awid
-            lwhps2fpga_awaddr                     => open,                                 --                          .awaddr
+            lwhps2fpga_awid                       => lwh2f_awid,                           --                lwhps2fpga.awid
+            lwhps2fpga_awaddr                     => lwh2f_awaddr,                         --                          .awaddr
             lwhps2fpga_awlen                      => open,                                 --                          .awlen
             lwhps2fpga_awsize                     => open,                                 --                          .awsize
             lwhps2fpga_awburst                    => open,                                 --                          .awburst
             lwhps2fpga_awlock                     => open,                                 --                          .awlock
             lwhps2fpga_awcache                    => open,                                 --                          .awcache
             lwhps2fpga_awprot                     => open,                                 --                          .awprot
-            lwhps2fpga_awvalid                    => open,                                 --                          .awvalid
-            lwhps2fpga_awready                    => '0',                                  --                          .awready
-            lwhps2fpga_wdata                      => open,                                 --                          .wdata
-            lwhps2fpga_wstrb                      => open,                                 --                          .wstrb
+            lwhps2fpga_awvalid                    => lwh2f_awvalid,                        --                          .awvalid
+            lwhps2fpga_awready                    => lwh2f_awready,                        --                          .awready
+            lwhps2fpga_wdata                      => lwh2f_wdata,                          --                          .wdata
+            lwhps2fpga_wstrb                      => lwh2f_wstrb,                          --                          .wstrb
             lwhps2fpga_wlast                      => open,                                 --                          .wlast
-            lwhps2fpga_wvalid                     => open,                                 --                          .wvalid
-            lwhps2fpga_wready                     => '0',                                  --                          .wready
-            lwhps2fpga_bid                        => (others => '0'),                      --                          .bid
-            lwhps2fpga_bresp                      => (others => '0'),                      --                          .bresp
-            lwhps2fpga_bvalid                     => '0',                                  --                          .bvalid
-            lwhps2fpga_bready                     => open,                                 --                          .bready
-            lwhps2fpga_arid                       => open,                                 --                          .arid
-            lwhps2fpga_araddr                     => open,                                 --                          .araddr
+            lwhps2fpga_wvalid                     => lwh2f_wvalid,                         --                          .wvalid
+            lwhps2fpga_wready                     => lwh2f_wready,                         --                          .wready
+            lwhps2fpga_bid                        => lwh2f_bid,                            --                          .bid
+            lwhps2fpga_bresp                      => lwh2f_bresp,                          --                          .bresp
+            lwhps2fpga_bvalid                     => lwh2f_bvalid,                         --                          .bvalid
+            lwhps2fpga_bready                     => lwh2f_bready,                         --                          .bready
+            lwhps2fpga_arid                       => lwh2f_arid,                           --                          .arid
+            lwhps2fpga_araddr                     => lwh2f_araddr,                         --                          .araddr
             lwhps2fpga_arlen                      => open,                                 --                          .arlen
             lwhps2fpga_arsize                     => open,                                 --                          .arsize
             lwhps2fpga_arburst                    => open,                                 --                          .arburst
             lwhps2fpga_arlock                     => open,                                 --                          .arlock
             lwhps2fpga_arcache                    => open,                                 --                          .arcache
             lwhps2fpga_arprot                     => open,                                 --                          .arprot
-            lwhps2fpga_arvalid                    => open,                                 --                          .arvalid
-            lwhps2fpga_arready                    => '0',                                  --                          .arready
-            lwhps2fpga_rid                        => (others => '0'),                      --                          .rid
-            lwhps2fpga_rdata                      => (others => '0'),                      --                          .rdata
-            lwhps2fpga_rresp                      => (others => '0'),                      --                          .rresp
-            lwhps2fpga_rlast                      => '0',                                  --                          .rlast
-            lwhps2fpga_rvalid                     => '0',                                  --                          .rvalid
-            lwhps2fpga_rready                     => open,                                 --                          .rready
+            lwhps2fpga_arvalid                    => lwh2f_arvalid,                        --                          .arvalid
+            lwhps2fpga_arready                    => lwh2f_arready,                        --                          .arready
+            lwhps2fpga_rid                        => lwh2f_rid,                            --                          .rid
+            lwhps2fpga_rdata                      => lwh2f_rdata,                          --                          .rdata
+            lwhps2fpga_rresp                      => lwh2f_rresp,                          --                          .rresp
+            lwhps2fpga_rlast                      => lwh2f_rlast,                          --                          .rlast
+            lwhps2fpga_rvalid                     => lwh2f_rvalid,                         --                          .rvalid
+            lwhps2fpga_rready                     => lwh2f_rready,                         --                          .rready
             hps_uart0_cts_n                       => '0',                                  --                 hps_uart0.cts_n
             hps_uart0_dcd_n                       => '0',                                  --                          .dcd_n
             hps_uart0_dsr_n                       => '0',                                  --                          .dsr_n

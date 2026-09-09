@@ -4,8 +4,8 @@
  kind="emif_io96b_hps"
  version="1.0"
  fabric="QSYS">
- <!-- Format version 26.1 110 (Future versions may contain additional information.) -->
- <!-- 2026.09.08.16:17:44 -->
+ <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
+ <!-- 2026.09.09.10:46:27 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
@@ -111,9 +111,9 @@
  <module
    name="emif_io96b_hps"
    kind="emif_io96b_hps"
-   version="4.2.0"
-   entity="emif_io96b_hps_emif_io96b_hps_420_dyxenzq"
-   library="emif_io96b_hps_emif_io96b_hps_420_dyxenzq"
+   version="5.0.0"
+   entity="emif_io96b_hps_emif_io96b_hps_500_j4t3edi"
+   library="emif_io96b_hps_emif_io96b_hps_500_j4t3edi"
    path="emif_io96b_hps"
    hpath="$$HPATH"
    className="emif_io96b_hps">
@@ -166,7 +166,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="SYSINFO_DEVICE_DIE_REVISIONS">
    <type>[Ljava.lang.String;</type>
-   <value>MAIN_SM4_REVB</value>
+   <value>MAIN_SM4_REVC</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -1020,7 +1020,7 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.sopcmodel.capabilitypackage.IPackageElement</subtype>
   <displayName>External Memory Interfaces for HPS IP</displayName>
-  <version>4.2.0</version>
+  <version>5.0.0</version>
  </plugin>
  <plugin>
   <instanceCount>5</instanceCount>
@@ -1038,6 +1038,6 @@ parameters are a RESULT of the module parameters. -->
   <displayName>Clock Input</displayName>
   <version>26.1</version>
  </plugin>
- <reportVersion>26.1 110</reportVersion>
+ <reportVersion>26.1.1 130</reportVersion>
  <uniqueIdentifier></uniqueIdentifier>
 </EnsembleReport>

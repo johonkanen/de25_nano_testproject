@@ -98,6 +98,10 @@ set_global_assignment -name VHDL_FILE $this_file_path/source/fpga_communication/
 # git hash constant (refresh with ./write_githash.sh)
 set_global_assignment -name VHDL_FILE $this_file_path/git_hash_pkg.vhd
 
+# lwhps2fpga (LWH2F) AXI4 <-> fpga_interconnect converter - see
+# de25_std_testproject's own axi_lwh2f_bridge.vhd (ported verbatim)
+set_global_assignment -name VHDL_FILE $this_file_path/axi_lwh2f_bridge.vhd
+
 # bring-up top level
 set_global_assignment -name VHDL_FILE $this_file_path/de25_nano_uart_top.vhd
 

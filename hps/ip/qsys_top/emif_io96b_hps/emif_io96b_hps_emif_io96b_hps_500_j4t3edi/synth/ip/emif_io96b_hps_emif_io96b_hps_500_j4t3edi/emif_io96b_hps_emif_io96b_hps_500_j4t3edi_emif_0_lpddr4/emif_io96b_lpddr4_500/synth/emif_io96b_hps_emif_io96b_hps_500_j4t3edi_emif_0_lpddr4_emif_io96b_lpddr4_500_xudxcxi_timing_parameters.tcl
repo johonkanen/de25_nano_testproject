@@ -1,0 +1,21 @@
+set ::GLOBAL_phy_arch_name                  emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_lpddr4_500_xudxcxi
+
+set var(MEM_TECHNOLOGY)                     LPDDR4
+set var(MEM_NUM_IO96)                       1
+set var(PHY_REFCLK_FREQ_MHZ)                166.6666
+set var(MEM_OPERATING_FREQ_MHZ)             799
+set var(MEM_DQ_WIDTH)                       32
+set var(PHY_NOC_EN)                         1
+set var(MEM_CLK_ASYNC)                      0
+set var(CLK_DIV_VCO_MEM)                    1
+set var(CLK_DIV_MEM_PHY)                    2
+set var(PLL_C_DIV_0)                        2
+set var(PLL_C_DIV_1)                        8
+set var(PLL_N_DIV)                          5
+set var(PLL_M_DIV)                          24
+set var(CLK_DIV_VCO_CORE)                   8
+set var(DQ_PER_DQS)                         8
+set var(LOCKSTEP_ROLE)                      OFF
+set var(MEM_CHANNEL_DATA_DQ_WIDTH)          32
+set var(DEVICE_REVISION)                    B
+set var(SM4A)                               0

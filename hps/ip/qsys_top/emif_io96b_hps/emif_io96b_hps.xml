@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy
- date="2026.09.08.16:17:44"
+ date="2026.09.09.10:46:27"
  outputDirectory="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/">
  <perimeter>
   <parameter
@@ -417,8 +417,8 @@
   <childSourceFiles/>
   <messages>
    <message level="Info" culprit="emif_io96b_hps">"Generating: emif_io96b_hps"</message>
-   <message level="Info" culprit="emif_io96b_hps">"Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Debug" culprit="emif_io96b_hps">validation time: 5.07 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">"Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Debug" culprit="emif_io96b_hps">validation time: 2.06 ms</message>
    <message level="Debug">set_validation_property AUTOMATIC_VALIDATION false</message>
    <message level="Debug">set_project_property DEVICE_FAMILY Agilex 5</message>
    <message level="Debug">The device and speed grade is changed to the defaults of the device family, Agilex 5.</message>
@@ -457,6 +457,7 @@
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_MARGIN</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_REQ</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_WEQ</message>
+   <message level="Debug">get_component_parameter_value ADV_CAL_INIT_MEM</message>
    <message level="Debug">get_component_parameter_value ANALOG_PARAM_DERIVATION_PARAM_NAME</message>
    <message level="Debug">get_component_parameter_value AXI4_ADDR_WIDTH</message>
    <message level="Debug">get_component_parameter_value CTRL_ALL_STRB_EN</message>
@@ -464,6 +465,7 @@
    <message level="Debug">get_component_parameter_value CTRL_DM_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_AUTOCORRECT_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_INLINE_EN</message>
+   <message level="Debug">get_component_parameter_value CTRL_ECC_WRITEBACK_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_PRIORITY_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_R_PRIORITY</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_W_PRIORITY</message>
@@ -780,7 +782,7 @@
    <message level="Debug">save_system </message>
    <message level="Debug">All modules have been converted to Generic Components.</message>
    <message level="Debug">send_message Debug RESULT:messages {} | cmds {{set_instance_package_parameter_property emif_0_lpddr4 PHY_AC_PLACEMENT DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 MEM_NUM_CHANNELS DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED false} {set_instance_package_parameter_property refclk_bridge CONNECTIONS DISABLED true} {set_instance_package_parameter_property refclk_bridge CUSTOM_ELABORATION_COMMANDS DISABLED true} {set_instance_package_parameter_property refclk_bridge INTERFACES DISABLED true} {set_instance_package_parameter_property refclk_bridge PORTS DISABLED true}} | PHY_TERM_X_R_T_REFCLK_INPUT_OHM RT_DIFF MEM_CHANNEL_CAPACITY_GBITS 16.0 PHY_TERM_X_REFCLK_IO_STD_TYPE TRUE_DIFF</message>
-   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 3.89 s</message>
+   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 3.01 s</message>
    <message level="Debug">load_component emif_0_lpddr4</message>
    <message level="Debug">set_component_parameter_value PHY_CS_TX_EQUALIZATION OFF</message>
    <message level="Debug">set_component_parameter_value MEM_DIE_DENSITY_GBITS 4</message>
@@ -955,6 +957,7 @@
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_MARGIN</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_REQ</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_WEQ</message>
+   <message level="Debug">get_component_parameter_value ADV_CAL_INIT_MEM</message>
    <message level="Debug">get_component_parameter_value ANALOG_PARAM_DERIVATION_PARAM_NAME</message>
    <message level="Debug">get_component_parameter_value AXI4_ADDR_WIDTH</message>
    <message level="Debug">get_component_parameter_value CTRL_ALL_STRB_EN</message>
@@ -962,6 +965,7 @@
    <message level="Debug">get_component_parameter_value CTRL_DM_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_AUTOCORRECT_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_INLINE_EN</message>
+   <message level="Debug">get_component_parameter_value CTRL_ECC_WRITEBACK_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_PRIORITY_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_R_PRIORITY</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_W_PRIORITY</message>
@@ -1278,8 +1282,8 @@
    <message level="Debug">save_system </message>
    <message level="Debug">All modules have been converted to Generic Components.</message>
    <message level="Debug">send_message Debug RESULT:messages {} | cmds {{set_instance_package_parameter_property emif_0_lpddr4 PHY_AC_PLACEMENT DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 MEM_NUM_CHANNELS DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED false} {set_instance_package_parameter_property refclk_bridge CONNECTIONS DISABLED true} {set_instance_package_parameter_property refclk_bridge CUSTOM_ELABORATION_COMMANDS DISABLED true} {set_instance_package_parameter_property refclk_bridge INTERFACES DISABLED true} {set_instance_package_parameter_property refclk_bridge PORTS DISABLED true}} | PHY_TERM_X_R_T_REFCLK_INPUT_OHM RT_DIFF MEM_CHANNEL_CAPACITY_GBITS 8.0 PHY_TERM_X_REFCLK_IO_STD_TYPE TRUE_DIFF</message>
-   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 2.46 s</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: qsys-generate emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys --synthesis=VHDL --package-subsystem --generate-all-simulation-scripts --part=A5EB013BB23BE4SCS --search-path=/home/jari/dev/de25_nano_testproject/build/**/*,/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/**/*,$ --clear-output-directory</message>
+   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 1.93 s</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: qsys-generate emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys --synthesis=VHDL --package-subsystem --generate-all-simulation-scripts --part=A5EB013BB23BE4SCS --search-path=/home/jari/dev/de25_nano_testproject/hps/**/*,/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/**/*,/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys,$ --clear-output-directory</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: ***************************************************************</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: Quartus is a registered trademark of Altera Corporation in the</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: US and other countries.  Portions of the Quartus Prime software</message>
@@ -1289,120 +1293,120 @@
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: refer to the Altera Software License Subscription Agreements </message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: on the Quartus Prime software download page.</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: ***************************************************************</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:16 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: Parallel IP Generation is enabled. </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: Platform Designer will attempt to use 4 processors for parallel IP generation based on available number of processors and the total number of IP to be generated.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: Starting: Platform Designer system generation</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Generating on localhost:34209</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.ip --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge_qsys_interface_bridge_10_tos2vpi"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge" with 2 modules, 2 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.ip (emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge) took 466 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generating on localhost:37891</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.ip --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.refclk_gpio: GPIO supports a maximum interface frequency of 250 MHZ.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio_altera_gpio_2300_ctzjwfq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Generating: altera_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio" with 3 modules, 3 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.ip (emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio) took 555 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generating on localhost:36401</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: All Generic Component instances match their respective ip files.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Loading 0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Reading input file</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_ddr4comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_ddr5comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_ddr5dimm</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_lpddr4</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_lpddr5</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_ddr4comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_ddr5comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_ddr5dimm</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_lpddr4</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_lpddr5</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module refclk_bridge</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module refclk_gpio</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Building connections</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing connections</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Validating</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Done reading input file</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" with 4 modules, 1 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys (emif_io96b_hps_emif_io96b_hps_420_dyxenzq) took 2021 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Generating on localhost:44535</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.ip --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4 --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.emif_0_lpddr4: Configuring this IP for device A5EB013BB23BE4SCS (Agilex 5). This device has speedgrade 4.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_lpddr4_420_yrdauvq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: cal_0: "Generating: cal_0"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_lpddr4_emif_io96b_cal_420_65qugki"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_cal_232_s5h5wki"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: jamb: "Generating: jamb"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_cal_alt_mem_if_jtag_master_232_ch65psa"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_alt_mem_if_jtag_master_191_2xbfrbi"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_st_jtag_interface"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_timing_adapter_1950_bbjt6kq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_altera_avalon_sc_fifo_1932_onpcouq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_st_bytes_to_packets"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_st_packets_to_bytes"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_packets_to_master"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_channel_adapter_1922_rd56ufy"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_channel_adapter_1922_5vp3d5a"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_reset_controller"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4" with 15 modules, 165 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.ip (emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4) took 4247 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Finished: Platform Designer system generation</message>
-   <message level="Debug" culprit="emif_io96b_hps">quartus_synth fileset time: 28.57 s</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:08 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: Parallel IP Generation is enabled. </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: Platform Designer will attempt to use 4 processors for parallel IP generation based on available number of processors and the total number of IP to be generated.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: Starting: Platform Designer system generation</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generating on localhost:41345</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.ip --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge_qsys_interface_bridge_10_tos2vpi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge" with 2 modules, 2 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.ip (emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge) took 295 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generating on localhost:43905</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.ip --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.refclk_gpio: GPIO supports a maximum interface frequency of 250 MHZ.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio_altera_gpio_2300_ctzjwfq"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Generating: altera_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio" with 3 modules, 3 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.ip (emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio) took 428 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Generating on localhost:38345</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: All Generic Component instances match their respective ip files.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Loading 0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Reading input file</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_ddr4comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_ddr5comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_ddr5dimm</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_lpddr4</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_lpddr5</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_ddr4comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_ddr5comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_ddr5dimm</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_lpddr4</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_lpddr5</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module refclk_bridge</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module refclk_gpio</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Building connections</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing connections</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Validating</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Done reading input file</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" with 4 modules, 1 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys (emif_io96b_hps_emif_io96b_hps_500_j4t3edi) took 1494 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Generating on localhost:39345</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.ip --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4 --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.emif_0_lpddr4: Configuring this IP for device A5EB013BB23BE4SCS (Agilex 5). This device has speedgrade 4.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_lpddr4_500_xudxcxi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: cal_0: "Generating: cal_0"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_lpddr4_emif_io96b_cal_500_jaonrqy"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_cal_233_ivfl6qa"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: jamb: "Generating: jamb"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_cal_alt_mem_if_jtag_master_233_jc3qfoi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_alt_mem_if_jtag_master_191_2xbfrbi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_st_jtag_interface"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_timing_adapter_1950_bbjt6kq"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_altera_avalon_sc_fifo_1932_onpcouq"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_st_bytes_to_packets"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_st_packets_to_bytes"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_packets_to_master"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_channel_adapter_1922_rd56ufy"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_channel_adapter_1922_5vp3d5a"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_reset_controller"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4" with 15 modules, 165 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.ip (emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4) took 2366 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:27 Info: Finished: Platform Designer system generation</message>
+   <message level="Debug" culprit="emif_io96b_hps">quartus_synth fileset time: 19.72 s</message>
   </messages>
  </entity>
  <entity
    kind="emif_io96b_hps"
-   version="4.2.0"
-   name="emif_io96b_hps_emif_io96b_hps_420_dyxenzq">
+   version="5.0.0"
+   name="emif_io96b_hps_emif_io96b_hps_500_j4t3edi">
   <parameter name="SYSINFO_DEVICE_SPEEDGRADE" value="4" />
-  <parameter name="SYSINFO_DEVICE_DIE_REVISIONS" value="MAIN_SM4_REVB" />
+  <parameter name="SYSINFO_DEVICE_DIE_REVISIONS" value="MAIN_SM4_REVC" />
   <parameter name="SYSINFO_DEVICE_GROUP" value="B" />
   <parameter name="EMIF_REF_CLK_SHARING" value="false" />
   <parameter name="EMIF_SHOW_INTERNAL_SETTINGS" value="false" />
@@ -1420,62 +1424,62 @@
   <parameter name="SYSINFO_DEVICE_TEMPERATURE_GRADE" value="EXTENDED" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.sopcinfo"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.sopcinfo"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.sopcinfo"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.sopcinfo"
        attributes="" />
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.sopcinfo"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.sopcinfo"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.sopcinfo"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.sopcinfo"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.qip"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.qip"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/qsys_top/emif_io96b_hps/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.sopcinfo"
        attributes="" />
   </childGeneratedFiles>
   <sourceFiles/>
   <childSourceFiles/>
   <instantiator instantiator="emif_io96b_hps" as="emif_io96b_hps" />
   <messages>
-   <message level="Info" culprit="emif_io96b_hps">"Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Debug" culprit="emif_io96b_hps">validation time: 5.07 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">"Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Debug" culprit="emif_io96b_hps">validation time: 2.06 ms</message>
    <message level="Debug">set_validation_property AUTOMATIC_VALIDATION false</message>
    <message level="Debug">set_project_property DEVICE_FAMILY Agilex 5</message>
    <message level="Debug">The device and speed grade is changed to the defaults of the device family, Agilex 5.</message>
@@ -1514,6 +1518,7 @@
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_MARGIN</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_REQ</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_WEQ</message>
+   <message level="Debug">get_component_parameter_value ADV_CAL_INIT_MEM</message>
    <message level="Debug">get_component_parameter_value ANALOG_PARAM_DERIVATION_PARAM_NAME</message>
    <message level="Debug">get_component_parameter_value AXI4_ADDR_WIDTH</message>
    <message level="Debug">get_component_parameter_value CTRL_ALL_STRB_EN</message>
@@ -1521,6 +1526,7 @@
    <message level="Debug">get_component_parameter_value CTRL_DM_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_AUTOCORRECT_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_INLINE_EN</message>
+   <message level="Debug">get_component_parameter_value CTRL_ECC_WRITEBACK_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_PRIORITY_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_R_PRIORITY</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_W_PRIORITY</message>
@@ -1837,7 +1843,7 @@
    <message level="Debug">save_system </message>
    <message level="Debug">All modules have been converted to Generic Components.</message>
    <message level="Debug">send_message Debug RESULT:messages {} | cmds {{set_instance_package_parameter_property emif_0_lpddr4 PHY_AC_PLACEMENT DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 MEM_NUM_CHANNELS DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED false} {set_instance_package_parameter_property refclk_bridge CONNECTIONS DISABLED true} {set_instance_package_parameter_property refclk_bridge CUSTOM_ELABORATION_COMMANDS DISABLED true} {set_instance_package_parameter_property refclk_bridge INTERFACES DISABLED true} {set_instance_package_parameter_property refclk_bridge PORTS DISABLED true}} | PHY_TERM_X_R_T_REFCLK_INPUT_OHM RT_DIFF MEM_CHANNEL_CAPACITY_GBITS 16.0 PHY_TERM_X_REFCLK_IO_STD_TYPE TRUE_DIFF</message>
-   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 3.89 s</message>
+   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 3.01 s</message>
    <message level="Debug">load_component emif_0_lpddr4</message>
    <message level="Debug">set_component_parameter_value PHY_CS_TX_EQUALIZATION OFF</message>
    <message level="Debug">set_component_parameter_value MEM_DIE_DENSITY_GBITS 4</message>
@@ -2012,6 +2018,7 @@
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_MARGIN</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_REQ</message>
    <message level="Debug">get_component_parameter_value ADV_CAL_ENABLE_WEQ</message>
+   <message level="Debug">get_component_parameter_value ADV_CAL_INIT_MEM</message>
    <message level="Debug">get_component_parameter_value ANALOG_PARAM_DERIVATION_PARAM_NAME</message>
    <message level="Debug">get_component_parameter_value AXI4_ADDR_WIDTH</message>
    <message level="Debug">get_component_parameter_value CTRL_ALL_STRB_EN</message>
@@ -2019,6 +2026,7 @@
    <message level="Debug">get_component_parameter_value CTRL_DM_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_AUTOCORRECT_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_ECC_INLINE_EN</message>
+   <message level="Debug">get_component_parameter_value CTRL_ECC_WRITEBACK_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_PRIORITY_EN</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_R_PRIORITY</message>
    <message level="Debug">get_component_parameter_value CTRL_FIXED_W_PRIORITY</message>
@@ -2335,8 +2343,8 @@
    <message level="Debug">save_system </message>
    <message level="Debug">All modules have been converted to Generic Components.</message>
    <message level="Debug">send_message Debug RESULT:messages {} | cmds {{set_instance_package_parameter_property emif_0_lpddr4 PHY_AC_PLACEMENT DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 MEM_NUM_CHANNELS DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED true} {set_instance_package_parameter_property emif_0_lpddr4 PHY_MAINBAND_ACCESS_MODE DISABLED false} {set_instance_package_parameter_property refclk_bridge CONNECTIONS DISABLED true} {set_instance_package_parameter_property refclk_bridge CUSTOM_ELABORATION_COMMANDS DISABLED true} {set_instance_package_parameter_property refclk_bridge INTERFACES DISABLED true} {set_instance_package_parameter_property refclk_bridge PORTS DISABLED true}} | PHY_TERM_X_R_T_REFCLK_INPUT_OHM RT_DIFF MEM_CHANNEL_CAPACITY_GBITS 8.0 PHY_TERM_X_REFCLK_IO_STD_TYPE TRUE_DIFF</message>
-   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 2.46 s</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: qsys-generate emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys --synthesis=VHDL --package-subsystem --generate-all-simulation-scripts --part=A5EB013BB23BE4SCS --search-path=/home/jari/dev/de25_nano_testproject/build/**/*,/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/**/*,$ --clear-output-directory</message>
+   <message level="Debug" culprit="emif_io96b_hps">elaboration time: 1.93 s</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: qsys-generate emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys --synthesis=VHDL --package-subsystem --generate-all-simulation-scripts --part=A5EB013BB23BE4SCS --search-path=/home/jari/dev/de25_nano_testproject/hps/**/*,/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/**/*,/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys,$ --clear-output-directory</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: ***************************************************************</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: Quartus is a registered trademark of Altera Corporation in the</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: US and other countries.  Portions of the Quartus Prime software</message>
@@ -2346,112 +2354,112 @@
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: refer to the Altera Software License Subscription Agreements </message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: on the Quartus Prime software download page.</message>
    <message level="Info" culprit="emif_io96b_hps">generate_all_instances: ***************************************************************</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:16 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: Parallel IP Generation is enabled. </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: Platform Designer will attempt to use 4 processors for parallel IP generation based on available number of processors and the total number of IP to be generated.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:21 Info: Starting: Platform Designer system generation</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Generating on localhost:34209</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.ip --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge_qsys_interface_bridge_10_tos2vpi"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge" with 2 modules, 2 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:34 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.ip (emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge) took 466 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generating on localhost:37891</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.ip --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.refclk_gpio: GPIO supports a maximum interface frequency of 250 MHZ.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio_altera_gpio_2300_ctzjwfq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: "Generating: altera_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio" with 3 modules, 3 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.ip (emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio) took 555 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generating on localhost:36401</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: All Generic Component instances match their respective ip files.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Loading 0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Reading input file</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_ddr4comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_ddr5comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_ddr5dimm</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_lpddr4</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_0_lpddr5</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_ddr4comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_ddr5comp</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_ddr5dimm</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_lpddr4</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module emif_1_lpddr5</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module refclk_bridge</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing module refclk_gpio</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Building connections</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Parameterizing connections</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Validating</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Done reading input file</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" with 4 modules, 1 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:35 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qsys (emif_io96b_hps_emif_io96b_hps_420_dyxenzq) took 2021 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: </message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Generating on localhost:44535</message>
-   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Saving generation log to /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_generation.rpt</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Generated by version: 26.1 build 110</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Starting: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: qsys-generate /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.ip --synthesis=VHDL --output-directory=/tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4 --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.emif_0_lpddr4: Configuring this IP for device A5EB013BB23BE4SCS (Agilex 5). This device has speedgrade 4.</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Transforming system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Processing generation queue"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_lpddr4_420_yrdauvq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: cal_0: "Generating: cal_0"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_lpddr4_emif_io96b_cal_420_65qugki"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_cal_232_s5h5wki"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: jamb: "Generating: jamb"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_emif_io96b_cal_alt_mem_if_jtag_master_232_ch65psa"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_alt_mem_if_jtag_master_191_2xbfrbi"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_st_jtag_interface"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_timing_adapter_1950_bbjt6kq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_altera_avalon_sc_fifo_1932_onpcouq"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_st_bytes_to_packets"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_st_packets_to_bytes"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_avalon_packets_to_master"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_channel_adapter_1922_rd56ufy"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4_channel_adapter_1922_5vp3d5a"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: "Generating: altera_reset_controller"</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4: Done "emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4" with 15 modules, 165 files</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Finished: Create HDL design files for synthesis</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Generation of /tmp/alt0704_8052573266924323122.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.ip (emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4) took 4247 ms</message>
-   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.08.16:17:43 Info: Finished: Platform Designer system generation</message>
-   <message level="Debug" culprit="emif_io96b_hps">quartus_synth fileset time: 28.57 s</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:08 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: Parallel IP Generation is enabled. </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: Platform Designer will attempt to use 4 processors for parallel IP generation based on available number of processors and the total number of IP to be generated.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:12 Info: Starting: Platform Designer system generation</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generating on localhost:41345</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.ip --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge_qsys_interface_bridge_10_tos2vpi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge" with 2 modules, 2 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.ip (emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge) took 295 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generating on localhost:43905</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.ip --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.refclk_gpio: GPIO supports a maximum interface frequency of 250 MHZ.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio_altera_gpio_2300_ctzjwfq"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: "Generating: altera_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio" with 3 modules, 3 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:20 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.ip (emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio) took 428 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Generating on localhost:38345</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: All Generic Component instances match their respective ip files.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Loading 0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Reading input file</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_ddr4comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_ddr5comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_ddr5dimm</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_lpddr4</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_0_lpddr5</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_ddr4comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_ddr5comp</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_ddr5dimm</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_lpddr4</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module emif_1_lpddr5</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module refclk_bridge</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing module refclk_gpio</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Building connections</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Parameterizing connections</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Validating</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Done reading input file</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" with 4 modules, 1 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:21 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qsys (emif_io96b_hps_emif_io96b_hps_500_j4t3edi) took 1494 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: </message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Generating on localhost:39345</message>
+   <message level="Warning" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Warning: Quartus project not specified. Use --quartus-project and --rev to specify a Quartus project and revision.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Saving generation log to /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_generation.rpt</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Generated by version: 26.1.1 build 130</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Starting: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: qsys-generate /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.ip --synthesis=VHDL --output-directory=/tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4 --family="Agilex 5" --part=A5EB013BB23BE4SCS</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.emif_0_lpddr4: Configuring this IP for device A5EB013BB23BE4SCS (Agilex 5). This device has speedgrade 4.</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Transforming system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Naming system components in system: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Processing generation queue"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_lpddr4_500_xudxcxi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: cal_0: "Generating: cal_0"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_lpddr4_emif_io96b_cal_500_jaonrqy"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_cal_233_ivfl6qa"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: jamb: "Generating: jamb"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_emif_io96b_cal_alt_mem_if_jtag_master_233_jc3qfoi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_alt_mem_if_jtag_master_191_2xbfrbi"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_st_jtag_interface"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_timing_adapter_1950_bbjt6kq"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_altera_avalon_sc_fifo_1932_onpcouq"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_st_bytes_to_packets"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_st_packets_to_bytes"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_avalon_packets_to_master"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_channel_adapter_1922_rd56ufy"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4_channel_adapter_1922_5vp3d5a"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: "Generating: altera_reset_controller"</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4: Done "emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4" with 15 modules, 165 files</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Finished: Create HDL design files for synthesis</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:26 Info: Generation of /tmp/alt0705_192435038393061990.dir/0012_packageGeneration/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.ip (emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4) took 2366 ms</message>
+   <message level="Info" culprit="emif_io96b_hps">generate_all_instances: 2026.09.09.10:46:27 Info: Finished: Platform Designer system generation</message>
+   <message level="Debug" culprit="emif_io96b_hps">quartus_synth fileset time: 19.72 s</message>
   </messages>
  </entity>
 </deploy>

@@ -983,7 +983,7 @@ tennm_soc_hps #(
 ,.soc_hps_wrapper_hps_a55_core_state("HPS_A55_CORE_STATE_BOTH_ON")
 ,.soc_hps_wrapper_hps_a76_core_selection("HPS_A76_CORE_SELECTION_OFF")
 ,.soc_hps_wrapper_hps_l3_memory_size("HPS_L3_MEMORY_SIZE_1_MB")
-,.soc_hps_wrapper_powermode_freq_hz(32'b00011111110010011111100001010000)
+,.soc_hps_wrapper_powermode_freq_hz(32'b00101111101011110000100000000000)
 ,.soc_hps_wrapper_h2f_addr_width(32'b00000000000000000000000000100110)
 ,.soc_hps_wrapper_h2f_data_width(32'b00000000000000000000000000000000)
 ,.soc_hps_wrapper_lwh2f_addr_width(32'b00000000000000000000000000011101)

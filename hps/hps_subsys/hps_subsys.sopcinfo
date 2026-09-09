@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="hps_subsys" kind="hps_subsys" version="1.0" fabric="QSYS">
- <!-- Format version 26.1 110 (Future versions may contain additional information.) -->
- <!-- 2026.09.08.16:16:52 -->
+ <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
+ <!-- 2026.09.09.10:45:49 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
@@ -687,6 +687,14 @@ the requested settings for a module instance. -->
                         </entry>
                         <entry>
                             <key>userData</key>
+                            <value>false</value>
+                        </entry>
+                        <entry>
+                            <key>terminateWriteChannel</key>
+                            <value>false</value>
+                        </entry>
+                        <entry>
+                            <key>terminateReadChannel</key>
                             <value>false</value>
                         </entry>
                         <entry>
@@ -3943,6 +3951,22 @@ parameters are a RESULT of the module parameters. -->
     <visible>true</visible>
     <valid>true</valid>
    </parameter>
+   <parameter name="terminateWriteChannel">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="terminateReadChannel">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
    <parameter name="readIssuingCapability">
     <type>java.lang.Integer</type>
     <value>16</value>
@@ -7096,7 +7120,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="SYSINFO_DEVICE_DIE_REVISIONS">
    <type>[Ljava.lang.String;</type>
-   <value>MAIN_SM4_REVB</value>
+   <value>MAIN_SM4_REVC</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -8427,6 +8451,6 @@ parameters are a RESULT of the module parameters. -->
   <displayName>Conduit Connection</displayName>
   <version>26.1</version>
  </plugin>
- <reportVersion>26.1 110</reportVersion>
+ <reportVersion>26.1.1 130</reportVersion>
  <uniqueIdentifier></uniqueIdentifier>
 </EnsembleReport>

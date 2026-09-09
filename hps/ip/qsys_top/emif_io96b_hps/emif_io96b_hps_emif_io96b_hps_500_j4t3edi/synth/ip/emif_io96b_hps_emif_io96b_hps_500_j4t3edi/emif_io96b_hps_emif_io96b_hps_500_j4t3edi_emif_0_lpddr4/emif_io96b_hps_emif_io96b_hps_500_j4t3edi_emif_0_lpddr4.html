@@ -1,0 +1,829 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>datasheet for emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4</title>
+  <style type="text/css">
+body { font-family:arial ;}
+a { text-decoration:underline ; color:#003000 ;}
+a:hover { text-decoration:underline ; color:0030f0 ;}
+td { padding : 5px ;}
+table.topTitle { width:100% ;}
+table.topTitle td.l { text-align:left ; font-weight: bold ; font-size:30px ;}
+table.topTitle td.r { text-align:right ; font-weight: bold ; font-size:16px ;}
+table.blueBar { width : 100% ; border-spacing : 0px ;}
+table.blueBar td { background:#0036ff ; font-size:12px ; color : white ; text-align : left ; font-weight : bold ;}
+table.blueBar td.l { text-align : left ;}
+table.blueBar td.r { text-align : right ;}
+table.items { width:100% ; border-collapse:collapse ;}
+table.items td.label { font-weight:bold ; font-size:16px ; vertical-align:top ;}
+table.items td.mono { font-family:courier ; font-size:12px ; white-space:pre ;}
+div.label { font-weight:bold ; font-size:16px ; vertical-align:top ; text-align:center ;}
+table.grid { border-collapse:collapse ;}
+table.grid td { border:1px solid #bbb ; font-size:12px ;}
+body { font-family:arial ;}
+table.x { font-family:courier ; border-collapse:collapse ; padding:2px ;}
+table.x td { border:1px solid #bbb ;}
+td.tableTitle { font-weight:bold ; text-align:center ;}
+table.grid { border-collapse:collapse ;}
+table.grid td { border:1px solid #bbb ;}
+table.grid td.tableTitle { font-weight:bold ; text-align:center ;}
+table.mmap { border-collapse:collapse ; text-size:11px ; border:1px solid #d8d8d8 ;}
+table.mmap td { border-color:#d8d8d8 ; border-width:1px ; border-style:solid ;}
+table.mmap td.empty { border-style:none ; background-color:#f0f0f0 ;}
+table.mmap td.slavemodule { text-align:left ; font-size:11px ; border-style:solid solid none solid ;}
+table.mmap td.slavem { text-align:right ; font-size:9px ; font-style:italic ; border-style:none solid none solid ;}
+table.mmap td.slaveb { text-align:right ; font-size:9px ; font-style:italic ; border-style:none solid solid solid ;}
+table.mmap td.mastermodule { text-align:center ; font-size:11px ; border-style:solid solid none solid ;}
+table.mmap td.masterlr { text-align:center ; font-size:9px ; font-style:italic ; border-style:none solid solid solid ;}
+table.mmap td.masterl { text-align:center ; font-size:9px ; font-style:italic ; border-style:none none solid solid ;}
+table.mmap td.masterm { text-align:center ; font-size:9px ; font-style:italic ; border-style:none none solid none ;}
+table.mmap td.masterr { text-align:center ; font-size:9px ; font-style:italic ; border-style:none solid solid none ;}
+table.mmap td.addr { font-family:courier ; font-size:9px ; text-align:right ;}
+table.connectionboxes { border-collapse:separate ; border-spacing:0px ; font-family:arial ;}
+table.connectionboxes td.from { border-bottom:1px solid black ; font-size:9px ; font-style:italic ; vertical-align:bottom ; text-align:left ;}
+table.connectionboxes td.to { font-size:9px ; font-style:italic ; vertical-align:top ; text-align:right ;}
+table.connectionboxes td.lefthandwire { border-bottom:1px solid black ; font-size:9px ; font-style:italic ; vertical-align:bottom ; text-align:right ;}
+table.connectionboxes td.righthandwire { border-bottom:1px solid black ; font-size:9px ; font-style:italic ; vertical-align:bottom ; text-align:left ;}
+table.connectionboxes td.righthandlabel { font-size:11px ; vertical-align:bottom ; text-align:left ;}
+table.connectionboxes td.neighbor { padding:3px ; border:1px solid black ; font-size: 11px ; background:#e8e8e8 ; vertical-align:center ; text-align:center ;}
+table.connectionboxes td.main { padding:8px ; border:1px solid black ; font-size: 14px ; font-weight:bold ; background:#ffffff ; vertical-align:center ; text-align:center ;}
+.parametersbox { border:1px solid #d0d0d0 ; display:inline-block ; max-height:160px ; overflow:auto ; width:360px ; font-size:10px ;}
+.flowbox { display:inline-block ;}
+.parametersbox table { font-size:10px ;}
+td.parametername { font-style:italic ;}
+td.parametervalue { font-weight:bold ;}
+div.greydiv { vertical-align:top ; text-align:center ; background:#eeeeee ; border-top:1px solid #707070 ; border-bottom:1px solid #707070 ; padding:20px ; margin:20px ; width:auto ;}</style>
+ </head>
+ <body>
+  <table class="topTitle">
+   <tr>
+    <td class="l">emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4</td>
+    <td class="r">
+     <br/>
+     <br/>
+    </td>
+   </tr>
+  </table>
+  <table class="blueBar">
+   <tr>
+    <td class="l">2026.09.09.10:46:24</td>
+    <td class="r">Datasheet</td>
+   </tr>
+  </table>
+  <div style="width:100% ;  height:10px"> </div>
+  <div class="label">Overview</div>
+  <div class="greydiv">
+   <div style="display:inline-block ; text-align:left">
+    <table class="connectionboxes">
+     <tr style="height:6px">
+      <td></td>
+     </tr>
+    </table>
+   </div><span style="display:inline-block ; width:28px"> </span>
+   <div style="display:inline-block ; text-align:left"><span>
+     <br/></span>
+   </div>
+  </div>
+  <div style="width:100% ;  height:10px"> </div>
+  <div class="label">Memory Map</div>
+  <table class="mmap">
+   <tr>
+    <td class="empty" rowspan="2"></td>
+    <td class="mastermodule" colspan="1">
+     <a href="#module_emif_0_lpddr4_cal_0"><b>emif_0_lpddr4_cal_0</b>
+     </a>
+    </td>
+    <td class="mastermodule" colspan="1">
+     <a href="#module_emif_0_lpddr4_cal_0_cal_0"><b>emif_0_lpddr4_cal_0_cal_0</b>
+     </a>
+    </td>
+    <td class="mastermodule" colspan="1">
+     <a href="#module_emif_0_lpddr4_cal_0_cal_0_jamb"><b>emif_0_lpddr4_cal_0_cal_0_jamb</b>
+     </a>
+    </td>
+    <td class="mastermodule" colspan="1">
+     <a href="#module_emif_0_lpddr4_cal_0_cal_0_jamb_jamb"><b>emif_0_lpddr4_cal_0_cal_0_jamb_jamb</b>
+     </a>
+    </td>
+   </tr>
+   <tr>
+    <td class="masterlr">&#160;m0_axi4lite</td>
+    <td class="masterlr">&#160;m0_axi4lite</td>
+    <td class="masterlr">&#160;master</td>
+    <td class="masterlr">&#160;master</td>
+   </tr>
+   <tr>
+    <td class="slavemodule">&#160;
+     <a href="#module_emif_0_lpddr4_cal_0"><b>emif_0_lpddr4_cal_0</b>
+     </a>
+    </td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+   <tr>
+    <td class="slavem">s0_axi4lite&#160;</td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+   <tr>
+    <td class="slavem">s0_noc_axi4lite&#160;</td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+   <tr>
+    <td class="slavem">s0_noc_axi4litenoc&#160;</td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+   <tr>
+    <td class="slavemodule">&#160;
+     <a href="#module_emif_0_lpddr4_cal_0_cal_0"><b>emif_0_lpddr4_cal_0_cal_0</b>
+     </a>
+    </td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+   <tr>
+    <td class="slavem">s0_axi4lite&#160;</td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+   <tr>
+    <td class="slavem">s0_noc_axi4lite&#160;</td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+   <tr>
+    <td class="slavem">s0_noc_axi4litenoc&#160;</td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+    <td class="empty"></td>
+   </tr>
+  </table>
+  <a name="module_emif_0_lpddr4"> </a>
+  <div>
+   <hr/>
+   <h2>emif_0_lpddr4</h2>emif_io96b_lpddr4 v5.0.0
+   <br/>
+   <br/>
+   <br/>
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Parameters</h2>
+      <table>
+       <tr>
+        <td class="parametername">MEM_NUM_CHANNELS</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_CHANNEL_DATA_DQ_WIDTH</td>
+        <td class="parametervalue">32</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_DIE_DENSITY_GBITS</td>
+        <td class="parametervalue">4</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_CHANNEL_CS_WIDTH</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_OPERATING_FREQ_MHZ_AUTOSET_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_OPERATING_FREQ_MHZ</td>
+        <td class="parametervalue">800</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_ECC_INLINE_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_DM_EN</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_WR_DBI_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_RD_DBI_EN</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_PERFORMANCE_PROFILE</td>
+        <td class="parametervalue">SEQ</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_AUTO_PRECHARGE_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">DIAG_HMC_ADDR_SWAP_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_PLACEMENT_EN</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_ALL_STRB_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">CTRL_FIXED_PRIORITY_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">TURNAROUND_R2W_SAMECS_CYC</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">TURNAROUND_R2R_SAMECS_CYC</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">TURNAROUND_W2W_SAMECS_CYC</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">TURNAROUND_W2R_SAMECS_CYC</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_REFCLK_FREQ_MHZ_AUTOSET_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_REFCLK_ADVANCED_SELECT_EN</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_REFCLK_FREQ_MHZ</td>
+        <td class="parametervalue">166.6666</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_AC_PLACEMENT</td>
+        <td class="parametervalue">BOT</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_MAINBAND_ACCESS_MODE</td>
+        <td class="parametervalue">HARD_PATH</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_SIDEBAND_ACCESS_MODE</td>
+        <td class="parametervalue">HARD_PATH</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_SWIZZLE_MAP</td>
+        <td class="parametervalue">PIN_SWIZZLE_CH0_DQS0=5 4 0 7 1 6 2 3;PIN_SWIZZLE_CH0_DQS1=15 8 14 9 12 13 11 10;PIN_SWIZZLE_CH0_DQS2=18 22 19 20 21 23 16 17;PIN_SWIZZLE_CH0_DQS3=27 29 28 26 24 25 31 30;</td>
+       </tr>
+       <tr>
+        <td class="parametername">DEBUG_TOOLS_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">INSTANCE_ID</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">ADV_CAL_ENABLE_MARGIN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_CL_CYC</td>
+        <td class="parametervalue">16</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_CWL_CYC</td>
+        <td class="parametervalue">12</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_RD_POSTAMBLE_CYC</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_WR_POSTAMBLE_CYC</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TSR_NS</td>
+        <td class="parametervalue">15.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRFCAB_NS</td>
+        <td class="parametervalue">180.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRFCPB_NS</td>
+        <td class="parametervalue">90.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TXSR_NS</td>
+        <td class="parametervalue">187.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TXP_NS</td>
+        <td class="parametervalue">7.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCCD_NS</td>
+        <td class="parametervalue">8.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRTP_NS</td>
+        <td class="parametervalue">10.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRCD_NS</td>
+        <td class="parametervalue">18.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRPPB_NS</td>
+        <td class="parametervalue">18.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRPAB_NS</td>
+        <td class="parametervalue">21.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRAS_NS</td>
+        <td class="parametervalue">42.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TWR_NS</td>
+        <td class="parametervalue">18.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TWTR_NS</td>
+        <td class="parametervalue">10.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRRD_NS</td>
+        <td class="parametervalue">10.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TPPD_CYC</td>
+        <td class="parametervalue">4.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TFAW_NS</td>
+        <td class="parametervalue">40.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TRC_NS</td>
+        <td class="parametervalue">63.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TREFW_NS</td>
+        <td class="parametervalue">3.2E7</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_MINNUMREFSREQ</td>
+        <td class="parametervalue">8192.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TREFI_NS</td>
+        <td class="parametervalue">3904.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCKE_NS</td>
+        <td class="parametervalue">7.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCMDCKE_NS</td>
+        <td class="parametervalue">3.75</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCKELCK_NS</td>
+        <td class="parametervalue">6.25</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCSCKE_NS</td>
+        <td class="parametervalue">1.75</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCKCKEH_NS</td>
+        <td class="parametervalue">3.75</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCSCKEH_NS</td>
+        <td class="parametervalue">1.75</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TMRWCKEL_NS</td>
+        <td class="parametervalue">14.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TZQCKE_NS</td>
+        <td class="parametervalue">3.75</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TMRR_NS</td>
+        <td class="parametervalue">10.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TMRW_NS</td>
+        <td class="parametervalue">12.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TMRD_NS</td>
+        <td class="parametervalue">14.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TESCKE_NS</td>
+        <td class="parametervalue">3.75</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TZQCAL_NS</td>
+        <td class="parametervalue">1000.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TZQLAT_NS</td>
+        <td class="parametervalue">30.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TDQSCK_MAX_NS</td>
+        <td class="parametervalue">3.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TDQSCK_MIN_NS</td>
+        <td class="parametervalue">1.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCKCKEL_NS</td>
+        <td class="parametervalue">6.25</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCKELCMD_NS</td>
+        <td class="parametervalue">6.25</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_TCKEHCMD_NS</td>
+        <td class="parametervalue">7.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">JEDEC_OVERRIDE_TABLE_PARAM_NAME</td>
+        <td class="parametervalue">MEM_TCCD_NS</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_HDL_FORMAT</td>
+        <td class="parametervalue">VERILOG</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_GEN_SYNTH</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_GEN_SIM</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_TG_CSR_ACCESS_MODE</td>
+        <td class="parametervalue">JTAG</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_TG_PROGRAM</td>
+        <td class="parametervalue">MEDIUM</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_TG_WIDE_IF</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_USER_PLL_OUTPUT_FREQ_MHZ_AUTOSET_EN</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_USER_PLL_OUTPUT_FREQ_MHZ</td>
+        <td class="parametervalue">275.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_USER_PLL_REFCLK_FREQ_MHZ</td>
+        <td class="parametervalue">100.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">EX_DESIGN_PMON_CH0_EN</td>
+        <td class="parametervalue">false</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_R_S_AC_OUTPUT_OHM</td>
+        <td class="parametervalue">SERIES_40_OHM_CAL</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_R_S_CK_OUTPUT_OHM</td>
+        <td class="parametervalue">SERIES_40_OHM_CAL</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_R_S_DQ_OUTPUT_OHM</td>
+        <td class="parametervalue">SERIES_40_OHM_CAL</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_DQ_SLEW_RATE</td>
+        <td class="parametervalue">FASTEST</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_AC_SLEW_RATE</td>
+        <td class="parametervalue">FASTEST</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_CK_SLEW_RATE</td>
+        <td class="parametervalue">FASTEST</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_R_T_DQ_INPUT_OHM</td>
+        <td class="parametervalue">RT_50_OHM_CAL</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_DQ_VREF</td>
+        <td class="parametervalue">17.5</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_TERM_X_R_T_REFCLK_INPUT_OHM</td>
+        <td class="parametervalue">RT_DIFF</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_AC_TX_EQUALIZATION</td>
+        <td class="parametervalue">OFF</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_CK_TX_EQUALIZATION</td>
+        <td class="parametervalue">OFF</td>
+       </tr>
+       <tr>
+        <td class="parametername">PHY_DQ_TX_EQUALIZATION</td>
+        <td class="parametervalue">OFF</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_ODT_DQ_X_TGT_WR</td>
+        <td class="parametervalue">5</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_ODT_DQ_X_IDLE</td>
+        <td class="parametervalue">off</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_ODT_DQ_X_RON</td>
+        <td class="parametervalue">6</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_VREF_DQ_X_RANGE</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_VREF_DQ_X_VALUE</td>
+        <td class="parametervalue">28.0</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_ODT_CA_X_CA_COMM</td>
+        <td class="parametervalue">3</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_ODT_CA_X_CA_ENABLE</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_ODT_CA_X_CS_ENABLE</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_ODT_CA_X_CK_ENABLE</td>
+        <td class="parametervalue">true</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_VREF_CA_X_CA_RANGE</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">MEM_VREF_CA_X_CA_VALUE</td>
+        <td class="parametervalue">23.2</td>
+       </tr>
+       <tr>
+        <td class="parametername">ANALOG_PARAM_DERIVATION_PARAM_NAME</td>
+        <td class="parametervalue">MEM_VREF_DQ_X_VALUE,MEM_VREF_CA_X_CA_VALUE,MEM_VREF_CA_X_CA_RANGE</td>
+       </tr>
+       <tr>
+        <td class="parametername">deviceFamily</td>
+        <td class="parametervalue">UNKNOWN</td>
+       </tr>
+       <tr>
+        <td class="parametername">generateLegacySim</td>
+        <td class="parametervalue">false</td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>&#160;&#160;
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Software Assignments</h2>(none)</td>
+    </tr>
+   </table>
+  </div>
+  <a name="module_emif_0_lpddr4_cal_0"> </a>
+  <div>
+   <hr/>
+   <h2>emif_0_lpddr4_cal_0</h2>emif_io96b_lpddr4_emif_io96b_cal v5.0.0
+   <br/>
+   <br/>
+   <br/>
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Parameters</h2>
+      <table>
+       <tr>
+        <td class="parametername">INSTANCE_ID</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">NUM_CALBUS_PERIPHS</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">NUM_CALBUS_PLLS</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">PORT_S_AXIL_MODE</td>
+        <td class="parametervalue">HARD_PATH</td>
+       </tr>
+       <tr>
+        <td class="parametername">deviceFamily</td>
+        <td class="parametervalue">UNKNOWN</td>
+       </tr>
+       <tr>
+        <td class="parametername">generateLegacySim</td>
+        <td class="parametervalue">false</td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>&#160;&#160;
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Software Assignments</h2>(none)</td>
+    </tr>
+   </table>
+  </div>
+  <a name="module_emif_0_lpddr4_cal_0_cal_0"> </a>
+  <div>
+   <hr/>
+   <h2>emif_0_lpddr4_cal_0_cal_0</h2>emif_io96b_cal v2.3.3
+   <br/>
+   <br/>
+   <br/>
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Parameters</h2>
+      <table>
+       <tr>
+        <td class="parametername">INSTANCE_ID</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">NUM_CALBUS_PERIPHS</td>
+        <td class="parametervalue">1</td>
+       </tr>
+       <tr>
+        <td class="parametername">NUM_CALBUS_PLLS</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">PORT_S_AXIL_MODE</td>
+        <td class="parametervalue">HARD_PATH</td>
+       </tr>
+       <tr>
+        <td class="parametername">deviceFamily</td>
+        <td class="parametervalue">UNKNOWN</td>
+       </tr>
+       <tr>
+        <td class="parametername">generateLegacySim</td>
+        <td class="parametervalue">false</td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>&#160;&#160;
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Software Assignments</h2>(none)</td>
+    </tr>
+   </table>
+  </div>
+  <a name="module_emif_0_lpddr4_cal_0_cal_0_jamb"> </a>
+  <div>
+   <hr/>
+   <h2>emif_0_lpddr4_cal_0_cal_0_jamb</h2>emif_io96b_cal_alt_mem_if_jtag_master v2.3.3
+   <br/>
+   <br/>
+   <br/>
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Parameters</h2>
+      <table>
+       <tr>
+        <td class="parametername">USE_PLI</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">PLI_PORT</td>
+        <td class="parametervalue">50000</td>
+       </tr>
+       <tr>
+        <td class="parametername">FAST_VER</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">FIFO_DEPTHS</td>
+        <td class="parametervalue">2</td>
+       </tr>
+       <tr>
+        <td class="parametername">generateLegacySim</td>
+        <td class="parametervalue">false</td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>&#160;&#160;
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Software Assignments</h2>(none)</td>
+    </tr>
+   </table>
+  </div>
+  <a name="module_emif_0_lpddr4_cal_0_cal_0_jamb_jamb"> </a>
+  <div>
+   <hr/>
+   <h2>emif_0_lpddr4_cal_0_cal_0_jamb_jamb</h2>alt_mem_if_jtag_master v19.1
+   <br/>
+   <br/>
+   <br/>
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Parameters</h2>
+      <table>
+       <tr>
+        <td class="parametername">USE_PLI</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">PLI_PORT</td>
+        <td class="parametervalue">50000</td>
+       </tr>
+       <tr>
+        <td class="parametername">FAST_VER</td>
+        <td class="parametervalue">0</td>
+       </tr>
+       <tr>
+        <td class="parametername">FIFO_DEPTHS</td>
+        <td class="parametervalue">2</td>
+       </tr>
+       <tr>
+        <td class="parametername">generateLegacySim</td>
+        <td class="parametervalue">false</td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>&#160;&#160;
+   <table class="flowbox">
+    <tr>
+     <td class="parametersbox">
+      <h2>Software Assignments</h2>(none)</td>
+    </tr>
+   </table>
+  </div>
+  <table class="blueBar">
+   <tr>
+    <td class="l">generation took 0.00 seconds</td>
+    <td class="r">rendering took 0.02 seconds</td>
+   </tr>
+  </table>
+ </body>
+</html>

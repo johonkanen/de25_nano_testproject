@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy
- date="2026.09.08.16:16:51"
+ date="2026.09.09.10:45:48"
  outputDirectory="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/hps_subsys_s10_user_rst_clkgate_0/">
  <perimeter>
   <parameter
@@ -73,7 +73,7 @@
   </sourceFiles>
   <childSourceFiles>
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/pgm/altera_s10_user_rst_clkgate/altera_s10_user_rst_clkgate_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/pgm/altera_s10_user_rst_clkgate/altera_s10_user_rst_clkgate_hw.tcl" />
   </childSourceFiles>
   <messages>
    <message level="Info" culprit="hps_subsys_s10_user_rst_clkgate_0">"Generating: hps_subsys_s10_user_rst_clkgate_0"</message>
@@ -105,7 +105,7 @@
   </childGeneratedFiles>
   <sourceFiles>
    <file
-       path="/home/jari/altera_pro/26.1/ip/altera/pgm/altera_s10_user_rst_clkgate/altera_s10_user_rst_clkgate_hw.tcl" />
+       path="/home/jari/altera_pro/26.1.1/ip/altera/pgm/altera_s10_user_rst_clkgate/altera_s10_user_rst_clkgate_hw.tcl" />
   </sourceFiles>
   <childSourceFiles/>
   <instantiator

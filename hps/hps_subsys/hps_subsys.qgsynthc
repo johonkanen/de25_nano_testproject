@@ -525,6 +525,14 @@
                             &lt;value&gt;false&lt;/value&gt;
                         &lt;/entry&gt;
                         &lt;entry&gt;
+                            &lt;key&gt;terminateWriteChannel&lt;/key&gt;
+                            &lt;value&gt;false&lt;/value&gt;
+                        &lt;/entry&gt;
+                        &lt;entry&gt;
+                            &lt;key&gt;terminateReadChannel&lt;/key&gt;
+                            &lt;value&gt;false&lt;/value&gt;
+                        &lt;/entry&gt;
+                        &lt;entry&gt;
                             &lt;key&gt;readIssuingCapability&lt;/key&gt;
                             &lt;value&gt;16&lt;/value&gt;
                         &lt;/entry&gt;
@@ -3432,7 +3440,7 @@
           </parameter>
           <parameter>
             <name>SYSINFO_DEVICE_DIE_REVISIONS</name>
-            <value>MAIN_SM4_REVB</value>
+            <value>MAIN_SM4_REVC</value>
           </parameter>
           <parameter>
             <name>SYSINFO_DEVICE_FAMILY</name>

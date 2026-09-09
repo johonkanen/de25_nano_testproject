@@ -32,15 +32,22 @@ sim/*.ghw
 __pycache__/
 *.pyc
 
-# hps/hps_min.qsys (source) and hps/hps_min/ (generated output) are tracked
-# so the project builds after qsys-generate without re-running Platform
-# Designer - see hps/README.md.
+# hps/hps_subsys.qsys (source) and hps/hps_subsys/, hps/ip/hps_subsys/*/
+# (generated output) are tracked so the project builds after qsys-generate
+# without re-running Platform Designer - see hps/README.md.
 hps/**/*.qpf
 hps/**/*.qsf
 
-# bare-metal HPS test build output (see hps/baremetal_uart1_test/README.md)
+# bare-metal HPS test build output (see hps/baremetal_uart1_test/README.md
+# and hps/baremetal_lwh2f_regs/README.md)
 hps/baremetal_uart1_test/build/
+hps/baremetal_lwh2f_regs/build/
 # hps/baremetal-drivers is a `git clone` per that README (or, locally, a
 # symlink to one) - no trailing slash so this also matches the symlink case
 # (a trailing slash would only match a real directory, not a symlink to one).
 hps/baremetal-drivers
+
+# leftover Quartus project working directory from an earlier local run -
+# output_files/ above already covers the normal case; this project's own
+# build/ happened to use a differently-named directory once.
+/build/

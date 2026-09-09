@@ -1,13 +1,13 @@
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_TOOL_NAME "QsysPrimePro"
-set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_TOOL_VERSION "26.1"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_TOOL_VERSION "26.1.1"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_TOOL_ENV "QsysPrimePro"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_TOOL_VENDOR_NAME "Altera Corporation"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_TOP_LEVEL_COMPONENT_NAME "emif_io96b_hps"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name PRE_COMPILED_MODULE "ON"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name OCS_IP_FILE [file join $::quartus(qip_path) "../emif_io96b_hps.ip"]
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name OCS_IP_TYPE "emif_io96b_hps"
-set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name OCS_IP_VERSION "4.2.0"
-set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name OCS_IP_HASH "dyxenzq"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name OCS_IP_VERSION "5.0.0"
+set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name OCS_IP_HASH "j4t3edi"
 set_global_assignment -library "emif_io96b_hps" -name SOPCINFO_FILE [file join $::quartus(qip_path) "emif_io96b_hps.sopcinfo"]
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name SLD_INFO "QSYS_NAME emif_io96b_hps HAS_SOPCINFO 1 GENERATION_ID 0"
 set_global_assignment -library "emif_io96b_hps" -name MISC_FILE [file join $::quartus(qip_path) "emif_io96b_hps.cmp"]
@@ -22,18 +22,18 @@ set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name I
 set_global_assignment -name SYNTHESIS_ONLY_QIP ON
 set_global_assignment -library "emif_io96b_hps" -name MISC_FILE [file join $::quartus(qip_path) "../emif_io96b_hps.ip"]
 
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_NAME "ZW1pZl9pbzk2Yl9ocHNfZW1pZl9pbzk2Yl9ocHNfNDIwX2R5eGVuenE="
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_DISPLAY_NAME "RXh0ZXJuYWwgTWVtb3J5IEludGVyZmFjZXMgZm9yIEhQUyBJUA=="
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_INTERNAL "Off"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_VERSION "NC4yLjA="
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_DESCRIPTION "QWx0ZXJhIEV4dGVybmFsIE1lbW9yeSBJbnRlcmZhY2VzIElQIGZvciBIYXJkIFByb2Nlc3NvciBTeXN0ZW0="
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_GROUP "UHJvY2Vzc29ycyBhbmQgUGVyaXBoZXJhbHMvSGFyZCBQcm9jZXNzb3IgQ29tcG9uZW50cw=="
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly93d3cuaW50ZWwuY29tL2NvbnRlbnQvd3d3L3VzL2VuL2RvY3MvcHJvZ3JhbW1hYmxlLzc3MjUzOC5odG1s"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly93d3cuaW50ZWwuY29tL2NvbnRlbnQvd3d3L3VzL2VuL2RvY3MvcHJvZ3JhbW1hYmxlLzc3MjYzNS5odG1s"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly93d3cuaW50ZWwuY29tL2NvbnRlbnQvd3d3L3VzL2VuL2RvY3MvcHJvZ3JhbW1hYmxlLzgxNzQ2Ny5odG1s"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly93d3cuaW50ZWwuY29tL2NvbnRlbnQvd3d3L3VzL2VuL2RvY3MvcHJvZ3JhbW1hYmxlLzgxNzM5Ni5odG1s"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_NAME "ZW1pZl9pbzk2Yl9ocHNfZW1pZl9pbzk2Yl9ocHNfNTAwX2o0dDNlZGk="
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_DISPLAY_NAME "RXh0ZXJuYWwgTWVtb3J5IEludGVyZmFjZXMgZm9yIEhQUyBJUA=="
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_VERSION "NS4wLjA="
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_DESCRIPTION "QWx0ZXJhIEV4dGVybmFsIE1lbW9yeSBJbnRlcmZhY2VzIElQIGZvciBIYXJkIFByb2Nlc3NvciBTeXN0ZW0="
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_GROUP "UHJvY2Vzc29ycyBhbmQgUGVyaXBoZXJhbHMvSGFyZCBQcm9jZXNzb3IgQ29tcG9uZW50cw=="
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzc3MjUzOC9jdXJyZW50"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzc3MjYzNS9jdXJyZW50"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzgxNzQ2Ny9jdXJyZW50"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzgxNzM5Ni9jdXJyZW50"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_NAME "ZW1pZl9pbzk2Yl9ocHM="
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_DISPLAY_NAME "c3lzdGVt"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_REPORT_HIERARCHY "On"
@@ -41,27 +41,27 @@ set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name I
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_AUTHOR "QWx0ZXJhIENvcnBvcmF0aW9u"
 set_global_assignment -entity "emif_io96b_hps" -library "emif_io96b_hps" -name IP_COMPONENT_VERSION "MS4w"
 
-set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IO_STANDARD "1.1V True Differential Signaling" -to "ref_clk"
-set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name INPUT_TERMINATION "DIFFERENTIAL" -to "ref_clk"
-set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name HPS_EMIF_BANK_LOCATION PRIMARY -to emif_0_lpddr4|emif_0_lpddr4|emif_arch_top|io0.calip_0|cal_0|cal_arch_0|u_iossm|iossm
+set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IO_STANDARD "1.1V True Differential Signaling" -to "ref_clk"
+set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name INPUT_TERMINATION "DIFFERENTIAL" -to "ref_clk"
+set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name HPS_EMIF_BANK_LOCATION PRIMARY -to emif_0_lpddr4|emif_0_lpddr4|emif_arch_top|io0.calip_0|cal_0|cal_arch_0|u_iossm|iossm
 
-set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name HPS_EMIF_BANK_LOCATION PRIMARY -to emif_0_lpddr4|emif_0_lpddr4|emif_arch_top|io0.calip_0|cal_0|gen_tniu.tniu|tniu|target_0.target_lite_inst_0
+set_instance_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name HPS_EMIF_BANK_LOCATION PRIMARY -to emif_0_lpddr4|emif_0_lpddr4|emif_arch_top|io0.calip_0|cal_0|gen_tniu.tniu|tniu|target_0.target_lite_inst_0
 
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name HPS_ISW_EMIF "HPS_IO_NUM 1 HPS_IO_CONFIG 1x32 IO96B0_PLL 1 MEM_CHANNEL_CAPACITY_GBITS 8.0"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name HPS_ISW_EMIF "HPS_IO_NUM 1 HPS_IO_CONFIG 1x32 IO96B0_PLL 1 MEM_CHANNEL_CAPACITY_GBITS 8.0"
 
 
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.sopcinfo"]
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq.qip"]
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.qip"]
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_bridge.sopcinfo"]
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.sopcinfo"]
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_emif_0_lpddr4.qip"]
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.sopcinfo"]
-set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_420_dyxenzq/synth/ip/emif_io96b_hps_emif_io96b_hps_420_dyxenzq/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio/emif_io96b_hps_emif_io96b_hps_420_dyxenzq_refclk_gpio.qip"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.sopcinfo"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi.qip"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.sopcinfo"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_gpio.qip"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.qip"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_refclk_bridge.sopcinfo"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name QIP_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.qip"]
+set_global_assignment -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name SOURCE_FILE [file join $::quartus(qip_path) "emif_io96b_hps_emif_io96b_hps_500_j4t3edi/synth/ip/emif_io96b_hps_emif_io96b_hps_500_j4t3edi/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4/emif_io96b_hps_emif_io96b_hps_500_j4t3edi_emif_0_lpddr4.sopcinfo"]
 set_global_assignment -library "emif_io96b_hps" -name VHDL_FILE [file join $::quartus(qip_path) "synth/emif_io96b_hps.vhd"]
 
 
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_TOOL_NAME "emif_io96b_hps"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_TOOL_VERSION "4.2.0"
-set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -library "emif_io96b_hps_emif_io96b_hps_420_dyxenzq" -name IP_TOOL_ENV "QsysPrimePro"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_TOOL_NAME "emif_io96b_hps"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_TOOL_VERSION "5.0.0"
+set_global_assignment -entity "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -library "emif_io96b_hps_emif_io96b_hps_500_j4t3edi" -name IP_TOOL_ENV "QsysPrimePro"
 
