@@ -5,3 +5,14 @@
  <old_version>21.0.0</old_version>
  <new_version>21.1.0</new_version>
 </ip>
+
+<ip name="emif_io96b_hps">
+ <timestamp>2026-09-09T11:04:36.707945239</timestamp>
+ <file>ip/qsys_top/emif_io96b_hps.ip</file>
+ <old_version>4.2.0</old_version>
+ <new_version>5.0.0</new_version>
+ <changes>
+  <change>5.0.0</change>
+  <change>Update required due to change in underlying assignment the IP needs to make</change>
+ </changes>
+</ip>

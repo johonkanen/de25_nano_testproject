@@ -47,6 +47,7 @@ module hps_subsys (
 		output wire        hps_uart0_rts_n,                       //                          .rts_n
 		input  wire        hps_uart0_rx,                          //                          .rx
 		output wire        hps_uart0_tx,                          //                          .tx
+		output wire        h2f_user0_clk_clk,                     //             h2f_user0_clk.clk
 		input  wire        hps_io_hps_osc_clk,                    //                    hps_io.hps_osc_clk
 		inout  wire        hps_io_sdmmc_data0,                    //                          .sdmmc_data0
 		inout  wire        hps_io_sdmmc_data1,                    //                          .sdmmc_data1

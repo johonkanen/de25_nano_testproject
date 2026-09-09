@@ -102,6 +102,10 @@ set_global_assignment -name VHDL_FILE $this_file_path/git_hash_pkg.vhd
 # de25_std_testproject's own axi_lwh2f_bridge.vhd (ported verbatim)
 set_global_assignment -name VHDL_FILE $this_file_path/axi_lwh2f_bridge.vhd
 
+# H2F User0 clock heartbeat test - see hps/README.md's "H2F User0 clock"
+# section and h2f_user0_clk_heartbeat.vhd (ported verbatim)
+set_global_assignment -name VHDL_FILE $this_file_path/h2f_user0_clk_heartbeat.vhd
+
 # bring-up top level
 set_global_assignment -name VHDL_FILE $this_file_path/de25_nano_uart_top.vhd
 
@@ -156,6 +160,10 @@ set_location_assignment PIN_BT1  -to HDMI_I2C_SCL
 set_location_assignment PIN_BW2  -to HDMI_I2C_SDA
 set_location_assignment PIN_DK32 -to FAN_ALERT_n
 
+# H2F User0 clock heartbeat test - GPIO0_D[2] (from
+# Demonstration/FPGA/Golden_top/golden_top.qsf)
+set_location_assignment PIN_C2   -to H2F_CLK_TEST
+
 set_instance_assignment -name IO_STANDARD "1.1-V"        -to CLOCK0_50    -entity de25_nano_uart_top
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to KEY[0]       -entity de25_nano_uart_top
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to KEY[1]       -entity de25_nano_uart_top
@@ -176,6 +184,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to FPGA_UART_TX -entit
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to HDMI_I2C_SCL -entity de25_nano_uart_top
 set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to HDMI_I2C_SDA -entity de25_nano_uart_top
 set_instance_assignment -name IO_STANDARD "1.1-V"        -to FAN_ALERT_n  -entity de25_nano_uart_top
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to H2F_CLK_TEST -entity de25_nano_uart_top
 
 set_instance_assignment -name CURRENT_STRENGTH_NEW 6MA -to FPGA_UART_TX -entity de25_nano_uart_top
 

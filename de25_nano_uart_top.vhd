@@ -104,6 +104,7 @@ entity de25_nano_uart_top is
         ;HDMI_I2C_SCL  : inout std_logic                      -- PIN_BT1
         ;HDMI_I2C_SDA  : inout std_logic                      -- PIN_BW2
         ;FAN_ALERT_n   : in  std_logic                        -- PIN_DK32
+        ;H2F_CLK_TEST  : out std_logic                        -- GPIO0_D[2] (PIN_C2) - see h2f_user0_clk_heartbeat.vhd
 
         -- ---- HPS (hps_min - see hps/README.md) ----
         -- 'in' ports default to '0'/all-zero so existing testbenches that
@@ -307,9 +308,22 @@ architecture rtl of de25_nano_uart_top is
             emif_hps_emif_mem_reset_n_mem_reset_n : out   std_logic;                                        -- mem_reset_n
             emif_hps_emif_oct_0_oct_rzqin         : in    std_logic                     := 'X';             -- oct_rzqin
             emif_hps_emif_ref_clk_clk             : in    std_logic                     := 'X';             -- clk
-            ninit_done_reset                      : out   std_logic                                         -- reset
+            ninit_done_reset                      : out   std_logic;                                        -- reset
+            h2f_user0_clk_clk                     : out   std_logic
         );
     end component hps_subsys;
+
+    component h2f_user0_clk_heartbeat is
+        port (
+            h2f_user0_clock : in  std_logic;
+            heartbeat_out   : out std_logic
+        );
+    end component h2f_user0_clk_heartbeat;
+
+    -- HPS's dedicated free-running H2F User0 clock (50 MHz, independent of
+    -- CLOCK0_50) - see hps/README.md's "H2F User0 clock" section and
+    -- h2f_user0_clk_heartbeat.vhd.
+    signal h2f_user0_clock : std_logic;
 
     -- hps_subsys emits these EMIF signals as 1-bit vectors; the top-level
     -- LPDDR4A_* pins are scalars, so bridge through a signal.
@@ -623,7 +637,17 @@ begin
             emif_hps_emif_mem_reset_n_mem_reset_n => LPDDR4A_RESET_n,                      -- emif_hps_emif_mem_reset_n.mem_reset_n
             emif_hps_emif_oct_0_oct_rzqin         => LPDDR4A_RZQ,                          --       emif_hps_emif_oct_0.oct_rzqin
             emif_hps_emif_ref_clk_clk             => LPDDR4A_REFCLK_p,                     --     emif_hps_emif_ref_clk.clk
-            ninit_done_reset                      => open                                 --                ninit_done.reset
+            ninit_done_reset                      => open,                                --                ninit_done.reset
+            h2f_user0_clk_clk                     => h2f_user0_clock
+        );
+
+    ------------------------------------------------------------------
+    -- H2F User0 clock test - see h2f_user0_clk_heartbeat.vhd
+    ------------------------------------------------------------------
+    u_h2f_user0_clk_heartbeat : component h2f_user0_clk_heartbeat
+        port map (
+            h2f_user0_clock => h2f_user0_clock,
+            heartbeat_out   => H2F_CLK_TEST
         );
 
     LPDDR4A_CS_n <= ddr_cs_vec(0);

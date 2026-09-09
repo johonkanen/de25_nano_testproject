@@ -59,6 +59,7 @@ entity hps_subsys is
 		hps_uart0_rts_n                       : out   std_logic;                                        --                          .rts_n
 		hps_uart0_rx                          : in    std_logic                     := '0';             --                          .rx
 		hps_uart0_tx                          : out   std_logic;                                        --                          .tx
+		h2f_user0_clk_clk                     : out   std_logic;                                        --             h2f_user0_clk.clk
 		hps_io_hps_osc_clk                    : in    std_logic                     := '0';             --                    hps_io.hps_osc_clk
 		hps_io_sdmmc_data0                    : inout std_logic                     := '0';             --                          .sdmmc_data0
 		hps_io_sdmmc_data1                    : inout std_logic                     := '0';             --                          .sdmmc_data1
@@ -154,6 +155,7 @@ architecture rtl of hps_subsys is
 			uart0_rts_n                    : out   std_logic;                                         -- rts_n
 			uart0_rx                       : in    std_logic                      := 'X';             -- rx
 			uart0_tx                       : out   std_logic;                                         -- tx
+			h2f_user0_clk_clk              : out   std_logic;                                         -- clk
 			hps_io_hps_osc_clk             : in    std_logic                      := 'X';             -- hps_osc_clk
 			hps_io_sdmmc_data0             : inout std_logic                      := 'X';             -- sdmmc_data0
 			hps_io_sdmmc_data1             : inout std_logic                      := 'X';             -- sdmmc_data1
@@ -453,6 +455,7 @@ begin
 			uart0_rts_n                    => hps_uart0_rts_n,                           --                        .rts_n
 			uart0_rx                       => hps_uart0_rx,                              --                        .rx
 			uart0_tx                       => hps_uart0_tx,                              --                        .tx
+			h2f_user0_clk_clk              => h2f_user0_clk_clk,                         --           h2f_user0_clk.clk
 			hps_io_hps_osc_clk             => hps_io_hps_osc_clk,                        --                  hps_io.hps_osc_clk
 			hps_io_sdmmc_data0             => hps_io_sdmmc_data0,                        --                        .sdmmc_data0
 			hps_io_sdmmc_data1             => hps_io_sdmmc_data1,                        --                        .sdmmc_data1

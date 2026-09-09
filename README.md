@@ -244,6 +244,14 @@ checked first — and a missing Ncore CCU crossbar routing window, which
 is die-level and did apply here) — see that test's own README for the
 full account.
 
+**The HPS's dedicated H2F User0 free-running clock is also
+hardware-confirmed**: 50 MHz, independent of `CLOCK0_50`, blinking
+`GPIO0_D[2]` at ~0.75 Hz via
+[`h2f_user0_clk_heartbeat.vhd`](h2f_user0_clk_heartbeat.vhd) — see
+[hps/README.md](hps/README.md)'s own section for how this got wired up
+(needed the Platform Designer GUI for one step, a genuine tooling
+limitation, not a preference).
+
 ## Simulate
 
 Two [VUnit](https://vunit.github.io/) testbenches, both run by

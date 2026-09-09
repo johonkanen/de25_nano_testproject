@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy
- date="2026.09.09.11:00:13"
+ date="2026.09.09.11:13:39"
  outputDirectory="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/">
  <perimeter>
   <parameter

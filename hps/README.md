@@ -75,40 +75,35 @@ for how to actually get software running on the HPS to talk on it, and
 [`baremetal_lwh2f_regs/`](baremetal_lwh2f_regs/) for reaching the same
 fabric register file over LWH2F instead, from the ARM cores directly.
 
-## H2F User0 clock (HPS-generated free-running clock to fabric) - .ip ready, one GUI step left
+## ✅ H2F User0 clock (HPS-generated free-running clock to fabric)
 
 `User0_clk_enable`/`User0_clk_freq` in `ip/hps_subsys/agilex_hps.ip` are
 set to `true`/`50.0` MHz - the same HPS-generated, board-oscillator-
 independent free-running clock feature de25_std_testproject wired up (see
 that project's own `hps/README.md` "H2F User0 clock" section for the full
-account, including a gotcha worth reading before touching the GUI: it's
-easy to enable the similarly-named but opposite-direction "Enable
-FPGA-to-HPS Free Clock" by mistake instead).
+account). **Hardware-confirmed working** (2026-09-09): exported as
+`h2f_user0_clk` at the system level (via the Platform Designer GUI - the
+one step that genuinely can't be done headlessly, see
+de25_std_testproject's own `hps/README.md` for why), wired in
+`de25_nano_uart_top.vhd` into
+[`h2f_user0_clk_heartbeat.vhd`](../h2f_user0_clk_heartbeat.vhd) - an
+isolated, standalone module (not touching the register file/LWH2F path)
+that divides the clock down and blinks `GPIO0_D[2]` (`PIN_C2`) with it.
+Confirmed blinking on a real board at the expected ~0.75 Hz rate.
 
-Confirmed headlessly (safe, done): regenerating `agilex_hps.ip` directly
-produces a real `h2f_user0_clk_clk` port on that sub-component, and the
-whole project still synthesizes clean (0 errors, 0 warnings) with this
-change in place - inert, since `hps_subsys.qsys` doesn't see the new
-interface yet.
-
-**What's left needs the Platform Designer GUI** (a real tooling
-limitation, not a preference - see de25_std_testproject's own
-`hps/README.md` for why `intel_agilex_5_soc`/`agilex_hps`'s "Generic
-Component" wrapper can't be refreshed headlessly): open
-`hps_subsys.qsys`, let it re-import `agilex_hps.ip`, export the new
-`h2f_user0_clk` interface at the system level (same way `lwhps2fpga`
-etc. already are), save. Then wire the new `h2f_user0_clock_clk` port
-into `de25_nano_uart_top.vhd` - an isolated test module
-(`h2f_user0_clk_heartbeat.vhd`, ported from de25_std_testproject) driving
-a spare pin, not the register file, exactly as done there.
+Unlike de25_std_testproject's own attempt at this, the "Enable
+FPGA-to-HPS Free Clock" mix-up (a similarly-named, opposite-direction
+feature) was avoided entirely this time - `F2H_free_clock_enable` stayed
+`false` throughout.
 
 ## Status
 
-✅ Hardware-confirmed, both interfaces: HPS UART1 (bare-metal, see
-[docs/de25_nano_hps.md](../docs/de25_nano_hps.md)) and LWH2F (see
-[`baremetal_lwh2f_regs/README.md`](baremetal_lwh2f_regs/README.md)), plus
-the fabric register interface's own `test_uart.py` suite, all confirmed
-working simultaneously on the same HPS-inclusive bitstream. LPDDR4
+✅ Hardware-confirmed: HPS UART1 (bare-metal, see
+[docs/de25_nano_hps.md](../docs/de25_nano_hps.md)), LWH2F (see
+[`baremetal_lwh2f_regs/README.md`](baremetal_lwh2f_regs/README.md)), and
+the H2F User0 clock (see above), plus the fabric register interface's own
+`test_uart.py` suite, all confirmed working on the same HPS-inclusive
+bitstream. LPDDR4
 calibration on this project's own generated bitstream specifically is
 still unconfirmed (nothing here exercises the DDR path yet) — see the
 top-level README.

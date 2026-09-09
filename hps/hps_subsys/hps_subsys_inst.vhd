@@ -48,6 +48,7 @@
 			hps_uart0_rts_n                       : out   std_logic;                                        -- rts_n
 			hps_uart0_rx                          : in    std_logic                     := 'X';             -- rx
 			hps_uart0_tx                          : out   std_logic;                                        -- tx
+			h2f_user0_clk_clk                     : out   std_logic;                                        -- clk
 			hps_io_hps_osc_clk                    : in    std_logic                     := 'X';             -- hps_osc_clk
 			hps_io_sdmmc_data0                    : inout std_logic                     := 'X';             -- sdmmc_data0
 			hps_io_sdmmc_data1                    : inout std_logic                     := 'X';             -- sdmmc_data1
@@ -141,6 +142,7 @@
 			hps_uart0_rts_n                       => CONNECTED_TO_hps_uart0_rts_n,                       --                          .rts_n
 			hps_uart0_rx                          => CONNECTED_TO_hps_uart0_rx,                          --                          .rx
 			hps_uart0_tx                          => CONNECTED_TO_hps_uart0_tx,                          --                          .tx
+			h2f_user0_clk_clk                     => CONNECTED_TO_h2f_user0_clk_clk,                     --             h2f_user0_clk.clk
 			hps_io_hps_osc_clk                    => CONNECTED_TO_hps_io_hps_osc_clk,                    --                    hps_io.hps_osc_clk
 			hps_io_sdmmc_data0                    => CONNECTED_TO_hps_io_sdmmc_data0,                    --                          .sdmmc_data0
 			hps_io_sdmmc_data1                    => CONNECTED_TO_hps_io_sdmmc_data1,                    --                          .sdmmc_data1

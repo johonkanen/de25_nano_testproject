@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="hps_subsys" kind="hps_subsys" version="1.0" fabric="QSYS">
  <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
- <!-- 2026.09.09.11:00:03 -->
+ <!-- 2026.09.09.11:13:29 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
@@ -879,6 +879,47 @@ the requested settings for a module instance. -->
                         <entry>
                             <key>prSafe</key>
                             <value>false</value>
+                        </entry>
+                    </parameterValueMap>
+                </parameters>
+            </interface>
+            <interface>
+                <name>h2f_user0_clk</name>
+                <type>clock</type>
+                <isStart>true</isStart>
+                <ports>
+                    <port>
+                        <name>h2f_user0_clk_clk</name>
+                        <role>clk</role>
+                        <direction>Output</direction>
+                        <width>1</width>
+                        <lowerBound>0</lowerBound>
+                        <vhdlType>STD_LOGIC</vhdlType>
+                        <terminationValue>0</terminationValue>
+                    </port>
+                </ports>
+                <assignments>
+                    <assignmentValueMap/>
+                </assignments>
+                <parameters>
+                    <parameterValueMap>
+                        <entry>
+                            <key>associatedDirectClock</key>
+                        </entry>
+                        <entry>
+                            <key>clockRate</key>
+                            <value>0</value>
+                        </entry>
+                        <entry>
+                            <key>clockRateKnown</key>
+                            <value>false</value>
+                        </entry>
+                        <entry>
+                            <key>externallyDriven</key>
+                            <value>false</value>
+                        </entry>
+                        <entry>
+                            <key>ptfSchematicName</key>
                         </entry>
                     </parameterValueMap>
                 </parameters>
@@ -1837,7 +1878,21 @@ the requested settings for a module instance. -->
         </descriptors>
     </systemInfoParameterDescriptors>
     <systemInfos>
-        <connPtSystemInfos/>
+        <connPtSystemInfos>
+            <entry>
+                <key>h2f_user0_clk</key>
+                <value>
+                    <connectionPointName>h2f_user0_clk</connectionPointName>
+                    <suppliedSystemInfos>
+                        <entry>
+                            <key>CLOCK_RATE</key>
+                            <value>0</value>
+                        </entry>
+                    </suppliedSystemInfos>
+                    <consumedSystemInfos/>
+                </value>
+            </entry>
+        </connPtSystemInfos>
     </systemInfos>
 </componentDefinition>]]></value>
    <derived>false</derived>
@@ -2404,6 +2459,14 @@ the requested settings for a module instance. -->
                         <value>false</value>
                     </entry>
                     <entry>
+                        <key>terminateWriteChannel</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>terminateReadChannel</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
                         <key>readIssuingCapability</key>
                         <value>16</value>
                     </entry>
@@ -2585,6 +2648,47 @@ the requested settings for a module instance. -->
                     <entry>
                         <key>prSafe</key>
                         <value>false</value>
+                    </entry>
+                </parameterValueMap>
+            </parameters>
+        </interface>
+        <interface>
+            <name>h2f_user0_clk</name>
+            <type>clock</type>
+            <isStart>true</isStart>
+            <ports>
+                <port>
+                    <name>h2f_user0_clk_clk</name>
+                    <role>clk</role>
+                    <direction>Output</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                    <terminationValue>0</terminationValue>
+                </port>
+            </ports>
+            <assignments>
+                <assignmentValueMap/>
+            </assignments>
+            <parameters>
+                <parameterValueMap>
+                    <entry>
+                        <key>associatedDirectClock</key>
+                    </entry>
+                    <entry>
+                        <key>clockRate</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>clockRateKnown</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>externallyDriven</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>ptfSchematicName</key>
                     </entry>
                 </parameterValueMap>
             </parameters>
@@ -4429,6 +4533,76 @@ parameters are a RESULT of the module parameters. -->
     <direction>Output</direction>
     <width>1</width>
     <role>tx</role>
+   </port>
+  </interface>
+  <interface name="h2f_user0_clk" kind="clock_source" version="26.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedDirectClock">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="clockRate">
+    <type>long</type>
+    <value>0</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="clockRateKnown">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="externallyDriven">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="ptfSchematicName">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>clock</type>
+   <span>0</span>
+   <isStart>true</isStart>
+   <port>
+    <name>h2f_user0_clk_clk</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>clk</role>
    </port>
   </interface>
   <interface name="hps_io" kind="conduit_end" version="26.1">
@@ -8433,6 +8607,14 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
   <displayName>Conduit</displayName>
+  <version>26.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>clock_source</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Clock Output</displayName>
   <version>26.1</version>
  </plugin>
  <plugin>
