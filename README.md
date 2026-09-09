@@ -252,6 +252,13 @@ hardware-confirmed**: 50 MHz, independent of `CLOCK0_50`, blinking
 (needed the Platform Designer GUI for one step, a genuine tooling
 limitation, not a preference).
 
+### Booting Linux
+
+**Full Linux boot is hardware-confirmed**: real QSPI cold boot (SPL) → ATF
+BL31 → U-Boot → Linux 6.12.11, live toybox root shell over the HPS UART1
+console. Build instructions, the exact boot commands, and the full boot
+trace are in [linux/README.md](linux/README.md).
+
 ## Simulate
 
 Two [VUnit](https://vunit.github.io/) testbenches, both run by
