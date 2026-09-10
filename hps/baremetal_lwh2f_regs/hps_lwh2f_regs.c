@@ -395,18 +395,18 @@ int main(void) {
     send_hex_u32(uart1, (uint32_t)LWH2F_BASE);
     send_str(uart1, "\r\n");
 
-    if (rstmgr_handle >= 0) {
-        int32_t sysmgr_handle = sysmgr_open("/dev/sysmgr", 0);
-        if (sysmgr_handle >= 0) {
-            lwh2f_bridge_enable(rstmgr_handle, sysmgr_handle, uart1);
-            (void)sysmgr_close(sysmgr_handle);
-        } else {
-            send_str(uart1, "sysmgr_open failed\r\n");
-        }
-        (void)rstmgr_close(rstmgr_handle);
-    } else {
-        send_str(uart1, "rstmgr_open failed\r\n");
-    }
+    /* Reordered to match ATF's actual sequence: init_ncore_ccu() (BL2) and
+     * enable_nonsecure_access() (BL31) both run very early, well before
+     * U-Boot's `bridge enable` command ever performs the RSTMGR
+     * HDSKREQ/HDSKACK flush-handshake dance. This test previously did
+     * lwh2f_bridge_enable() FIRST and NCore CCU + firewall LAST - on
+     * hardware that produced "hdskack assert poll: TIMED OUT" (see git
+     * history) even though the identical handshake completes cleanly in
+     * the real ATF boot chain. Doing the NCore CCU window + firewall
+     * unlock first, matching ATF's order, to see if that's what HDSKACK
+     * was actually waiting on. */
+    ncore_program_lwsoc2fpga_window(NCORE_CAIU0_BASE, uart1);
+    ncore_program_lwsoc2fpga_window(NCORE_NCAIU0_BASE, uart1);
 
     /* NOC firewall: bridge_enable() only takes the bridge out of reset and
      * flags it enabled in the system manager - a *separate* per-master
@@ -432,6 +432,19 @@ int main(void) {
         (void)noc_firewall_close(noc_fw_handle);
     } else {
         send_str(uart1, "noc_firewall_open failed\r\n");
+    }
+
+    if (rstmgr_handle >= 0) {
+        int32_t sysmgr_handle = sysmgr_open("/dev/sysmgr", 0);
+        if (sysmgr_handle >= 0) {
+            lwh2f_bridge_enable(rstmgr_handle, sysmgr_handle, uart1);
+            (void)sysmgr_close(sysmgr_handle);
+        } else {
+            send_str(uart1, "sysmgr_open failed\r\n");
+        }
+        (void)rstmgr_close(rstmgr_handle);
+    } else {
+        send_str(uart1, "rstmgr_open failed\r\n");
     }
 
     /* Diagnostic only. See de25_std_testproject's own note: SMMU is
@@ -466,10 +479,37 @@ int main(void) {
 
     long_busy_delay(60000000U);
 
-    /* NoC crossbar routing window for LWSOC2FPGA - see
-     * ncore_program_lwsoc2fpga_window()'s own comment. */
-    ncore_program_lwsoc2fpga_window(NCORE_CAIU0_BASE, uart1);
-    ncore_program_lwsoc2fpga_window(NCORE_NCAIU0_BASE, uart1);
+    /* Wait for the fabric itself to report configuration complete before
+     * touching LWH2F. build_de25_nano_uart.tcl now sets HPS_INITIALIZATION
+     * "HPS FIRST" (needed to fix a QSPI-controller cold-boot hang) - the ARM
+     * cores can start running before the FPGA fabric has finished
+     * configuring, unlike when this test last passed (FPGA-first default).
+     * SYSMGR_SOC64_FPGA_CONFIG bit 1 (EARLY_USERMODE) is the same bit
+     * u-boot-socfpga's is_fpga_config_ready() polls before allowing
+     * `bridge enable` to proceed - check it here too. */
+    {
+        int32_t sysmgr_handle2 = sysmgr_open("/dev/sysmgr", 0);
+        if (sysmgr_handle2 >= 0) {
+            uint32_t fpga_config = 0;
+            uint32_t iters;
+            for (iters = 0; iters < 10000000U; iters++) {
+                (void)sysmgr_ioctl(sysmgr_handle2, (int32_t)IOCTL_SYSMGR_GET_FPGA_CONFIG,
+                                    (uintptr_t)&fpga_config, sizeof(fpga_config));
+                if (fpga_config & 0x2U) {
+                    break;
+                }
+            }
+            send_str(uart1, "fpga_config poll: ");
+            send_str(uart1, (iters < 10000000U) ? "ready, iters=0x" : "TIMED OUT, iters=0x");
+            send_hex_u32(uart1, iters);
+            send_str(uart1, " fpga_config=0x");
+            send_hex_u32(uart1, fpga_config);
+            send_str(uart1, "\r\n");
+            (void)sysmgr_close(sysmgr_handle2);
+        } else {
+            send_str(uart1, "sysmgr_open (fpga_config poll) failed\r\n");
+        }
+    }
 
     /* self-test: register 1 is the constant id, 0x0000DE25 */
     uint32_t id = *lwh2f_reg(1);

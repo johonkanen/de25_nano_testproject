@@ -73,22 +73,41 @@ set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "ACTIVE SERIAL X4"
 set_global_assignment -name ACTIVE_SERIAL_CLOCK AS_FREQ_125MHZ
 set_global_assignment -name DEVICE_INITIALIZATION_CLOCK OSC_CLK_1_125MHZ
 
-# Both assignments below come from Intel/Altera's own official reference
-# design for this exact board (altera-fpga/agilex5e-ed-gsrd,
-# terasic-de25-nano-devkit/baseline-a55/baseline_a55.qsf) - found while
-# chasing a FreeRTOS-over-QSPI attempt that configured the fabric fine
-# (confirmed by fan/LEDs) but produced zero HPS UART output. Bisection via
-# instrumented ATF checkpoints showed BL2 hangs forever on its very first
-# register read of the Cadence QSPI controller (cad_qspi_idle()) - a
-# hardware bus stall, not a software timeout. QSPI_OWNERSHIP defaults away
-# from HPS, so the ARM cores never actually have a live bus path to that
-# peripheral's registers at all until this is set.
+# Comes from Intel/Altera's own official reference design for this exact
+# board (altera-fpga/agilex5e-ed-gsrd, terasic-de25-nano-devkit/baseline-a55/
+# baseline_a55.qsf) - found while chasing a FreeRTOS-over-QSPI attempt that
+# configured the fabric fine (confirmed by fan/LEDs) but produced zero HPS
+# UART output. Bisection via instrumented ATF checkpoints showed BL2 hangs
+# forever on its very first register read of the Cadence QSPI controller
+# (cad_qspi_idle()) - a hardware bus stall, not a software timeout.
+# QSPI_OWNERSHIP defaults away from HPS, so the ARM cores never actually
+# have a live bus path to that peripheral's registers at all until this is
+# set.
 #
-# HPS_CONFIG_ORDER (guessed initially) is not a real assignment name -
-# quartus_sh's get_all_assignment_names has no such entry. The real name
-# for that concept is HPS_INITIALIZATION.
-set_global_assignment -name QSPI_OWNERSHIP HPS
-set_global_assignment -name HPS_INITIALIZATION "HPS FIRST"
+# HPS_INITIALIZATION "HPS FIRST" was originally added alongside this (both
+# copied from the same reference-design diff, never tested independently)
+# but turned out to let the ARM cores start before the FPGA fabric is
+# guaranteed ready, permanently hanging the first LWH2F bridge access - see
+# hps/baremetal_lwh2f_regs/README.md and
+# memory/de25_nano_lwh2f_hps_first_regression.md. "AFTER INIT_DONE" fixed
+# LWH2F (confirmed on hardware through real Linux userspace, 2026-09-10)
+# but then the ethernet PHY stopped attaching to MDIO
+# ("mdio_bus stmmac-0: MDIO device at address 1 is missing", reproducible
+# across power cycles). Terasic's own GHRD (~/dev/de25_nano/Demonstration/
+# SoC_FPGA/GHRD, Device & Pin Options GUI) uses HPS/FPGA configuration
+# order "After INIT_DONE" too (it's the *default* - not written explicitly
+# to golden_top.qsf, which is why grepping for it there found nothing) but
+# leaves QSPI Ownership at its own default, "SDM", not "HPS" - so the
+# QSPI_OWNERSHIP HPS + HPS_INITIALIZATION "AFTER INIT_DONE" combination
+# used here was never validated anywhere. Testing QSPI_OWNERSHIP SDM
+# (matching GHRD and this project's own original working c76f534 state, in
+# which neither assignment was set at all) to see if that restores
+# ethernet while re-checking whether the original QSPI-controller
+# cold-boot hang this assignment was added for still needs QSPI_OWNERSHIP
+# HPS specifically under "AFTER INIT_DONE" ordering, or if that hang was
+# actually specific to "HPS FIRST" timing.
+set_global_assignment -name QSPI_OWNERSHIP SDM
+set_global_assignment -name HPS_INITIALIZATION "AFTER INIT_DONE"
 set_global_assignment -name PWRMGT_VOLTAGE_OUTPUT_FORMAT "LINEAR FORMAT"
 set_global_assignment -name PWRMGT_LINEAR_FORMAT_N "-12"
 
