@@ -62,6 +62,15 @@ export PATH="${TC_BIN}:${PATH}"
 export CROSS_COMPILE="${CROSS_PREFIX}"
 echo ">> toolchain: $(command -v ${CROSS_PREFIX}gcc)  ($(${CROSS_PREFIX}gcc -dumpversion))"
 
+# toybox's build (both its own Makefile's implicit CC=cc default, and
+# mkroot.sh's own hardcoded `command -v "$CROSS_COMPILE"cc` check) expects
+# a "...-cc" binary; this toolchain only ships "...-gcc". Symlink it in
+# (once; -x check makes this idempotent across re-runs) rather than fight
+# CC= overrides per invocation - found running this script end to end,
+# 2026-09-10 (toybox failed with "No aarch64-none-linux-gnu-cc found"
+# despite CROSS_COMPILE/PATH both being set correctly).
+[[ -x "${TC_BIN}/${CROSS_PREFIX}cc" ]] || ln -sf "${CROSS_PREFIX}gcc" "${TC_BIN}/${CROSS_PREFIX}cc"
+
 # ---- ARM Trusted Firmware (Terasic fork) --------------------------------
 if [[ ! -d arm-trusted-firmware ]]; then
     git clone --depth 1 -b "${ATF_BRANCH}" "${ATF_REPO}" arm-trusted-firmware
