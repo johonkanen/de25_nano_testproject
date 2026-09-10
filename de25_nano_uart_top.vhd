@@ -177,7 +177,17 @@ architecture rtl of de25_nano_uart_top is
     -- HPS's lwhps2fpga AXI interface actually run on - see
     -- lwhps2fpga_axi_clock_clk below).
     signal h2f_reset             : std_logic;
-    signal h2f_reset_sync        : std_logic_vector(2 downto 0) := (others => '1');
+    -- 10 stages, not the textbook 3 - the 3-stage chain passed once then
+    -- hung the CPU permanently on the very next LWH2F access under
+    -- h2f_user0_clock (h2f_reset and h2f_user0_clock both come from the
+    -- same HPS hard macro, so they're not as cleanly asynchronous to each
+    -- other as h2f_reset was against the independent CLOCK0_50 board
+    -- oscillator - needs more margin to resolve reliably). 10 stages
+    -- confirmed reliable: 30 consecutive LWH2F reads across 2 independent
+    -- boots, plus the webapp's HTTP write/read round-trip. See
+    -- memory/de25_nano_h2f_user0_clock_core_clock.md for the full
+    -- investigation.
+    signal h2f_reset_sync        : std_logic_vector(9 downto 0) := (others => '1');
     signal h2f_reset_synchronized : std_logic;
 
     signal bus_to_communications   : fpga_interconnect_record := init_fpga_interconnect;
@@ -386,11 +396,11 @@ begin
         if h2f_reset = '1' then
             h2f_reset_sync <= (others => '1');
         elsif rising_edge(core_clock) then
-            h2f_reset_sync <= h2f_reset_sync(1 downto 0) & '0';
+            h2f_reset_sync <= h2f_reset_sync(8 downto 0) & '0';
         end if;
     end process h2f_reset_synchronizer;
 
-    h2f_reset_synchronized <= h2f_reset_sync(2);
+    h2f_reset_synchronized <= h2f_reset_sync(9);
 
 ------------------------------------------------------------------------
     input_synchroniser : process (core_clock) is
@@ -548,7 +558,7 @@ begin
     )
     port map (
         clock   => core_clock
-        ,resetn => not system_reset
+        ,resetn => not h2f_reset_synchronized
 
         ,awid    => lwh2f_awid
         ,awaddr  => lwh2f_awaddr
@@ -593,7 +603,7 @@ begin
         port map (
             h2f_reset_reset                       => h2f_reset,                           --                 h2f_reset.reset
             lwhps2fpga_axi_clock_clk              => core_clock,                           --      lwhps2fpga_axi_clock.clk
-            lwhps2fpga_axi_reset_reset            => system_reset,                         --      lwhps2fpga_axi_reset.reset
+            lwhps2fpga_axi_reset_reset            => h2f_reset_synchronized,               --      lwhps2fpga_axi_reset.reset
             lwhps2fpga_awid                       => lwh2f_awid,                           --                lwhps2fpga.awid
             lwhps2fpga_awaddr                     => lwh2f_awaddr,                         --                          .awaddr
             lwhps2fpga_awlen                      => open,                                 --                          .awlen
