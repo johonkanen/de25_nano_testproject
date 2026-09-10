@@ -32,9 +32,26 @@ sim/*.ghw
 __pycache__/
 *.pyc
 
-# hps/hps_subsys.qsys (source) and hps/hps_subsys/, hps/ip/hps_subsys/*/
-# (generated output) are tracked so the project builds after qsys-generate
-# without re-running Platform Designer - see hps/README.md.
+# Platform Designer / IP generated output. Only the .qsys/.ip source files
+# need to be tracked - `quartus_ipgenerate <project> -c <revision>` (or the
+# full `quartus_sh --flow compile <project> -c <revision>`, after generating
+# the project with `quartus_sh -t build_de25_nano_uart.tcl`) regenerates all
+# of this from the .qsys/.ip files alone. Verified 2026-09-10: deleted these
+# directories, ran quartus_ipgenerate, and every regenerated file (down to
+# hps_subsys_bb.v/agilex_hps_bb.v/emif_io96b_hps_bb.v) came back byte-for-byte
+# identical to what was previously committed by hand; a full
+# `quartus_sh --flow compile` also succeeded end-to-end from that clean
+# state. This superseded an earlier, overly-conservative assumption (see
+# hps/README.md's "Platform Designer Generic Component limitation") that
+# ALL generated output needed to be checked in - that limitation is real
+# but narrower: it's about *editing* an .ip file's parameters (e.g.
+# reconfiguring an interface's export mode) requiring the GUI once, not
+# about generating output from an already-configured .ip/.qsys file, which
+# is fully scriptable.
+hps/hps_subsys/
+hps/ip/hps_subsys/agilex_hps/
+hps/ip/hps_subsys/hps_subsys_s10_user_rst_clkgate_0/
+hps/ip/qsys_top/emif_io96b_hps/
 hps/**/*.qpf
 hps/**/*.qsf
 
