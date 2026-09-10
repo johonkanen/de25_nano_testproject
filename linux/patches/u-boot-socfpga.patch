@@ -1,0 +1,27 @@
+diff --git a/arch/arm/mach-socfpga/misc_soc64.c b/arch/arm/mach-socfpga/misc_soc64.c
+index 26ba9727535..c6a881d94a4 100644
+--- a/arch/arm/mach-socfpga/misc_soc64.c
++++ b/arch/arm/mach-socfpga/misc_soc64.c
+@@ -153,8 +153,21 @@ int is_fpga_config_ready(void)
+ 	}
+ #endif
+ 
++	/* Upstream requires FPGA_COMPLETE|EARLY_USERMODE both set, but
++	 * FPGA_COMPLETE never sets on this board after a plain cold-boot
++	 * config (confirmed: stays 0x2 - EARLY_USERMODE only - indefinitely
++	 * on a fully booted, long-running system, via both QSPI cold boot
++	 * and a fresh JTAG reconfigure; no code anywhere writes this SDM
++	 * status register, so it's not a missing software step). This
++	 * register has no write path in U-Boot at all - it's SDM-hardware-
++	 * set - so FPGA_COMPLETE most likely only latches after an explicit
++	 * *dynamic* reconfiguration (`fpga load`), never after the initial
++	 * cold-boot config alone. EARLY_USERMODE is the bit whose own name
++	 * matches what we actually need: safe for early fabric access.
++	 * See de25_nano_testproject/linux/README.md's "Web-controlled FPGA
++	 * registers" section for the full investigation. */
+ 	return (readl(socfpga_get_sysmgr_addr() + SYSMGR_SOC64_FPGA_CONFIG) &
+-		SYSMGR_FPGACONFIG_READY_MASK) == SYSMGR_FPGACONFIG_READY_MASK;
++		SYSMGR_FPGACONFIG_EARLY_USERMODE) == SYSMGR_FPGACONFIG_EARLY_USERMODE;
+ }
+ 
+ void do_bridge_reset(int enable, unsigned int mask)

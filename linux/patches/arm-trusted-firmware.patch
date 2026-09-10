@@ -1,0 +1,55 @@
+diff --git a/plat/intel/soc/agilex5/bl31_plat_setup.c b/plat/intel/soc/agilex5/bl31_plat_setup.c
+index 429615ae1..bbcc3821b 100644
+--- a/plat/intel/soc/agilex5/bl31_plat_setup.c
++++ b/plat/intel/soc/agilex5/bl31_plat_setup.c
+@@ -167,6 +167,36 @@ void bl31_platform_setup(void)
+ {
+ 	socfpga_delay_timer_init();
+ 
++	/* Same BL2-only-call gap as init_ncore_ccu() below, found right
++	 * after adding that fix didn't resolve the hang on its own:
++	 * enable_nonsecure_access() (socfpga_firewall.c) explicitly disables
++	 * the *dedicated* LWSOC2FPGA bridge firewall
++	 * (SOCFPGA_LWSOC2FPGA_SCR_REG_BASE, via enable_ns_bridge_access())
++	 * for non-secure access - separate from the NCore CCU crossbar
++	 * routing and from the reset-manager bridge-enable. Linux userspace
++	 * accesses (EL0, non-secure) would be silently blocked by this
++	 * firewall - dropped with no response, hanging the requesting CPU
++	 * core forever - even with the other two fixed. Only ever called
++	 * from BL2, never BL31, and this chain has no BL2. */
++	enable_nonsecure_access();
++
++	/* Program the Ncore CCU crossbar's LWSOC2FPGA routing window.
++	 * Normally done by ATF's own BL2 (bl2_plat_setup.c calls
++	 * init_ncore_ccu() unconditionally, very early) - but this boot
++	 * chain uses U-Boot's own SPL instead of ATF's BL2, which never
++	 * calls it, leaving the ARM cores' AXI master ports into the NoC
++	 * with no route to the LWH2F bridge at all. Without this, the very
++	 * first AXI transaction from Linux (or anything else) targeting
++	 * 0x20000000+ hangs the issuing CPU core forever at the hardware
++	 * level - no SIGBUS, no crash message, just permanent
++	 * unresponsiveness (confirmed on hardware chasing exactly this
++	 * symptom - see de25_nano_testproject/linux/README.md's
++	 * "Web-controlled FPGA registers" section). Same root cause class
++	 * independently found and fixed for de25_std_testproject's own
++	 * bare-metal LWH2F test, for the same underlying reason (that one
++	 * had zero ATF stages at all, not even BL31). */
++	init_ncore_ccu();
++
+ 	/* TODO: DTB not available */
+ 	// socfpga_dt_populate_gicv3_config(SOCFPGA_DTB_BASE, &plat_gicv3_gic_data);
+ 	// NOTICE("SOCFPGA: GIC GICD base address 0x%lx\n", plat_gicv3_gic_data.gicd_base);
+diff --git a/plat/intel/soc/agilex5/platform.mk b/plat/intel/soc/agilex5/platform.mk
+index 9206dfeec..b24d9b3f0 100644
+--- a/plat/intel/soc/agilex5/platform.mk
++++ b/plat/intel/soc/agilex5/platform.mk
+@@ -103,7 +103,8 @@ BL31_SOURCES	+=	\
+ 		plat/intel/soc/common/sip/socfpga_sip_fcs.c		\
+ 		plat/intel/soc/common/soc/socfpga_mailbox.c		\
+ 		plat/intel/soc/common/soc/socfpga_system_manager.c	\
+-		plat/intel/soc/common/soc/socfpga_reset_manager.c
++		plat/intel/soc/common/soc/socfpga_reset_manager.c	\
++		plat/intel/soc/common/soc/socfpga_firewall.c
+ 
+ # Configs for A76 and A55
+ HW_ASSISTED_COHERENCY := 1
