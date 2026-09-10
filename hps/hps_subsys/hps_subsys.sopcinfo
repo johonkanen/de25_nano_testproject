@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="hps_subsys" kind="hps_subsys" version="1.0" fabric="QSYS">
  <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
- <!-- 2026.09.09.11:13:29 -->
+ <!-- 2026.09.10.14:14:00 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
@@ -770,12 +770,12 @@ the requested settings for a module instance. -->
                 </parameters>
             </interface>
             <interface>
-                <name>uart0</name>
+                <name>uart1</name>
                 <type>conduit</type>
                 <isStart>false</isStart>
                 <ports>
                     <port>
-                        <name>uart0_cts_n</name>
+                        <name>uart1_cts_n</name>
                         <role>cts_n</role>
                         <direction>Input</direction>
                         <width>1</width>
@@ -784,7 +784,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_dcd_n</name>
+                        <name>uart1_dcd_n</name>
                         <role>dcd_n</role>
                         <direction>Input</direction>
                         <width>1</width>
@@ -793,7 +793,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_dsr_n</name>
+                        <name>uart1_dsr_n</name>
                         <role>dsr_n</role>
                         <direction>Input</direction>
                         <width>1</width>
@@ -802,7 +802,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_dtr_n</name>
+                        <name>uart1_dtr_n</name>
                         <role>dtr_n</role>
                         <direction>Output</direction>
                         <width>1</width>
@@ -811,7 +811,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_out1_n</name>
+                        <name>uart1_out1_n</name>
                         <role>out1_n</role>
                         <direction>Output</direction>
                         <width>1</width>
@@ -820,7 +820,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_out2_n</name>
+                        <name>uart1_out2_n</name>
                         <role>out2_n</role>
                         <direction>Output</direction>
                         <width>1</width>
@@ -829,7 +829,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_ri_n</name>
+                        <name>uart1_ri_n</name>
                         <role>ri_n</role>
                         <direction>Input</direction>
                         <width>1</width>
@@ -838,7 +838,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_rts_n</name>
+                        <name>uart1_rts_n</name>
                         <role>rts_n</role>
                         <direction>Output</direction>
                         <width>1</width>
@@ -847,7 +847,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_rx</name>
+                        <name>uart1_rx</name>
                         <role>rx</role>
                         <direction>Input</direction>
                         <width>1</width>
@@ -856,7 +856,7 @@ the requested settings for a module instance. -->
                         <terminationValue>0</terminationValue>
                     </port>
                     <port>
-                        <name>uart0_tx</name>
+                        <name>uart1_tx</name>
                         <role>tx</role>
                         <direction>Output</direction>
                         <width>1</width>
@@ -1113,24 +1113,6 @@ the requested settings for a module instance. -->
                         <name>hps_io_mdio0_mdc</name>
                         <role>mdio0_mdc</role>
                         <direction>Output</direction>
-                        <width>1</width>
-                        <lowerBound>0</lowerBound>
-                        <vhdlType>STD_LOGIC</vhdlType>
-                        <terminationValue>0</terminationValue>
-                    </port>
-                    <port>
-                        <name>hps_io_uart1_tx</name>
-                        <role>uart1_tx</role>
-                        <direction>Output</direction>
-                        <width>1</width>
-                        <lowerBound>0</lowerBound>
-                        <vhdlType>STD_LOGIC</vhdlType>
-                        <terminationValue>0</terminationValue>
-                    </port>
-                    <port>
-                        <name>hps_io_uart1_rx</name>
-                        <role>uart1_rx</role>
-                        <direction>Input</direction>
                         <width>1</width>
                         <lowerBound>0</lowerBound>
                         <vhdlType>STD_LOGIC</vhdlType>
@@ -2539,12 +2521,12 @@ the requested settings for a module instance. -->
             </parameters>
         </interface>
         <interface>
-            <name>uart0</name>
+            <name>uart1</name>
             <type>conduit</type>
             <isStart>false</isStart>
             <ports>
                 <port>
-                    <name>uart0_cts_n</name>
+                    <name>uart1_cts_n</name>
                     <role>cts_n</role>
                     <direction>Input</direction>
                     <width>1</width>
@@ -2553,7 +2535,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_dcd_n</name>
+                    <name>uart1_dcd_n</name>
                     <role>dcd_n</role>
                     <direction>Input</direction>
                     <width>1</width>
@@ -2562,7 +2544,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_dsr_n</name>
+                    <name>uart1_dsr_n</name>
                     <role>dsr_n</role>
                     <direction>Input</direction>
                     <width>1</width>
@@ -2571,7 +2553,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_dtr_n</name>
+                    <name>uart1_dtr_n</name>
                     <role>dtr_n</role>
                     <direction>Output</direction>
                     <width>1</width>
@@ -2580,7 +2562,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_out1_n</name>
+                    <name>uart1_out1_n</name>
                     <role>out1_n</role>
                     <direction>Output</direction>
                     <width>1</width>
@@ -2589,7 +2571,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_out2_n</name>
+                    <name>uart1_out2_n</name>
                     <role>out2_n</role>
                     <direction>Output</direction>
                     <width>1</width>
@@ -2598,7 +2580,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_ri_n</name>
+                    <name>uart1_ri_n</name>
                     <role>ri_n</role>
                     <direction>Input</direction>
                     <width>1</width>
@@ -2607,7 +2589,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_rts_n</name>
+                    <name>uart1_rts_n</name>
                     <role>rts_n</role>
                     <direction>Output</direction>
                     <width>1</width>
@@ -2616,7 +2598,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_rx</name>
+                    <name>uart1_rx</name>
                     <role>rx</role>
                     <direction>Input</direction>
                     <width>1</width>
@@ -2625,7 +2607,7 @@ the requested settings for a module instance. -->
                     <terminationValue>0</terminationValue>
                 </port>
                 <port>
-                    <name>uart0_tx</name>
+                    <name>uart1_tx</name>
                     <role>tx</role>
                     <direction>Output</direction>
                     <width>1</width>
@@ -2882,24 +2864,6 @@ the requested settings for a module instance. -->
                     <name>hps_io_mdio0_mdc</name>
                     <role>mdio0_mdc</role>
                     <direction>Output</direction>
-                    <width>1</width>
-                    <lowerBound>0</lowerBound>
-                    <vhdlType>STD_LOGIC</vhdlType>
-                    <terminationValue>0</terminationValue>
-                </port>
-                <port>
-                    <name>hps_io_uart1_tx</name>
-                    <role>uart1_tx</role>
-                    <direction>Output</direction>
-                    <width>1</width>
-                    <lowerBound>0</lowerBound>
-                    <vhdlType>STD_LOGIC</vhdlType>
-                    <terminationValue>0</terminationValue>
-                </port>
-                <port>
-                    <name>hps_io_uart1_rx</name>
-                    <role>uart1_rx</role>
-                    <direction>Input</direction>
                     <width>1</width>
                     <lowerBound>0</lowerBound>
                     <vhdlType>STD_LOGIC</vhdlType>
@@ -4427,7 +4391,7 @@ parameters are a RESULT of the module parameters. -->
     <role>reset_n</role>
    </port>
   </interface>
-  <interface name="uart0" kind="conduit_end" version="26.1">
+  <interface name="uart1" kind="conduit_end" version="26.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -4475,61 +4439,61 @@ parameters are a RESULT of the module parameters. -->
    <span>0</span>
    <isStart>false</isStart>
    <port>
-    <name>uart0_cts_n</name>
+    <name>uart1_cts_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>cts_n</role>
    </port>
    <port>
-    <name>uart0_dcd_n</name>
+    <name>uart1_dcd_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>dcd_n</role>
    </port>
    <port>
-    <name>uart0_dsr_n</name>
+    <name>uart1_dsr_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>dsr_n</role>
    </port>
    <port>
-    <name>uart0_dtr_n</name>
+    <name>uart1_dtr_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>dtr_n</role>
    </port>
    <port>
-    <name>uart0_out1_n</name>
+    <name>uart1_out1_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>out1_n</role>
    </port>
    <port>
-    <name>uart0_out2_n</name>
+    <name>uart1_out2_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>out2_n</role>
    </port>
    <port>
-    <name>uart0_ri_n</name>
+    <name>uart1_ri_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>ri_n</role>
    </port>
    <port>
-    <name>uart0_rts_n</name>
+    <name>uart1_rts_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>rts_n</role>
    </port>
    <port>
-    <name>uart0_rx</name>
+    <name>uart1_rx</name>
     <direction>Input</direction>
     <width>1</width>
     <role>rx</role>
    </port>
    <port>
-    <name>uart0_tx</name>
+    <name>uart1_tx</name>
     <direction>Output</direction>
     <width>1</width>
     <role>tx</role>
@@ -4777,18 +4741,6 @@ parameters are a RESULT of the module parameters. -->
     <direction>Output</direction>
     <width>1</width>
     <role>mdio0_mdc</role>
-   </port>
-   <port>
-    <name>hps_io_uart1_tx</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>uart1_tx</role>
-   </port>
-   <port>
-    <name>hps_io_uart1_rx</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>uart1_rx</role>
    </port>
    <port>
     <name>hps_io_gpio40</name>

@@ -39,16 +39,16 @@
 			lwhps2fpga_rvalid              : in    std_logic                      := 'X';             -- rvalid
 			lwhps2fpga_rready              : out   std_logic;                                         -- rready
 			emac0_app_rst_reset_n          : out   std_logic;                                         -- reset_n
-			uart0_cts_n                    : in    std_logic                      := 'X';             -- cts_n
-			uart0_dcd_n                    : in    std_logic                      := 'X';             -- dcd_n
-			uart0_dsr_n                    : in    std_logic                      := 'X';             -- dsr_n
-			uart0_dtr_n                    : out   std_logic;                                         -- dtr_n
-			uart0_out1_n                   : out   std_logic;                                         -- out1_n
-			uart0_out2_n                   : out   std_logic;                                         -- out2_n
-			uart0_ri_n                     : in    std_logic                      := 'X';             -- ri_n
-			uart0_rts_n                    : out   std_logic;                                         -- rts_n
-			uart0_rx                       : in    std_logic                      := 'X';             -- rx
-			uart0_tx                       : out   std_logic;                                         -- tx
+			uart1_cts_n                    : in    std_logic                      := 'X';             -- cts_n
+			uart1_dcd_n                    : in    std_logic                      := 'X';             -- dcd_n
+			uart1_dsr_n                    : in    std_logic                      := 'X';             -- dsr_n
+			uart1_dtr_n                    : out   std_logic;                                         -- dtr_n
+			uart1_out1_n                   : out   std_logic;                                         -- out1_n
+			uart1_out2_n                   : out   std_logic;                                         -- out2_n
+			uart1_ri_n                     : in    std_logic                      := 'X';             -- ri_n
+			uart1_rts_n                    : out   std_logic;                                         -- rts_n
+			uart1_rx                       : in    std_logic                      := 'X';             -- rx
+			uart1_tx                       : out   std_logic;                                         -- tx
 			h2f_user0_clk_clk              : out   std_logic;                                         -- clk
 			hps_io_hps_osc_clk             : in    std_logic                      := 'X';             -- hps_osc_clk
 			hps_io_sdmmc_data0             : inout std_logic                      := 'X';             -- sdmmc_data0
@@ -71,8 +71,6 @@
 			hps_io_emac0_rxd3              : in    std_logic                      := 'X';             -- emac0_rxd3
 			hps_io_mdio0_mdio              : inout std_logic                      := 'X';             -- mdio0_mdio
 			hps_io_mdio0_mdc               : out   std_logic;                                         -- mdio0_mdc
-			hps_io_uart1_tx                : out   std_logic;                                         -- uart1_tx
-			hps_io_uart1_rx                : in    std_logic                      := 'X';             -- uart1_rx
 			hps_io_gpio40                  : inout std_logic                      := 'X';             -- gpio40
 			hps_io_gpio41                  : inout std_logic                      := 'X';             -- gpio41
 			fpga2hps_interrupt_irq1_irq    : in    std_logic_vector(31 downto 0)  := (others => 'X'); -- irq

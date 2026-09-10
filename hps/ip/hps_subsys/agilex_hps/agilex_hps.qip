@@ -7,7 +7,7 @@ set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name PRE_COMPI
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name OCS_IP_FILE [file join $::quartus(qip_path) "../agilex_hps.ip"]
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name OCS_IP_TYPE "intel_agilex_5_soc"
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name OCS_IP_VERSION "14.0.0"
-set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name OCS_IP_HASH "7zw7mqq"
+set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name OCS_IP_HASH "y7heerq"
 set_global_assignment -library "agilex_hps" -name SOPCINFO_FILE [file join $::quartus(qip_path) "agilex_hps.sopcinfo"]
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name SLD_INFO "QSYS_NAME agilex_hps HAS_SOPCINFO 1 GENERATION_ID 0"
 set_global_assignment -library "agilex_hps" -name MISC_FILE [file join $::quartus(qip_path) "agilex_hps.cmp"]
@@ -18,26 +18,26 @@ set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_QSYS_M
 set_global_assignment -name SYNTHESIS_ONLY_QIP ON
 set_global_assignment -library "agilex_hps" -name MISC_FILE [file join $::quartus(qip_path) "../agilex_hps.ip"]
 
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_znzlgdq" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_NAME "YWdpbGV4X2hwc19pbnRlbF9zdW5kYW5jZW1lc2FfaHBzXzEwMF96bnpsZ2Rx"
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_znzlgdq" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_DISPLAY_NAME "aW50ZWxfc3VuZGFuY2VtZXNhX2hwcw=="
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_znzlgdq" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_znzlgdq" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_INTERNAL "On"
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_znzlgdq" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_VERSION "MS4wLjA="
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_NAME "YWdpbGV4X2hwc19pbnRlbF9zdW5kYW5jZW1lc2FfbXBmZV8xMDBfc3N1eXBncQ=="
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_DISPLAY_NAME "aW50ZWxfc3VuZGFuY2VtZXNhX21wZmU="
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_INTERNAL "On"
-set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_VERSION "MS4wLjA="
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_NAME "YWdpbGV4X2hwc19pbnRlbF9hZ2lsZXhfNV9zb2NfMTQwMF83enc3bXFx"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DISPLAY_NAME "SGFyZCBQcm9jZXNzb3IgU3lzdGVtIElQ"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_INTERNAL "Off"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_AUTHOR "QWx0ZXJh"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_VERSION "MTQuMC4w"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DESCRIPTION "VGhpcyBIUFMgY29udGFpbnMgYSBtaWNyb3Byb2Nlc3NvciB1bml0IChNUFUpIHN1YnN5c3RlbSB3aXRoIER1YWwtY29yZSBBUk0gQ29ydGV4LUE1NSBNUFUgb3IgYSBRdWFkLWNvcmUgQVJNIENvcnRleC1BNTUgYW5kIEE3NiBNUFVzLCBmbGFzaCBtZW1vcnkgY29udHJvbGxlcnMsIFNEUkFNIGNvbnRyb2xsZXIgaW50ZXJjb25uZWN0LCBvbi1jaGlwIG1lbW9yaWVzLCBzdXBwb3J0IHBlcmlwaGVyYWxzLCBpbnRlcmZhY2UgcGVyaXBoZXJhbHMsIGRlYnVnIGNhcGFiaWxpdGllcyBhbmQgcGhhc2UtbG9ja2VkIGxvb3BzIChQTExzKS4="
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_GROUP "UHJvY2Vzc29ycyBhbmQgUGVyaXBoZXJhbHMvSGFyZCBQcm9jZXNzb3IgU3lzdGVtcw=="
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzgxMzc1Mi9jdXJyZW50"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzgxNDM0Ni9jdXJyZW50"
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_vzqm2di" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_NAME "YWdpbGV4X2hwc19pbnRlbF9zdW5kYW5jZW1lc2FfaHBzXzEwMF92enFtMmRp"
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_vzqm2di" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_DISPLAY_NAME "aW50ZWxfc3VuZGFuY2VtZXNhX2hwcw=="
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_vzqm2di" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_vzqm2di" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_INTERNAL "On"
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_vzqm2di" -library "intel_sundancemesa_hps_100" -name IP_COMPONENT_VERSION "MS4wLjA="
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_NAME "YWdpbGV4X2hwc19pbnRlbF9zdW5kYW5jZW1lc2FfbXBmZV8xMDBfNWplMnducQ=="
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_DISPLAY_NAME "aW50ZWxfc3VuZGFuY2VtZXNhX21wZmU="
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_INTERNAL "On"
+set_global_assignment -entity "agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq" -library "intel_sundancemesa_mpfe_100" -name IP_COMPONENT_VERSION "MS4wLjA="
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_NAME "YWdpbGV4X2hwc19pbnRlbF9hZ2lsZXhfNV9zb2NfMTQwMF95N2hlZXJx"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DISPLAY_NAME "SGFyZCBQcm9jZXNzb3IgU3lzdGVtIElQ"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_AUTHOR "QWx0ZXJh"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_VERSION "MTQuMC4w"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DESCRIPTION "VGhpcyBIUFMgY29udGFpbnMgYSBtaWNyb3Byb2Nlc3NvciB1bml0IChNUFUpIHN1YnN5c3RlbSB3aXRoIER1YWwtY29yZSBBUk0gQ29ydGV4LUE1NSBNUFUgb3IgYSBRdWFkLWNvcmUgQVJNIENvcnRleC1BNTUgYW5kIEE3NiBNUFVzLCBmbGFzaCBtZW1vcnkgY29udHJvbGxlcnMsIFNEUkFNIGNvbnRyb2xsZXIgaW50ZXJjb25uZWN0LCBvbi1jaGlwIG1lbW9yaWVzLCBzdXBwb3J0IHBlcmlwaGVyYWxzLCBpbnRlcmZhY2UgcGVyaXBoZXJhbHMsIGRlYnVnIGNhcGFiaWxpdGllcyBhbmQgcGhhc2UtbG9ja2VkIGxvb3BzIChQTExzKS4="
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_GROUP "UHJvY2Vzc29ycyBhbmQgUGVyaXBoZXJhbHMvSGFyZCBQcm9jZXNzb3IgU3lzdGVtcw=="
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzgxMzc1Mi9jdXJyZW50"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_COMPONENT_DOCUMENTATION_LINK "aHR0cHM6Ly9kb2NzLmFsdGVyYS5jb20vci9kb2NzLzgxNDM0Ni9jdXJyZW50"
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_NAME "YWdpbGV4X2hwcw=="
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_DISPLAY_NAME "c3lzdGVt"
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_REPORT_HIERARCHY "On"
@@ -45,86 +45,80 @@ set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPON
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_AUTHOR "QWx0ZXJh"
 set_global_assignment -entity "agilex_hps" -library "agilex_hps" -name IP_COMPONENT_VERSION "MS4w"
 
-set_instance_assignment -name HPS_LOCATION PIN_AJ75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd3
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd3
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_rxd3[0]
-set_instance_assignment -name HPS_LOCATION PIN_AN64 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data2
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data2
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|sdmmc_data2[0]
-set_instance_assignment -name HPS_LOCATION PIN_Y74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data3
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data3
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|sdmmc_data3[0]
-set_instance_assignment -name HPS_LOCATION PIN_AK69 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_cmd
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_cmd
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|sdmmc_cmd[0]
-set_instance_assignment -name HPS_LOCATION PIN_N71 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_uart1_tx
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_uart1_tx
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|uart1_io_tx[0]
-set_instance_assignment -name HPS_LOCATION PIN_AD72 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_uart1_rx
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_uart1_rx
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|uart1_io_rx[0]
-set_instance_assignment -name HPS_LOCATION PIN_F75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_gpio40
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_gpio40
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|gpio40[0]
-set_instance_assignment -name HPS_LOCATION PIN_AD71 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_gpio41
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_gpio41
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|gpio41[0]
-set_instance_assignment -name HPS_LOCATION PIN_C74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_mdio0_mdio
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_mdio0_mdio
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|mdio0_mdio[0]
-set_instance_assignment -name HPS_LOCATION PIN_D71 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_mdio0_mdc
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_mdio0_mdc
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|mdio0_mdc[0]
-set_instance_assignment -name HPS_LOCATION PIN_BP75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_tx_clk
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_tx_clk
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_tx_clk[0]
-set_instance_assignment -name HPS_LOCATION PIN_BL74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_tx_ctl
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_tx_ctl
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_tx_ctl[0]
-set_instance_assignment -name HPS_LOCATION PIN_BL75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rx_clk
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rx_clk
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_rx_clk[0]
-set_instance_assignment -name HPS_LOCATION PIN_AP74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rx_ctl
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rx_ctl
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_rx_ctl[0]
-set_instance_assignment -name HPS_LOCATION PIN_BG74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd0
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd0
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_txd0[0]
-set_instance_assignment -name HPS_LOCATION PIN_AP75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd1
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd1
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_txd1[0]
-set_instance_assignment -name HPS_LOCATION PIN_BD74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd0
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd0
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_rxd0[0]
-set_instance_assignment -name HPS_LOCATION PIN_AN71 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd1
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd1
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_rxd1[0]
-set_instance_assignment -name HPS_LOCATION PIN_AF75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data0
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data0
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|sdmmc_data0[0]
-set_instance_assignment -name HPS_LOCATION PIN_BD75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd2
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd2
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_txd2[0]
-set_instance_assignment -name HPS_LOCATION PIN_AC75 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data1
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_data1
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|sdmmc_data1[0]
-set_instance_assignment -name HPS_LOCATION PIN_AM74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd3
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_txd3
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_txd3[0]
-set_instance_assignment -name HPS_LOCATION PIN_AC74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_cclk
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_sdmmc_cclk
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|sdmmc_cclk[0]
-set_instance_assignment -name HPS_LOCATION PIN_AJ74 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd2
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_emac0_rxd2
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|emac0_rxd2[0]
-set_instance_assignment -name HPS_LOCATION PIN_AN67 -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_hps_osc_clk
-set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to hps_io_hps_osc_clk
-set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to sm_hps|hps_osc_clk[0]
-set_instance_assignment -name GLOBAL_SIGNAL ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to "sm_hps|h2f_reset[0]"
-set_instance_assignment -name GLOBAL_SIGNAL ON -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -to "sm_hps|user0_clk[0]"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name HPS_ISW_DATA " SDM DDR 1 ddr IO96B_CSR 0 SDM WACH COLD pwr core 3 pwr boot 0 pwr l3 1 pwr periphs 59 intfcsel f2soc 0 intfcsel f2sdram 0 use csr.pinmux_emac0_usefpga.sel 0 use csr.pinmux_emac1_usefpga.sel 0 use csr.pinmux_emac2_usefpga.sel 0 use csr.pinmux_i2c0_usefpga.sel 0 use csr.pinmux_i2c1_usefpga.sel 0 use csr.pinmux_i3c0_usefpga.sel 0 use csr.pinmux_i3c1_usefpga.sel 0 use csr.pinmux_i2c_emac0_usefpga.sel 0 use csr.pinmux_i2c_emac1_usefpga.sel 0 use csr.pinmux_i2c_emac2_usefpga.sel 0 use csr.pinmux_nand_usefpga.sel 0 use csr.pinmux_spim0_usefpga.sel 0 use csr.pinmux_spim1_usefpga.sel 0 use csr.pinmux_spis0_usefpga.sel 0 use csr.pinmux_spis1_usefpga.sel 0 use csr.pinmux_uart0_usefpga.sel 1 use csr.pinmux_uart1_usefpga.sel 0 use csr.pinmux_mdio0_usefpga.sel 0 use csr.pinmux_mdio1_usefpga.sel 0 use csr.pinmux_mdio2_usefpga.sel 0 use csr.pinmux_jtag_usefpga.sel 0 use csr.pinmux_sdmmc_usefpga.sel 0 sel 0 8 sel 1 8 sel 2 8 sel 3 8 sel 4 8 sel 5 8 sel 6 8 sel 7 8 sel 8 8 sel 9 8 sel 10 8 sel 11 8 sel 12 0 sel 13 0 sel 14 0 sel 15 0 sel 16 0 sel 17 0 sel 18 0 sel 19 0 sel 20 0 sel 21 0 sel 22 0 sel 23 0 sel 24 3 sel 25 3 sel 26 3 sel 27 9 sel 28 8 sel 29 3 sel 30 3 sel 31 3 sel 32 8 sel 33 8 sel 34 8 sel 35 8 sel 36 8 sel 37 8 sel 38 5 sel 39 5 sel 40 8 sel 41 8 sel 42 8 sel 43 8 sel 44 8 sel 45 8 sel 46 5 sel 47 5 din 0 0 din 1 0 din 2 0 din 3 0 din 4 0 din 5 0 din 6 0 din 7 0 din 8 0 din 9 0 din 10 0 din 11 0 din 12 0 din 13 0 din 14 117 din 15 0 din 16 0 din 17 0 din 18 0 din 19 0 din 20 0 din 21 0 din 22 0 din 23 0 din 24 0 din 25 0 din 26 0 din 27 0 din 28 0 din 29 0 din 30 0 din 31 0 din 32 0 din 33 0 din 34 0 din 35 0 din 36 0 din 37 0 din 38 0 din 39 0 din 40 0 din 41 0 din 42 0 din 43 0 din 44 0 din 45 0 din 46 0 din 47 0 dou 0 0 dou 1 0 dou 2 0 dou 3 0 dou 4 0 dou 5 0 dou 6 0 dou 7 0 dou 8 0 dou 9 0 dou 10 0 dou 11 0 dou 12 117 dou 13 0 dou 14 0 dou 15 0 dou 16 0 dou 17 0 dou 18 0 dou 19 0 dou 20 0 dou 21 0 dou 22 0 dou 23 0 dou 24 0 dou 25 0 dou 26 0 dou 27 0 dou 28 0 dou 29 0 dou 30 0 dou 31 0 dou 32 0 dou 33 0 dou 34 0 dou 35 0 dou 36 0 dou 37 0 dou 38 0 dou 39 0 dou 40 0 dou 41 0 dou 42 0 dou 43 0 dou 44 0 dou 45 0 dou 46 0 dou 47 0 pll mainpllgrp.nocclk.src 0 pll mainpllgrp.nocdiv.cspdbgclk 2 pll mainpllgrp.nocdiv.cstraceclk 2 pll mainpllgrp.nocdiv.csclk 0 pll mainpllgrp.nocdiv.mpuperiphdiv 2 pll mainpllgrp.nocdiv.ccudiv 1 pll mainpllgrp.nocdiv.softphydiv 0 pll mainpllgrp.nocdiv.l4spclk 2 pll mainpllgrp.nocdiv.l4mpclk 1 pll mainpllgrp.nocdiv.l4sysfreeclk 2 pll mainpllgrp.pllglob.modclkdiv 6 pll mainpllgrp.pllglob.fastrefclk 0 pll mainpllgrp.pllglob.psrc 0 pll mainpllgrp.pllglob.drefclkdiv 0 pll mainpllgrp.pllglob.arefclkdiv 1 pll mainpllgrp.fdbck.fdiv 0 pll mainpllgrp.pllc0.div 4 pll mainpllgrp.pllc1.div 4 pll mainpllgrp.pllc2.div 6 pll mainpllgrp.pllc3.div 8 pll mainpllgrp.pllm.mdiv 128 pll perpllgrp.emacctl.emac0sel 0 pll perpllgrp.emacctl.emac1sel 0 pll perpllgrp.emacctl.emac2sel 0 pll perpllgrp.pllglob.modclkdiv 5 pll perpllgrp.pllglob.fstrefclk 0 pll perpllgrp.pllglob.psrc 0 pll perpllgrp.pllglob.drefclkdiv 0 pll perpllgrp.pllglob.arefclkdiv 1 pll perpllgrp.fdbck.fdiv 0 pll perpllgrp.pllc0.div 5 pll perpllgrp.pllc1.div 5 pll perpllgrp.pllc2.div 125 pll perpllgrp.pllc3.div 6 pll perpllgrp.pllm.mdiv 120 pll ctl.emacactr.src 1 pll ctl.emacactr.cnt 1 pll ctl.emacbctr.src 1 pll ctl.emacbctr.cnt 9 pll ctl.emacptpctr.src 0 pll ctl.emacptpctr.cnt 0 pll ctl.gpiodbctr.src 0 pll ctl.gpiodbctr.cnt 1 pll perpllgrp.gpiodiv.gpiodbclk 1 pll ctl.s2fuser0ctr.src 1 pll ctl.s2fuser0ctr.cnt 9 pll ctl.s2fuser1ctr.src 1 pll ctl.s2fuser1ctr.cnt 0 pll ctl.psirefctr.src 1 pll ctl.psirefctr.cnt 0 pll ctl.usb31ctr.src 0 pll ctl.usb31ctr.cnt 19 pll ctl.dsuctr.src 0 pll ctl.dsuctr.cnt 0 pll ctl.core01ctr.src 0 pll ctl.core01ctr.cnt 0 pll ctl.core23ctr.src 0 pll ctl.core2ctr.cnt 0 pll ctl.core3ctr.cnt 0 pll hps_osc_clk_hz 25000000 pll fpga_clk_hz 25000000"
+set_instance_assignment -name HPS_LOCATION PIN_AJ75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd3
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd3
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_rxd3[0]
+set_instance_assignment -name HPS_LOCATION PIN_AN64 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data2
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data2
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|sdmmc_data2[0]
+set_instance_assignment -name HPS_LOCATION PIN_Y74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data3
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data3
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|sdmmc_data3[0]
+set_instance_assignment -name HPS_LOCATION PIN_AK69 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_cmd
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_cmd
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|sdmmc_cmd[0]
+set_instance_assignment -name HPS_LOCATION PIN_F75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_gpio40
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_gpio40
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|gpio40[0]
+set_instance_assignment -name HPS_LOCATION PIN_AD71 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_gpio41
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_gpio41
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|gpio41[0]
+set_instance_assignment -name HPS_LOCATION PIN_C74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_mdio0_mdio
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_mdio0_mdio
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|mdio0_mdio[0]
+set_instance_assignment -name HPS_LOCATION PIN_D71 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_mdio0_mdc
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_mdio0_mdc
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|mdio0_mdc[0]
+set_instance_assignment -name HPS_LOCATION PIN_BP75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_tx_clk
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_tx_clk
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_tx_clk[0]
+set_instance_assignment -name HPS_LOCATION PIN_BL74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_tx_ctl
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_tx_ctl
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_tx_ctl[0]
+set_instance_assignment -name HPS_LOCATION PIN_BL75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rx_clk
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rx_clk
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_rx_clk[0]
+set_instance_assignment -name HPS_LOCATION PIN_AP74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rx_ctl
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rx_ctl
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_rx_ctl[0]
+set_instance_assignment -name HPS_LOCATION PIN_BG74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd0
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd0
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_txd0[0]
+set_instance_assignment -name HPS_LOCATION PIN_AP75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd1
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd1
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_txd1[0]
+set_instance_assignment -name HPS_LOCATION PIN_BD74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd0
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd0
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_rxd0[0]
+set_instance_assignment -name HPS_LOCATION PIN_AN71 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd1
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd1
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_rxd1[0]
+set_instance_assignment -name HPS_LOCATION PIN_AF75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data0
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data0
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|sdmmc_data0[0]
+set_instance_assignment -name HPS_LOCATION PIN_BD75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd2
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd2
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_txd2[0]
+set_instance_assignment -name HPS_LOCATION PIN_AC75 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data1
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_data1
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|sdmmc_data1[0]
+set_instance_assignment -name HPS_LOCATION PIN_AM74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd3
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_txd3
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_txd3[0]
+set_instance_assignment -name HPS_LOCATION PIN_AC74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_cclk
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_sdmmc_cclk
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|sdmmc_cclk[0]
+set_instance_assignment -name HPS_LOCATION PIN_AJ74 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd2
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_emac0_rxd2
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|emac0_rxd2[0]
+set_instance_assignment -name HPS_LOCATION PIN_AN67 -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_hps_osc_clk
+set_instance_assignment -name IO_STANDARD "1.8 V" -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to hps_io_hps_osc_clk
+set_instance_assignment -name HPS_IO ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to sm_hps|hps_osc_clk[0]
+set_instance_assignment -name GLOBAL_SIGNAL ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to "sm_hps|h2f_reset[0]"
+set_instance_assignment -name GLOBAL_SIGNAL ON -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -to "sm_hps|user0_clk[0]"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name HPS_ISW_DATA " SDM DDR 1 ddr IO96B_CSR 0 SDM WACH COLD pwr core 3 pwr boot 0 pwr l3 1 pwr periphs 59 intfcsel f2soc 0 intfcsel f2sdram 0 use csr.pinmux_emac0_usefpga.sel 0 use csr.pinmux_emac1_usefpga.sel 0 use csr.pinmux_emac2_usefpga.sel 0 use csr.pinmux_i2c0_usefpga.sel 0 use csr.pinmux_i2c1_usefpga.sel 0 use csr.pinmux_i3c0_usefpga.sel 0 use csr.pinmux_i3c1_usefpga.sel 0 use csr.pinmux_i2c_emac0_usefpga.sel 0 use csr.pinmux_i2c_emac1_usefpga.sel 0 use csr.pinmux_i2c_emac2_usefpga.sel 0 use csr.pinmux_nand_usefpga.sel 0 use csr.pinmux_spim0_usefpga.sel 0 use csr.pinmux_spim1_usefpga.sel 0 use csr.pinmux_spis0_usefpga.sel 0 use csr.pinmux_spis1_usefpga.sel 0 use csr.pinmux_uart0_usefpga.sel 0 use csr.pinmux_uart1_usefpga.sel 1 use csr.pinmux_mdio0_usefpga.sel 0 use csr.pinmux_mdio1_usefpga.sel 0 use csr.pinmux_mdio2_usefpga.sel 0 use csr.pinmux_jtag_usefpga.sel 0 use csr.pinmux_sdmmc_usefpga.sel 0 sel 0 8 sel 1 8 sel 2 8 sel 3 8 sel 4 8 sel 5 8 sel 6 8 sel 7 8 sel 8 8 sel 9 8 sel 10 8 sel 11 8 sel 12 0 sel 13 0 sel 14 0 sel 15 0 sel 16 0 sel 17 0 sel 18 0 sel 19 0 sel 20 0 sel 21 0 sel 22 0 sel 23 0 sel 24 3 sel 25 3 sel 26 3 sel 27 9 sel 28 8 sel 29 3 sel 30 3 sel 31 3 sel 32 8 sel 33 8 sel 34 8 sel 35 8 sel 36 8 sel 37 8 sel 38 8 sel 39 8 sel 40 8 sel 41 8 sel 42 8 sel 43 8 sel 44 8 sel 45 8 sel 46 5 sel 47 5 din 0 0 din 1 0 din 2 0 din 3 0 din 4 0 din 5 0 din 6 0 din 7 0 din 8 0 din 9 0 din 10 0 din 11 0 din 12 0 din 13 0 din 14 117 din 15 0 din 16 0 din 17 0 din 18 0 din 19 0 din 20 0 din 21 0 din 22 0 din 23 0 din 24 0 din 25 0 din 26 0 din 27 0 din 28 0 din 29 0 din 30 0 din 31 0 din 32 0 din 33 0 din 34 0 din 35 0 din 36 0 din 37 0 din 38 0 din 39 0 din 40 0 din 41 0 din 42 0 din 43 0 din 44 0 din 45 0 din 46 0 din 47 0 dou 0 0 dou 1 0 dou 2 0 dou 3 0 dou 4 0 dou 5 0 dou 6 0 dou 7 0 dou 8 0 dou 9 0 dou 10 0 dou 11 0 dou 12 117 dou 13 0 dou 14 0 dou 15 0 dou 16 0 dou 17 0 dou 18 0 dou 19 0 dou 20 0 dou 21 0 dou 22 0 dou 23 0 dou 24 0 dou 25 0 dou 26 0 dou 27 0 dou 28 0 dou 29 0 dou 30 0 dou 31 0 dou 32 0 dou 33 0 dou 34 0 dou 35 0 dou 36 0 dou 37 0 dou 38 0 dou 39 0 dou 40 0 dou 41 0 dou 42 0 dou 43 0 dou 44 0 dou 45 0 dou 46 0 dou 47 0 pll mainpllgrp.nocclk.src 0 pll mainpllgrp.nocdiv.cspdbgclk 2 pll mainpllgrp.nocdiv.cstraceclk 2 pll mainpllgrp.nocdiv.csclk 0 pll mainpllgrp.nocdiv.mpuperiphdiv 2 pll mainpllgrp.nocdiv.ccudiv 1 pll mainpllgrp.nocdiv.softphydiv 0 pll mainpllgrp.nocdiv.l4spclk 2 pll mainpllgrp.nocdiv.l4mpclk 1 pll mainpllgrp.nocdiv.l4sysfreeclk 2 pll mainpllgrp.pllglob.modclkdiv 6 pll mainpllgrp.pllglob.fastrefclk 0 pll mainpllgrp.pllglob.psrc 0 pll mainpllgrp.pllglob.drefclkdiv 0 pll mainpllgrp.pllglob.arefclkdiv 1 pll mainpllgrp.fdbck.fdiv 0 pll mainpllgrp.pllc0.div 4 pll mainpllgrp.pllc1.div 4 pll mainpllgrp.pllc2.div 6 pll mainpllgrp.pllc3.div 8 pll mainpllgrp.pllm.mdiv 128 pll perpllgrp.emacctl.emac0sel 0 pll perpllgrp.emacctl.emac1sel 0 pll perpllgrp.emacctl.emac2sel 0 pll perpllgrp.pllglob.modclkdiv 5 pll perpllgrp.pllglob.fstrefclk 0 pll perpllgrp.pllglob.psrc 0 pll perpllgrp.pllglob.drefclkdiv 0 pll perpllgrp.pllglob.arefclkdiv 1 pll perpllgrp.fdbck.fdiv 0 pll perpllgrp.pllc0.div 5 pll perpllgrp.pllc1.div 5 pll perpllgrp.pllc2.div 125 pll perpllgrp.pllc3.div 6 pll perpllgrp.pllm.mdiv 120 pll ctl.emacactr.src 1 pll ctl.emacactr.cnt 1 pll ctl.emacbctr.src 1 pll ctl.emacbctr.cnt 9 pll ctl.emacptpctr.src 0 pll ctl.emacptpctr.cnt 0 pll ctl.gpiodbctr.src 0 pll ctl.gpiodbctr.cnt 1 pll perpllgrp.gpiodiv.gpiodbclk 1 pll ctl.s2fuser0ctr.src 1 pll ctl.s2fuser0ctr.cnt 9 pll ctl.s2fuser1ctr.src 1 pll ctl.s2fuser1ctr.cnt 0 pll ctl.psirefctr.src 1 pll ctl.psirefctr.cnt 0 pll ctl.usb31ctr.src 0 pll ctl.usb31ctr.cnt 19 pll ctl.dsuctr.src 0 pll ctl.dsuctr.cnt 0 pll ctl.core01ctr.src 0 pll ctl.core01ctr.cnt 0 pll ctl.core23ctr.src 0 pll ctl.core2ctr.cnt 0 pll ctl.core3ctr.cnt 0 pll hps_osc_clk_hz 25000000 pll fpga_clk_hz 25000000"
 
-set_global_assignment -library "intel_sundancemesa_hps_100" -name VERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.v"]
+set_global_assignment -library "intel_sundancemesa_hps_100" -name VERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_vzqm2di.v"]
 set_global_assignment -library "intel_sundancemesa_hps_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/ready_latency/hps_axi4_ready_latency_adapter.sv"]
 set_global_assignment -library "intel_sundancemesa_hps_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/ready_latency/ready_latency_adapter.sv"]
 set_global_assignment -library "intel_sundancemesa_hps_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/ready_latency/ff_macro_p2c.sv"]
@@ -136,8 +130,8 @@ set_global_assignment -library "intel_sundancemesa_hps_100" -name SYSTEMVERILOG_
 set_global_assignment -library "intel_sundancemesa_hps_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/ready_latency/generic_mlab.sv"]
 set_global_assignment -library "intel_sundancemesa_hps_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/ready_latency/generic_m20k.sv"]
 set_global_assignment -library "intel_sundancemesa_hps_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/ready_latency/ready_latency_reset_synchronizer.sv"]
-set_instance_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_znzlgdq" -library "intel_sundancemesa_hps_100" -name SDC_ENTITY_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.sdc"]
-set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq.sv"]
+set_instance_assignment -entity "agilex_hps_intel_sundancemesa_hps_100_vzqm2di" -library "intel_sundancemesa_hps_100" -name SDC_ENTITY_FILE [file join $::quartus(qip_path) "intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_vzqm2di.sdc"]
+set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq.sv"]
 set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/ready_latency/mpfe_ready_latency_adapter.sv"]
 set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/ready_latency/ready_latency_adapter.sv"]
 set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/ready_latency/ff_macro_c2p.sv"]
@@ -149,11 +143,11 @@ set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG
 set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/ready_latency/generic_mlab.sv"]
 set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/ready_latency/generic_m20k.sv"]
 set_global_assignment -library "intel_sundancemesa_mpfe_100" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "intel_sundancemesa_mpfe_100/synth/ready_latency/ready_latency_reset_synchronizer.sv"]
-set_global_assignment -library "intel_agilex_5_soc_1400" -name VERILOG_FILE [file join $::quartus(qip_path) "intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_7zw7mqq.v"]
+set_global_assignment -library "intel_agilex_5_soc_1400" -name VERILOG_FILE [file join $::quartus(qip_path) "intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_y7heerq.v"]
 set_global_assignment -library "agilex_hps" -name VHDL_FILE [file join $::quartus(qip_path) "synth/agilex_hps.vhd"]
 
 
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_TOOL_NAME "intel_agilex_5_soc"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_TOOL_VERSION "14.0.0"
-set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" -library "intel_agilex_5_soc_1400" -name IP_TOOL_ENV "QsysPrimePro"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_TOOL_NAME "intel_agilex_5_soc"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_TOOL_VERSION "14.0.0"
+set_global_assignment -entity "agilex_hps_intel_agilex_5_soc_1400_y7heerq" -library "intel_agilex_5_soc_1400" -name IP_TOOL_ENV "QsysPrimePro"
 

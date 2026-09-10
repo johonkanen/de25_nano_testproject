@@ -12,7 +12,7 @@
 
 
 
-module agilex_hps_intel_sundancemesa_hps_100_znzlgdq(
+module agilex_hps_intel_sundancemesa_hps_100_vzqm2di(
   output wire [0 : 0 ] h2f_reset
  ,input wire [0 : 0 ] lwhps2fpga_clk
  ,input wire [0 : 0 ] lwhps2fpga_rst
@@ -52,16 +52,16 @@ module agilex_hps_intel_sundancemesa_hps_100_znzlgdq(
  ,input wire [0 : 0 ] lwhps2fpga_rvalid
  ,output wire [0 : 0 ] lwhps2fpga_rready
  ,output wire [0 : 0 ] emac0_rst_clk_app_n_o
- ,input wire [0 : 0 ] uart0_cts_n
- ,input wire [0 : 0 ] uart0_dcd_n
- ,input wire [0 : 0 ] uart0_dsr_n
- ,output wire [0 : 0 ] uart0_dtr_n
- ,output wire [0 : 0 ] uart0_out1_n
- ,output wire [0 : 0 ] uart0_out2_n
- ,input wire [0 : 0 ] uart0_ri_n
- ,output wire [0 : 0 ] uart0_rts_n
- ,input wire [0 : 0 ] uart0_rx
- ,output wire [0 : 0 ] uart0_tx
+ ,input wire [0 : 0 ] uart1_cts_n
+ ,input wire [0 : 0 ] uart1_dcd_n
+ ,input wire [0 : 0 ] uart1_dsr_n
+ ,output wire [0 : 0 ] uart1_dtr_n
+ ,output wire [0 : 0 ] uart1_out1_n
+ ,output wire [0 : 0 ] uart1_out2_n
+ ,input wire [0 : 0 ] uart1_ri_n
+ ,output wire [0 : 0 ] uart1_rts_n
+ ,input wire [0 : 0 ] uart1_rx
+ ,output wire [0 : 0 ] uart1_tx
  ,output wire [0 : 0 ] user0_clk
  ,input wire [0 : 0 ] hps_osc_clk
  ,inout wire [0 : 0 ] sdmmc_data0
@@ -84,8 +84,6 @@ module agilex_hps_intel_sundancemesa_hps_100_znzlgdq(
  ,input wire [0 : 0 ] emac0_rxd3
  ,inout wire [0 : 0 ] mdio0_mdio
  ,output wire [0 : 0 ] mdio0_mdc
- ,output wire [0 : 0 ] uart1_io_tx
- ,input wire [0 : 0 ] uart1_io_rx
  ,inout wire [0 : 0 ] gpio40
  ,inout wire [0 : 0 ] gpio41
  ,output wire [0 : 0 ] hps2mpfe_ccu_clk
@@ -517,45 +515,6 @@ tennm_ph2_io_ibuf #(
 );
 
 
-
-wire [0:0] emac0_txd0_obuf_i;
-tennm_ph2_io_obuf #(
-    .buffer_usage("REGULAR"),
-    .dynamic_pull_up_enabled("false"),
-    .equalization("EQUALIZATION_OFF"),
-    .io_standard("IO_STANDARD_IOSTD_OFF"),
-    .open_drain("OPEN_DRAIN_OFF"),
-    .rzq_id("RZQ_ID_RZQ0"),
-    .slew_rate("SLEW_RATE_SLOW"),
-    .termination("TERMINATION_SERIES_OFF"),
-    .toggle_speed("TOGGLE_SPEED_SLOW"),
-    .usage_mode("USAGE_MODE_GPIO")
-) hps_emac0_txd0_obuf(
-    .i(emac0_txd0_obuf_i),
-    .o(emac0_txd0),
-    .oe(1'b1)
-);
-
-wire [0:0] uart1_io_rx_ibuf_o;
-tennm_ph2_io_ibuf #(
-    .buffer_usage("REGULAR"),
-    .bus_hold("BUS_HOLD_OFF"),
-    .equalization("EQUALIZATION_OFF"),
-    .io_standard("IO_STANDARD_IOSTD_OFF"),
-    .rzq_id("RZQ_ID_RZQ0"),
-    .schmitt_trigger("SCHMITT_TRIGGER_OFF"),
-    .termination("TERMINATION_RT_OFF"),
-    .toggle_speed("TOGGLE_SPEED_SLOW"),
-    .usage_mode("USAGE_MODE_GPIO"),
-    .vref("VREF_OFF"),
-    .weak_pull_down("WEAK_PULL_DOWN_OFF"),
-    .weak_pull_up("WEAK_PULL_UP_OFF")
-) hps_uart1_io_rx_ibuf(
-    .i(uart1_io_rx),
-    .o(uart1_io_rx_ibuf_o)
-);
-
-
 wire [0:0] emac0_rxd2_ibuf_o;
 tennm_ph2_io_ibuf #(
     .buffer_usage("REGULAR"),
@@ -575,6 +534,25 @@ tennm_ph2_io_ibuf #(
     .o(emac0_rxd2_ibuf_o)
 );
 
+
+
+wire [0:0] emac0_txd0_obuf_i;
+tennm_ph2_io_obuf #(
+    .buffer_usage("REGULAR"),
+    .dynamic_pull_up_enabled("false"),
+    .equalization("EQUALIZATION_OFF"),
+    .io_standard("IO_STANDARD_IOSTD_OFF"),
+    .open_drain("OPEN_DRAIN_OFF"),
+    .rzq_id("RZQ_ID_RZQ0"),
+    .slew_rate("SLEW_RATE_SLOW"),
+    .termination("TERMINATION_SERIES_OFF"),
+    .toggle_speed("TOGGLE_SPEED_SLOW"),
+    .usage_mode("USAGE_MODE_GPIO")
+) hps_emac0_txd0_obuf(
+    .i(emac0_txd0_obuf_i),
+    .o(emac0_txd0),
+    .oe(1'b1)
+);
 
 
 wire [0:0] emac0_txd1_obuf_i;
@@ -631,25 +609,6 @@ tennm_ph2_io_obuf #(
 ) hps_emac0_txd2_obuf(
     .i(emac0_txd2_obuf_i),
     .o(emac0_txd2),
-    .oe(1'b1)
-);
-
-
-wire [0:0] uart1_io_tx_obuf_i;
-tennm_ph2_io_obuf #(
-    .buffer_usage("REGULAR"),
-    .dynamic_pull_up_enabled("false"),
-    .equalization("EQUALIZATION_OFF"),
-    .io_standard("IO_STANDARD_IOSTD_OFF"),
-    .open_drain("OPEN_DRAIN_OFF"),
-    .rzq_id("RZQ_ID_RZQ0"),
-    .slew_rate("SLEW_RATE_SLOW"),
-    .termination("TERMINATION_SERIES_OFF"),
-    .toggle_speed("TOGGLE_SPEED_SLOW"),
-    .usage_mode("USAGE_MODE_GPIO")
-) hps_uart1_io_tx_obuf(
-    .i(uart1_io_tx_obuf_i),
-    .o(uart1_io_tx),
     .oe(1'b1)
 );
 
@@ -1045,10 +1004,10 @@ tennm_soc_hps #(
  ,.lwsoc2fpga_aw_len({
      lwhps2fpga_awlen_intr
   })
- ,.uart0_rx({
-     uart0_rx[0:0]
-  })
  ,.cs_dbg_fpga_apb_pclken({
+     1'h0
+  })
+ ,.uart0_rx({
      1'h0
   })
  ,.mpfe_csr_awburst({
@@ -1114,9 +1073,6 @@ tennm_soc_hps #(
  ,.hps_ioa_14_bidir_out({
      emac0_tx_ctl_obuf_i
   })
- ,.uart0_tx({
-     uart0_tx[0:0]
-  })
  ,.emac2_phy_crs_i({
      1'h0
   })
@@ -1125,6 +1081,9 @@ tennm_soc_hps #(
   })
  ,.spis1_ss_in_n({
      1'h0
+  })
+ ,.mpfe_csr_awsize({
+     hps2mpfe_csr_awsize[2:0]
   })
  ,.ccu_dmi1_awready({
      hps2mpfe_dmi1_awready[0:0]
@@ -1135,14 +1094,11 @@ tennm_soc_hps #(
  ,.fpga3_dma_req({
      1'h0
   })
- ,.mpfe_csr_awsize({
-     hps2mpfe_csr_awsize[2:0]
-  })
  ,.mpfe_csr_bresp({
      hps2mpfe_csr_bresp[1:0]
   })
  ,.uart0_ri_n({
-     uart0_ri_n[0:0]
+     1'h0
   })
  ,.fpga7_dma_req({
      1'h0
@@ -1228,9 +1184,6 @@ tennm_soc_hps #(
  ,.ccu_dmi0_araddr({
      hps2mpfe_dmi0_araddr[43:0]
   })
- ,.uart0_out2_n({
-     uart0_out2_n[0:0]
-  })
  ,.ccu_dmi0_bid({
      hps2mpfe_dmi0_bid[9:0]
   })
@@ -1282,9 +1235,6 @@ tennm_soc_hps #(
  ,.ccu_dmi0_arvalid({
      hps2mpfe_dmi0_arvalid[0:0]
   })
- ,.hps_iob_16_bidir_in({
-     uart1_io_rx_ibuf_o
-  })
  ,.fpga2_dma_single({
      1'h0
   })
@@ -1295,7 +1245,7 @@ tennm_soc_hps #(
      hps2mpfe_dmi0_rid[9:0]
   })
  ,.uart1_cts_n({
-     1'h0
+     uart1_cts_n[0:0]
   })
  ,.lwsoc2fpga_aw_id({
      lwhps2fpga_awid_intr
@@ -1321,11 +1271,11 @@ tennm_soc_hps #(
  ,.emac1_phy_rxd_i({
      8'h0
   })
- ,.emac1_phy_rxclk_i({
+ ,.uart0_cts_n({
      1'h0
   })
- ,.uart0_cts_n({
-     uart0_cts_n[0:0]
+ ,.emac1_phy_rxclk_i({
+     1'h0
   })
  ,.lwsoc2fpga_ar_lock({
      lwhps2fpga_arlock_intr
@@ -1368,6 +1318,9 @@ tennm_soc_hps #(
   })
  ,.fpga4_dma_req({
      1'h0
+  })
+ ,.uart1_out1_n({
+     uart1_out1_n[0:0]
   })
  ,.emac0_rst_clk_app_n_o({
      emac0_rst_clk_app_n_o[0:0]
@@ -1564,14 +1517,14 @@ tennm_soc_hps #(
  ,.ccu_dmi1_awuser({
      hps2mpfe_dmi1_awuser[7:0]
   })
- ,.ccu_dmi1_awlock({
-     hps2mpfe_dmi1_awlock[0:0]
+ ,.fpga5_dma_single({
+     1'h0
   })
  ,.lwsoc2fpga_r_id({
      lwhps2fpga_rid_intr
   })
- ,.fpga5_dma_single({
-     1'h0
+ ,.ccu_dmi1_awlock({
+     hps2mpfe_dmi1_awlock[0:0]
   })
  ,.i3c_s_sda_in_a({
      1'h0
@@ -1582,14 +1535,14 @@ tennm_soc_hps #(
  ,.soc2fpga_b_resp({
      2'h0
   })
- ,.hps_iob_15_bidir_out({
-     uart1_io_tx_obuf_i
-  })
  ,.soc2fpga_r_id({
      4'h0
   })
  ,.ccu_dmi0_arid({
      hps2mpfe_dmi0_arid[9:0]
+  })
+ ,.uart1_dtr_n({
+     uart1_dtr_n[0:0]
   })
  ,.lwsoc2fpga_ar_addr({
      lwhps2fpga_araddr_intr
@@ -1627,9 +1580,6 @@ tennm_soc_hps #(
  ,.lwsoc2fpga_aw_lock({
      lwhps2fpga_awlock_intr
   })
- ,.uart0_dtr_n({
-     uart0_dtr_n[0:0]
-  })
  ,.fpga_atb_atclk({
      1'h0
   })
@@ -1660,6 +1610,9 @@ tennm_soc_hps #(
  ,.ccu_dmi1_arcache({
      hps2mpfe_dmi1_arcache[3:0]
   })
+ ,.uart1_out2_n({
+     uart1_out2_n[0:0]
+  })
  ,.hps_iob_1_bidir_out({
      sdmmc_data0_obuf_i
   })
@@ -1671,6 +1624,9 @@ tennm_soc_hps #(
   })
  ,.hps_iob_7_bidir_in({
      sdmmc_data3_ibuf_o
+  })
+ ,.uart1_rts_n({
+     uart1_rts_n[0:0]
   })
  ,.hps_iob_17_bidir_out({
      gpio40_obuf_i
@@ -1694,7 +1650,7 @@ tennm_soc_hps #(
      hps2mpfe_dmi1_arqos[3:0]
   })
  ,.uart1_dsr_n({
-     1'h0
+     uart1_dsr_n[0:0]
   })
  ,.ccu_dmi0_arprot({
      hps2mpfe_dmi0_arprot[2:0]
@@ -1706,7 +1662,7 @@ tennm_soc_hps #(
      8'h0
   })
  ,.uart1_dcd_n({
-     1'h0
+     uart1_dcd_n[0:0]
   })
  ,.ccu_dmi1_wdata({
      hps2mpfe_dmi1_wdata[255:0]
@@ -1726,13 +1682,10 @@ tennm_soc_hps #(
  ,.ccu_dmi0_arsize({
      hps2mpfe_dmi0_arsize[2:0]
   })
- ,.uart0_rts_n({
-     uart0_rts_n[0:0]
+ ,.uart1_ri_n({
+     uart1_ri_n[0:0]
   })
  ,.emac1_phy_col_i({
-     1'h0
-  })
- ,.uart1_ri_n({
      1'h0
   })
  ,.ccu_dmi1_arlen({
@@ -1753,10 +1706,10 @@ tennm_soc_hps #(
  ,.s2f_user_clk0_hio({
      user0_clk[0:0]
   })
- ,.uart0_dsr_n({
-     uart0_dsr_n[0:0]
-  })
  ,.soc2fpga_r_last({
+     1'h0
+  })
+ ,.uart0_dsr_n({
      1'h0
   })
  ,.hps_ioa_17_bidir_out({
@@ -1766,7 +1719,7 @@ tennm_soc_hps #(
      hps2mpfe_dmi1_bready[0:0]
   })
  ,.uart0_dcd_n({
-     uart0_dcd_n[0:0]
+     1'h0
   })
  ,.ccu_dmi1_awvalid({
      hps2mpfe_dmi1_awvalid[0:0]
@@ -1844,7 +1797,7 @@ tennm_soc_hps #(
      8'h0
   })
  ,.uart1_rx({
-     1'h0
+     uart1_rx[0:0]
   })
  ,.ccu_dmi0_awprot({
      hps2mpfe_dmi0_awprot[2:0]
@@ -1860,9 +1813,6 @@ tennm_soc_hps #(
   })
  ,.lwsoc2fpga_aw_addr({
      lwhps2fpga_awaddr_intr
-  })
- ,.uart0_out1_n({
-     uart0_out1_n[0:0]
   })
  ,.ccu_dmi0_wvalid({
      hps2mpfe_dmi0_wvalid[0:0]
@@ -1899,6 +1849,9 @@ tennm_soc_hps #(
   })
  ,.ccu_dmi0_arlock({
      hps2mpfe_dmi0_arlock[0:0]
+  })
+ ,.uart1_tx({
+     uart1_tx[0:0]
   })
  ,.emac2_phy_rxer_i({
      1'h0

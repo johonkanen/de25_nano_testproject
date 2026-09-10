@@ -594,7 +594,7 @@ Altera and sold by Altera or its authorized distributors.-->
       </ipxact:parameters>
     </ipxact:busInterface>
     <ipxact:busInterface>
-      <ipxact:name>uart0</ipxact:name>
+      <ipxact:name>uart1</ipxact:name>
       <ipxact:busType vendor="intel" library="intel" name="conduit" version="26.1"></ipxact:busType>
       <ipxact:abstractionTypes>
         <ipxact:abstractionType>
@@ -605,7 +605,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>cts_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_cts_n</ipxact:name>
+                <ipxact:name>uart1_cts_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -613,7 +613,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>dcd_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_dcd_n</ipxact:name>
+                <ipxact:name>uart1_dcd_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -621,7 +621,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>dsr_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_dsr_n</ipxact:name>
+                <ipxact:name>uart1_dsr_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -629,7 +629,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>dtr_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_dtr_n</ipxact:name>
+                <ipxact:name>uart1_dtr_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -637,7 +637,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>out1_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_out1_n</ipxact:name>
+                <ipxact:name>uart1_out1_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -645,7 +645,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>out2_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_out2_n</ipxact:name>
+                <ipxact:name>uart1_out2_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -653,7 +653,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>ri_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_ri_n</ipxact:name>
+                <ipxact:name>uart1_ri_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -661,7 +661,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>rts_n</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_rts_n</ipxact:name>
+                <ipxact:name>uart1_rts_n</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -669,7 +669,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>rx</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_rx</ipxact:name>
+                <ipxact:name>uart1_rx</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -677,7 +677,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 <ipxact:name>tx</ipxact:name>
               </ipxact:logicalPort>
               <ipxact:physicalPort>
-                <ipxact:name>uart0_tx</ipxact:name>
+                <ipxact:name>uart1_tx</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
           </ipxact:portMaps>
@@ -922,22 +922,6 @@ Altera and sold by Altera or its authorized distributors.-->
               </ipxact:logicalPort>
               <ipxact:physicalPort>
                 <ipxact:name>hps_io_mdio0_mdc</ipxact:name>
-              </ipxact:physicalPort>
-            </ipxact:portMap>
-            <ipxact:portMap>
-              <ipxact:logicalPort>
-                <ipxact:name>uart1_tx</ipxact:name>
-              </ipxact:logicalPort>
-              <ipxact:physicalPort>
-                <ipxact:name>hps_io_uart1_tx</ipxact:name>
-              </ipxact:physicalPort>
-            </ipxact:portMap>
-            <ipxact:portMap>
-              <ipxact:logicalPort>
-                <ipxact:name>uart1_rx</ipxact:name>
-              </ipxact:logicalPort>
-              <ipxact:physicalPort>
-                <ipxact:name>hps_io_uart1_rx</ipxact:name>
               </ipxact:physicalPort>
             </ipxact:portMap>
             <ipxact:portMap>
@@ -2230,7 +2214,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_cts_n</ipxact:name>
+        <ipxact:name>uart1_cts_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>in</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2243,7 +2227,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_dcd_n</ipxact:name>
+        <ipxact:name>uart1_dcd_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>in</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2256,7 +2240,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_dsr_n</ipxact:name>
+        <ipxact:name>uart1_dsr_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>in</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2269,7 +2253,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_dtr_n</ipxact:name>
+        <ipxact:name>uart1_dtr_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>out</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2282,7 +2266,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_out1_n</ipxact:name>
+        <ipxact:name>uart1_out1_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>out</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2295,7 +2279,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_out2_n</ipxact:name>
+        <ipxact:name>uart1_out2_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>out</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2308,7 +2292,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_ri_n</ipxact:name>
+        <ipxact:name>uart1_ri_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>in</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2321,7 +2305,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_rts_n</ipxact:name>
+        <ipxact:name>uart1_rts_n</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>out</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2334,7 +2318,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_rx</ipxact:name>
+        <ipxact:name>uart1_rx</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>in</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2347,7 +2331,7 @@ Altera and sold by Altera or its authorized distributors.-->
         </ipxact:wire>
       </ipxact:port>
       <ipxact:port>
-        <ipxact:name>uart0_tx</ipxact:name>
+        <ipxact:name>uart1_tx</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>out</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
@@ -2636,32 +2620,6 @@ Altera and sold by Altera or its authorized distributors.-->
         <ipxact:name>hps_io_mdio0_mdc</ipxact:name>
         <ipxact:wire>
           <ipxact:direction>out</ipxact:direction>
-          <ipxact:vectors></ipxact:vectors>
-          <ipxact:wireTypeDefs>
-            <ipxact:wireTypeDef>
-              <ipxact:typeName>STD_LOGIC</ipxact:typeName>
-              <ipxact:viewRef>QUARTUS_SYNTH</ipxact:viewRef>
-            </ipxact:wireTypeDef>
-          </ipxact:wireTypeDefs>
-        </ipxact:wire>
-      </ipxact:port>
-      <ipxact:port>
-        <ipxact:name>hps_io_uart1_tx</ipxact:name>
-        <ipxact:wire>
-          <ipxact:direction>out</ipxact:direction>
-          <ipxact:vectors></ipxact:vectors>
-          <ipxact:wireTypeDefs>
-            <ipxact:wireTypeDef>
-              <ipxact:typeName>STD_LOGIC</ipxact:typeName>
-              <ipxact:viewRef>QUARTUS_SYNTH</ipxact:viewRef>
-            </ipxact:wireTypeDef>
-          </ipxact:wireTypeDefs>
-        </ipxact:wire>
-      </ipxact:port>
-      <ipxact:port>
-        <ipxact:name>hps_io_uart1_rx</ipxact:name>
-        <ipxact:wire>
-          <ipxact:direction>in</ipxact:direction>
           <ipxact:vectors></ipxact:vectors>
           <ipxact:wireTypeDefs>
             <ipxact:wireTypeDef>
@@ -4473,22 +4431,22 @@ Altera and sold by Altera or its authorized distributors.-->
         <ipxact:parameter parameterId="UART0_PinMuxing" type="string">
           <ipxact:name>UART0_PinMuxing</ipxact:name>
           <ipxact:displayName></ipxact:displayName>
-          <ipxact:value>FPGA</ipxact:value>
+          <ipxact:value>Unused</ipxact:value>
         </ipxact:parameter>
         <ipxact:parameter parameterId="UART0_Mode" type="string">
           <ipxact:name>UART0_Mode</ipxact:name>
           <ipxact:displayName></ipxact:displayName>
-          <ipxact:value>Flow_control</ipxact:value>
+          <ipxact:value>N/A</ipxact:value>
         </ipxact:parameter>
         <ipxact:parameter parameterId="UART1_PinMuxing" type="string">
           <ipxact:name>UART1_PinMuxing</ipxact:name>
           <ipxact:displayName></ipxact:displayName>
-          <ipxact:value>IO</ipxact:value>
+          <ipxact:value>FPGA</ipxact:value>
         </ipxact:parameter>
         <ipxact:parameter parameterId="UART1_Mode" type="string">
           <ipxact:name>UART1_Mode</ipxact:name>
           <ipxact:displayName></ipxact:displayName>
-          <ipxact:value>No_flow_control</ipxact:value>
+          <ipxact:value>Flow_control</ipxact:value>
         </ipxact:parameter>
         <ipxact:parameter parameterId="I2C0_PinMuxing" type="string">
           <ipxact:name>I2C0_PinMuxing</ipxact:name>
@@ -5093,7 +5051,7 @@ Altera and sold by Altera or its authorized distributors.-->
         <ipxact:parameter parameterId="HPS_IO_Enable" type="string">
           <ipxact:name>HPS_IO_Enable</ipxact:name>
           <ipxact:displayName>HPSIO Enabled</ipxact:displayName>
-          <ipxact:value>NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,UART1:TX,UART1:RX,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC</ipxact:value>
+          <ipxact:value>NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC</ipxact:value>
         </ipxact:parameter>
         <ipxact:parameter parameterId="hps_ioa1_opd_en" type="bit">
           <ipxact:name>hps_ioa1_opd_en</ipxact:name>
@@ -6195,12 +6153,12 @@ Altera and sold by Altera or its authorized distributors.-->
             &lt;/parameters&gt;
         &lt;/interface&gt;
         &lt;interface&gt;
-            &lt;name&gt;uart0&lt;/name&gt;
+            &lt;name&gt;uart1&lt;/name&gt;
             &lt;type&gt;conduit&lt;/type&gt;
             &lt;isStart&gt;false&lt;/isStart&gt;
             &lt;ports&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_cts_n&lt;/name&gt;
+                    &lt;name&gt;uart1_cts_n&lt;/name&gt;
                     &lt;role&gt;cts_n&lt;/role&gt;
                     &lt;direction&gt;Input&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6209,7 +6167,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_dcd_n&lt;/name&gt;
+                    &lt;name&gt;uart1_dcd_n&lt;/name&gt;
                     &lt;role&gt;dcd_n&lt;/role&gt;
                     &lt;direction&gt;Input&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6218,7 +6176,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_dsr_n&lt;/name&gt;
+                    &lt;name&gt;uart1_dsr_n&lt;/name&gt;
                     &lt;role&gt;dsr_n&lt;/role&gt;
                     &lt;direction&gt;Input&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6227,7 +6185,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_dtr_n&lt;/name&gt;
+                    &lt;name&gt;uart1_dtr_n&lt;/name&gt;
                     &lt;role&gt;dtr_n&lt;/role&gt;
                     &lt;direction&gt;Output&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6236,7 +6194,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_out1_n&lt;/name&gt;
+                    &lt;name&gt;uart1_out1_n&lt;/name&gt;
                     &lt;role&gt;out1_n&lt;/role&gt;
                     &lt;direction&gt;Output&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6245,7 +6203,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_out2_n&lt;/name&gt;
+                    &lt;name&gt;uart1_out2_n&lt;/name&gt;
                     &lt;role&gt;out2_n&lt;/role&gt;
                     &lt;direction&gt;Output&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6254,7 +6212,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_ri_n&lt;/name&gt;
+                    &lt;name&gt;uart1_ri_n&lt;/name&gt;
                     &lt;role&gt;ri_n&lt;/role&gt;
                     &lt;direction&gt;Input&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6263,7 +6221,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_rts_n&lt;/name&gt;
+                    &lt;name&gt;uart1_rts_n&lt;/name&gt;
                     &lt;role&gt;rts_n&lt;/role&gt;
                     &lt;direction&gt;Output&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6272,7 +6230,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_rx&lt;/name&gt;
+                    &lt;name&gt;uart1_rx&lt;/name&gt;
                     &lt;role&gt;rx&lt;/role&gt;
                     &lt;direction&gt;Input&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6281,7 +6239,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;terminationValue&gt;0&lt;/terminationValue&gt;
                 &lt;/port&gt;
                 &lt;port&gt;
-                    &lt;name&gt;uart0_tx&lt;/name&gt;
+                    &lt;name&gt;uart1_tx&lt;/name&gt;
                     &lt;role&gt;tx&lt;/role&gt;
                     &lt;direction&gt;Output&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
@@ -6538,24 +6496,6 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;name&gt;hps_io_mdio0_mdc&lt;/name&gt;
                     &lt;role&gt;mdio0_mdc&lt;/role&gt;
                     &lt;direction&gt;Output&lt;/direction&gt;
-                    &lt;width&gt;1&lt;/width&gt;
-                    &lt;lowerBound&gt;0&lt;/lowerBound&gt;
-                    &lt;vhdlType&gt;STD_LOGIC&lt;/vhdlType&gt;
-                    &lt;terminationValue&gt;0&lt;/terminationValue&gt;
-                &lt;/port&gt;
-                &lt;port&gt;
-                    &lt;name&gt;hps_io_uart1_tx&lt;/name&gt;
-                    &lt;role&gt;uart1_tx&lt;/role&gt;
-                    &lt;direction&gt;Output&lt;/direction&gt;
-                    &lt;width&gt;1&lt;/width&gt;
-                    &lt;lowerBound&gt;0&lt;/lowerBound&gt;
-                    &lt;vhdlType&gt;STD_LOGIC&lt;/vhdlType&gt;
-                    &lt;terminationValue&gt;0&lt;/terminationValue&gt;
-                &lt;/port&gt;
-                &lt;port&gt;
-                    &lt;name&gt;hps_io_uart1_rx&lt;/name&gt;
-                    &lt;role&gt;uart1_rx&lt;/role&gt;
-                    &lt;direction&gt;Input&lt;/direction&gt;
                     &lt;width&gt;1&lt;/width&gt;
                     &lt;lowerBound&gt;0&lt;/lowerBound&gt;
                     &lt;vhdlType&gt;STD_LOGIC&lt;/vhdlType&gt;
@@ -7348,8 +7288,6 @@ Altera and sold by Altera or its authorized distributors.-->
         <altera:port_mapping altera:name="hps_io_sdmmc_data1" altera:internal="hps_io_sdmmc_data1"></altera:port_mapping>
         <altera:port_mapping altera:name="hps_io_sdmmc_data2" altera:internal="hps_io_sdmmc_data2"></altera:port_mapping>
         <altera:port_mapping altera:name="hps_io_sdmmc_data3" altera:internal="hps_io_sdmmc_data3"></altera:port_mapping>
-        <altera:port_mapping altera:name="hps_io_uart1_rx" altera:internal="hps_io_uart1_rx"></altera:port_mapping>
-        <altera:port_mapping altera:name="hps_io_uart1_tx" altera:internal="hps_io_uart1_tx"></altera:port_mapping>
       </altera:interface_mapping>
       <altera:interface_mapping altera:name="io96b0_to_hps" altera:internal="agilex_hps.io96b0_to_hps" altera:type="conduit" altera:dir="end">
         <altera:port_mapping altera:name="io96b0_to_hps_axi4_ch0_araddr" altera:internal="io96b0_to_hps_axi4_ch0_araddr"></altera:port_mapping>
@@ -7458,19 +7396,19 @@ Altera and sold by Altera or its authorized distributors.-->
       <altera:interface_mapping altera:name="lwhps2fpga_axi_reset" altera:internal="agilex_hps.lwhps2fpga_axi_reset" altera:type="reset" altera:dir="end">
         <altera:port_mapping altera:name="lwhps2fpga_axi_reset_reset" altera:internal="lwhps2fpga_axi_reset_reset"></altera:port_mapping>
       </altera:interface_mapping>
-      <altera:interface_mapping altera:name="uart0" altera:internal="agilex_hps.uart0" altera:type="conduit" altera:dir="end">
-        <altera:port_mapping altera:name="uart0_cts_n" altera:internal="uart0_cts_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_dcd_n" altera:internal="uart0_dcd_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_dsr_n" altera:internal="uart0_dsr_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_dtr_n" altera:internal="uart0_dtr_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_out1_n" altera:internal="uart0_out1_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_out2_n" altera:internal="uart0_out2_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_ri_n" altera:internal="uart0_ri_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_rts_n" altera:internal="uart0_rts_n"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_rx" altera:internal="uart0_rx"></altera:port_mapping>
-        <altera:port_mapping altera:name="uart0_tx" altera:internal="uart0_tx"></altera:port_mapping>
+      <altera:interface_mapping altera:name="uart0" altera:internal="agilex_hps.uart0"></altera:interface_mapping>
+      <altera:interface_mapping altera:name="uart1" altera:internal="agilex_hps.uart1" altera:type="conduit" altera:dir="end">
+        <altera:port_mapping altera:name="uart1_cts_n" altera:internal="uart1_cts_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_dcd_n" altera:internal="uart1_dcd_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_dsr_n" altera:internal="uart1_dsr_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_dtr_n" altera:internal="uart1_dtr_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_out1_n" altera:internal="uart1_out1_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_out2_n" altera:internal="uart1_out2_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_ri_n" altera:internal="uart1_ri_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_rts_n" altera:internal="uart1_rts_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_rx" altera:internal="uart1_rx"></altera:port_mapping>
+        <altera:port_mapping altera:name="uart1_tx" altera:internal="uart1_tx"></altera:port_mapping>
       </altera:interface_mapping>
-      <altera:interface_mapping altera:name="uart1" altera:internal="agilex_hps.uart1"></altera:interface_mapping>
     </altera:altera_interface_boundary>
     <altera:altera_has_warnings>false</altera:altera_has_warnings>
     <altera:altera_has_errors>false</altera:altera_has_errors>

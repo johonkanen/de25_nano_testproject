@@ -37,16 +37,16 @@ module hps_subsys (
 		input  wire        lwhps2fpga_rlast,                      //                          .rlast
 		input  wire        lwhps2fpga_rvalid,                     //                          .rvalid
 		output wire        lwhps2fpga_rready,                     //                          .rready
-		input  wire        hps_uart0_cts_n,                       //                 hps_uart0.cts_n
-		input  wire        hps_uart0_dcd_n,                       //                          .dcd_n
-		input  wire        hps_uart0_dsr_n,                       //                          .dsr_n
-		output wire        hps_uart0_dtr_n,                       //                          .dtr_n
-		output wire        hps_uart0_out1_n,                      //                          .out1_n
-		output wire        hps_uart0_out2_n,                      //                          .out2_n
-		input  wire        hps_uart0_ri_n,                        //                          .ri_n
-		output wire        hps_uart0_rts_n,                       //                          .rts_n
-		input  wire        hps_uart0_rx,                          //                          .rx
-		output wire        hps_uart0_tx,                          //                          .tx
+		input  wire        agilex_hps_uart1_cts_n,                //          agilex_hps_uart1.cts_n
+		input  wire        agilex_hps_uart1_dcd_n,                //                          .dcd_n
+		input  wire        agilex_hps_uart1_dsr_n,                //                          .dsr_n
+		output wire        agilex_hps_uart1_dtr_n,                //                          .dtr_n
+		output wire        agilex_hps_uart1_out1_n,               //                          .out1_n
+		output wire        agilex_hps_uart1_out2_n,               //                          .out2_n
+		input  wire        agilex_hps_uart1_ri_n,                 //                          .ri_n
+		output wire        agilex_hps_uart1_rts_n,                //                          .rts_n
+		input  wire        agilex_hps_uart1_rx,                   //                          .rx
+		output wire        agilex_hps_uart1_tx,                   //                          .tx
 		output wire        h2f_user0_clk_clk,                     //             h2f_user0_clk.clk
 		input  wire        hps_io_hps_osc_clk,                    //                    hps_io.hps_osc_clk
 		inout  wire        hps_io_sdmmc_data0,                    //                          .sdmmc_data0
@@ -69,8 +69,6 @@ module hps_subsys (
 		input  wire        hps_io_emac0_rxd3,                     //                          .emac0_rxd3
 		inout  wire        hps_io_mdio0_mdio,                     //                          .mdio0_mdio
 		output wire        hps_io_mdio0_mdc,                      //                          .mdio0_mdc
-		output wire        hps_io_uart1_tx,                       //                          .uart1_tx
-		input  wire        hps_io_uart1_rx,                       //                          .uart1_rx
 		inout  wire        hps_io_gpio40,                         //                          .gpio40
 		inout  wire        hps_io_gpio41,                         //                          .gpio41
 		input  wire [31:0] f2h_irq1_in_irq,                       //               f2h_irq1_in.irq

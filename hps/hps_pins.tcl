@@ -146,8 +146,6 @@ set_instance_assignment -name IO_STANDARD "1.8-V" -to HPS_SD_DATA[0]
 set_instance_assignment -name IO_STANDARD "1.8-V" -to HPS_SD_DATA[1]
 set_instance_assignment -name IO_STANDARD "1.8-V" -to HPS_SD_DATA[2]
 set_instance_assignment -name IO_STANDARD "1.8-V" -to HPS_SD_DATA[3]
-set_instance_assignment -name IO_STANDARD "1.8-V" -to HPS_UART_RX
-set_instance_assignment -name IO_STANDARD "1.8-V" -to HPS_UART_TX
 set_location_assignment PIN_AN67 -to HPS_CLK_25
 set_location_assignment PIN_D71  -to HPS_ENET_MDC
 set_location_assignment PIN_C74  -to HPS_ENET_MDIO
@@ -171,6 +169,4 @@ set_location_assignment PIN_AF75 -to HPS_SD_DATA[0]
 set_location_assignment PIN_AC75 -to HPS_SD_DATA[1]
 set_location_assignment PIN_AN64 -to HPS_SD_DATA[2]
 set_location_assignment PIN_Y74  -to HPS_SD_DATA[3]
-set_location_assignment PIN_AD72 -to HPS_UART_RX
-set_location_assignment PIN_N71  -to HPS_UART_TX
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="agilex_hps" kind="agilex_hps" version="1.0" fabric="QSYS">
  <!-- Format version 26.1.1 130 (Future versions may contain additional information.) -->
- <!-- 2026.09.09.11:13:39 -->
+ <!-- 2026.09.10.14:14:10 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
@@ -148,7 +148,7 @@
    name="agilex_hps"
    kind="intel_agilex_5_soc"
    version="14.0.0"
-   entity="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"
+   entity="agilex_hps_intel_agilex_5_soc_1400_y7heerq"
    library="intel_agilex_5_soc_1400"
    path="agilex_hps"
    hpath="agilex_hps"
@@ -370,10 +370,10 @@ pinmux_select {
   value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
   value: 8
@@ -1142,7 +1142,7 @@ reg {
    <type>boolean</type>
    <value>false</value>
    <derived>false</derived>
-   <enabled>true</enabled>
+   <enabled>false</enabled>
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
@@ -2276,7 +2276,7 @@ reg {
   </parameter>
   <parameter name="UART0_PinMuxing">
    <type>java.lang.String</type>
-   <value>FPGA</value>
+   <value>Unused</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -2284,7 +2284,7 @@ reg {
   </parameter>
   <parameter name="UART0_Mode">
    <type>java.lang.String</type>
-   <value>Flow_control</value>
+   <value>N/A</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -2292,7 +2292,7 @@ reg {
   </parameter>
   <parameter name="UART1_PinMuxing">
    <type>java.lang.String</type>
-   <value>IO</value>
+   <value>FPGA</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -2300,7 +2300,7 @@ reg {
   </parameter>
   <parameter name="UART1_Mode">
    <type>java.lang.String</type>
-   <value>No_flow_control</value>
+   <value>Flow_control</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -3268,7 +3268,7 @@ reg {
   </parameter>
   <parameter name="HPS_IO_Enable">
    <type>[Ljava.lang.String;</type>
-   <value>NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,UART1:TX,UART1:RX,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC</value>
+   <value>NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -3582,7 +3582,7 @@ reg {
    <type>boolean</type>
    <value>false</value>
    <derived>false</derived>
-   <enabled>true</enabled>
+   <enabled>false</enabled>
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
@@ -3590,7 +3590,7 @@ reg {
    <type>boolean</type>
    <value>false</value>
    <derived>false</derived>
-   <enabled>true</enabled>
+   <enabled>false</enabled>
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
@@ -3892,7 +3892,7 @@ reg {
   </parameter>
   <parameter name="REG_pinmux_uart0_usefpga_sel">
    <type>int</type>
-   <value>1</value>
+   <value>0</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -3900,7 +3900,7 @@ reg {
   </parameter>
   <parameter name="REG_pinmux_uart1_usefpga_sel">
    <type>int</type>
-   <value>0</value>
+   <value>1</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -4252,7 +4252,7 @@ reg {
   </parameter>
   <parameter name="REG_pin38_sel">
    <type>int</type>
-   <value>5</value>
+   <value>8</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -4260,7 +4260,7 @@ reg {
   </parameter>
   <parameter name="REG_pin39_sel">
    <type>int</type>
-   <value>5</value>
+   <value>8</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -6558,7 +6558,7 @@ parameters are a RESULT of the module parameters. -->
     <role>reset_n</role>
    </port>
   </interface>
-  <interface name="uart0" kind="conduit_end" version="26.1">
+  <interface name="uart1" kind="conduit_end" version="26.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -6606,61 +6606,61 @@ parameters are a RESULT of the module parameters. -->
    <span>0</span>
    <isStart>false</isStart>
    <port>
-    <name>uart0_cts_n</name>
+    <name>uart1_cts_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>cts_n</role>
    </port>
    <port>
-    <name>uart0_dcd_n</name>
+    <name>uart1_dcd_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>dcd_n</role>
    </port>
    <port>
-    <name>uart0_dsr_n</name>
+    <name>uart1_dsr_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>dsr_n</role>
    </port>
    <port>
-    <name>uart0_dtr_n</name>
+    <name>uart1_dtr_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>dtr_n</role>
    </port>
    <port>
-    <name>uart0_out1_n</name>
+    <name>uart1_out1_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>out1_n</role>
    </port>
    <port>
-    <name>uart0_out2_n</name>
+    <name>uart1_out2_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>out2_n</role>
    </port>
    <port>
-    <name>uart0_ri_n</name>
+    <name>uart1_ri_n</name>
     <direction>Input</direction>
     <width>1</width>
     <role>ri_n</role>
    </port>
    <port>
-    <name>uart0_rts_n</name>
+    <name>uart1_rts_n</name>
     <direction>Output</direction>
     <width>1</width>
     <role>rts_n</role>
    </port>
    <port>
-    <name>uart0_rx</name>
+    <name>uart1_rx</name>
     <direction>Input</direction>
     <width>1</width>
     <role>rx</role>
    </port>
    <port>
-    <name>uart0_tx</name>
+    <name>uart1_tx</name>
     <direction>Output</direction>
     <width>1</width>
     <role>tx</role>
@@ -6908,18 +6908,6 @@ parameters are a RESULT of the module parameters. -->
     <direction>Output</direction>
     <width>1</width>
     <role>mdio0_mdc</role>
-   </port>
-   <port>
-    <name>hps_io_uart1_tx</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>uart1_tx</role>
-   </port>
-   <port>
-    <name>hps_io_uart1_rx</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>uart1_rx</role>
    </port>
    <port>
     <name>hps_io_gpio40</name>

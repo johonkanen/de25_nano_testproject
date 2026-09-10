@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deploy
- date="2026.09.09.11:13:39"
+ date="2026.09.10.14:14:10"
  outputDirectory="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/">
  <perimeter>
   <parameter
@@ -181,20 +181,20 @@
        role="reset_n"
        width="1" />
   </interface>
-  <interface name="uart0" kind="conduit" start="0">
+  <interface name="uart1" kind="conduit" start="0">
    <property name="associatedClock" value="" />
    <property name="associatedReset" value="" />
    <property name="prSafe" value="false" />
-   <port name="uart0_cts_n" direction="input" role="cts_n" width="1" />
-   <port name="uart0_dcd_n" direction="input" role="dcd_n" width="1" />
-   <port name="uart0_dsr_n" direction="input" role="dsr_n" width="1" />
-   <port name="uart0_dtr_n" direction="output" role="dtr_n" width="1" />
-   <port name="uart0_out1_n" direction="output" role="out1_n" width="1" />
-   <port name="uart0_out2_n" direction="output" role="out2_n" width="1" />
-   <port name="uart0_ri_n" direction="input" role="ri_n" width="1" />
-   <port name="uart0_rts_n" direction="output" role="rts_n" width="1" />
-   <port name="uart0_rx" direction="input" role="rx" width="1" />
-   <port name="uart0_tx" direction="output" role="tx" width="1" />
+   <port name="uart1_cts_n" direction="input" role="cts_n" width="1" />
+   <port name="uart1_dcd_n" direction="input" role="dcd_n" width="1" />
+   <port name="uart1_dsr_n" direction="input" role="dsr_n" width="1" />
+   <port name="uart1_dtr_n" direction="output" role="dtr_n" width="1" />
+   <port name="uart1_out1_n" direction="output" role="out1_n" width="1" />
+   <port name="uart1_out2_n" direction="output" role="out2_n" width="1" />
+   <port name="uart1_ri_n" direction="input" role="ri_n" width="1" />
+   <port name="uart1_rts_n" direction="output" role="rts_n" width="1" />
+   <port name="uart1_rx" direction="input" role="rx" width="1" />
+   <port name="uart1_tx" direction="output" role="tx" width="1" />
   </interface>
   <interface name="h2f_user0_clk" kind="clock" start="1">
    <property name="associatedDirectClock" value="" />
@@ -305,8 +305,6 @@
        role="mdio0_mdio"
        width="1" />
    <port name="hps_io_mdio0_mdc" direction="output" role="mdio0_mdc" width="1" />
-   <port name="hps_io_uart1_tx" direction="output" role="uart1_tx" width="1" />
-   <port name="hps_io_uart1_rx" direction="input" role="uart1_rx" width="1" />
    <port name="hps_io_gpio40" direction="bidir" role="gpio40" width="1" />
    <port name="hps_io_gpio41" direction="bidir" role="gpio41" width="1" />
   </interface>
@@ -856,15 +854,15 @@
   </childSourceFiles>
   <messages>
    <message level="Info" culprit="agilex_hps">"Generating: agilex_hps"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_znzlgdq"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_y7heerq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_vzqm2di"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq"</message>
   </messages>
  </entity>
  <entity
    kind="intel_agilex_5_soc"
    version="14.0.0"
-   name="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq">
+   name="agilex_hps_intel_agilex_5_soc_1400_y7heerq">
   <parameter
      name="HPS_HANDOFF_OPTION_STRING"
      value="    HPS_PRESENT: true
@@ -925,7 +923,7 @@
   <parameter name="IO_INPUT_DELAY36" value="-1" />
   <parameter name="IO_OUTPUT_DELAY42" value="-1" />
   <parameter name="FPGA_EMAC1_md_clk_mhz" value="2.5" />
-  <parameter name="UART1_Mode" value="No_flow_control" />
+  <parameter name="UART1_Mode" value="Flow_control" />
   <parameter name="IO_OUTPUT_DELAY41" value="-1" />
   <parameter name="REG_pin10_sel" value="8" />
   <parameter name="REG_io2_output_delay" value="0" />
@@ -976,7 +974,7 @@
   <parameter name="SPIS1_PinMuxing" value="Unused" />
   <parameter name="Periph_gpio_freq_override" value="400.0" />
   <parameter name="JAVA_ERROR_MSG" value="" />
-  <parameter name="REG_pinmux_uart1_usefpga_sel" value="0" />
+  <parameter name="REG_pinmux_uart1_usefpga_sel" value="1" />
   <parameter name="hps_iob1_opd_en" value="false" />
   <parameter name="ED_f2sdram_connectivity" value="1" />
   <parameter name="Pwr_override_cache_size" value="false" />
@@ -1009,7 +1007,7 @@
   <parameter name="ED_f2sdram_data_width" value="256" />
   <parameter name="I2C0_PinMuxing" value="Unused" />
   <parameter name="hps_iob21_opd_en" value="false" />
-  <parameter name="REG_pin39_sel" value="5" />
+  <parameter name="REG_pin39_sel" value="8" />
   <parameter name="REG_io30_output_delay" value="0" />
   <parameter name="OPT_coreboot_sel" value="0" />
   <parameter name="REG_mpllc0_div" value="4" />
@@ -1152,10 +1150,10 @@ pinmux_select {
   value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
   value: 8
@@ -1644,7 +1642,7 @@ reg {
   <parameter name="MPLL_Override" value="true" />
   <parameter name="REG_io5_input_delay" value="0" />
   <parameter name="REG_s2fuser1ctr_src" value="1" />
-  <parameter name="REG_pin38_sel" value="5" />
+  <parameter name="REG_pin38_sel" value="8" />
   <parameter name="REG_nocdiv_softphydiv" value="0" />
   <parameter name="PLL_CLK3" value="Unused" />
   <parameter name="PLL_CLK4" value="Unused" />
@@ -1666,7 +1664,7 @@ reg {
      name="NOC_clk_outputs"
      value="NOC,L4 Free,L4 Peripheral,L4 Slow Peripheral,SoftPHY,CoreSight,CoreSight Debug APB,CoreSight Trace IO" />
   <parameter name="EMAC0_PTP" value="false" />
-  <parameter name="UART0_Mode" value="Flow_control" />
+  <parameter name="UART0_Mode" value="N/A" />
   <parameter name="H2F_IRQ_EMAC0_Enable" value="false" />
   <parameter name="Periph_clk_override" value="false" />
   <parameter name="CM_Mode" value="N/A" />
@@ -1690,7 +1688,7 @@ reg {
   <parameter name="MPU_Events_Enable" value="false" />
   <parameter name="REG_hps_osc_hz" value="25000000" />
   <parameter name="REG_core01ctr_src" value="0" />
-  <parameter name="REG_pinmux_uart0_usefpga_sel" value="1" />
+  <parameter name="REG_pinmux_uart0_usefpga_sel" value="0" />
   <parameter name="MPU_core2_freq_override_mhz" value="800.0" />
   <parameter name="JTAG_Enable" value="false" />
   <parameter name="MPFE_f2s_SMMU" value="0" />
@@ -1883,7 +1881,7 @@ reg {
   <parameter name="OPT_f2sdram_sel" value="0" />
   <parameter
      name="HPS_IO_Enable"
-     value="NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,UART1:TX,UART1:RX,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC" />
+     value="NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC" />
   <parameter name="MPU_clk_override" value="true" />
   <parameter name="REG_gpiodbctr_cnt" value="1" />
   <parameter name="JAVA_WARNING_MSG" value="" />
@@ -1898,7 +1896,7 @@ reg {
   <parameter name="REG_pin13_sel" value="0" />
   <parameter name="REG_ppllm_mdiv" value="120" />
   <parameter name="REG_mpllglob_drefclkdiv" value="0" />
-  <parameter name="UART1_PinMuxing" value="IO" />
+  <parameter name="UART1_PinMuxing" value="FPGA" />
   <parameter name="H2F_IRQ_GPIO0_Enable" value="false" />
   <parameter name="ED_h2f_addr_width" value="26" />
   <parameter name="REG_io34_output_delay" value="0" />
@@ -1958,7 +1956,7 @@ reg {
   <parameter name="MPU_core01_src_override" value="1" />
   <parameter name="REG_nocdiv_l4sysfreeclk" value="2" />
   <parameter name="Pwr_mpu_l3_cache_size" value="2" />
-  <parameter name="UART0_PinMuxing" value="FPGA" />
+  <parameter name="UART0_PinMuxing" value="Unused" />
   <parameter name="I2CEMAC2_PinMuxing" value="Unused" />
   <parameter name="REG_pin46_sel" value="5" />
   <parameter name="DMA_Enable" value="No,No,No,No,No,No,No,No" />
@@ -2119,12 +2117,12 @@ reg {
   <parameter name="REG_emacactr_cnt" value="1" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_7zw7mqq.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_y7heerq.v"
        attributes="CONTAINS_INLINE_CONFIGURATION" />
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_7zw7mqq.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_agilex_5_soc_1400/synth/agilex_hps_intel_agilex_5_soc_1400_y7heerq.v"
        attributes="CONTAINS_INLINE_CONFIGURATION" />
   </childGeneratedFiles>
   <sourceFiles>
@@ -2307,15 +2305,15 @@ reg {
   </childSourceFiles>
   <instantiator instantiator="agilex_hps" as="agilex_hps" />
   <messages>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_znzlgdq"</message>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_agilex_5_soc_1400_y7heerq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_vzqm2di"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq"</message>
   </messages>
  </entity>
  <entity
    kind="intel_sundancemesa_hps"
    version="1.0.0"
-   name="agilex_hps_intel_sundancemesa_hps_100_znzlgdq">
+   name="agilex_hps_intel_sundancemesa_hps_100_vzqm2di">
   <parameter
      name="HPS_HANDOFF_OPTION_STRING"
      value="    HPS_PRESENT: true
@@ -2380,7 +2378,7 @@ reg {
   <parameter name="IO_INPUT_DELAY36" value="-1" />
   <parameter name="IO_OUTPUT_DELAY42" value="-1" />
   <parameter name="FPGA_EMAC1_md_clk_mhz" value="2.5" />
-  <parameter name="UART1_Mode" value="No_flow_control" />
+  <parameter name="UART1_Mode" value="Flow_control" />
   <parameter name="IO_OUTPUT_DELAY41" value="-1" />
   <parameter name="H2F_IRQ_UART0_Enable" value="false" />
   <parameter name="IO_OUTPUT_DELAY40" value="-1" />
@@ -2476,7 +2474,7 @@ reg {
   <parameter name="I3C0_Mode" value="N/A" />
   <parameter
      name="HPS_IO_Enable"
-     value="NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,UART1:TX,UART1:RX,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC" />
+     value="NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,EMAC0:TX_CLK,EMAC0:TX_CTL,EMAC0:RX_CLK,EMAC0:RX_CTL,EMAC0:TXD0,EMAC0:TXD1,EMAC0:RXD0,EMAC0:RXD1,EMAC0:TXD2,EMAC0:TXD3,EMAC0:RXD2,EMAC0:RXD3,SDMMC:DATA0,SDMMC:DATA1,SDMMC:CCLK,HCLK:HPS_OSC_CLK,NONE,SDMMC:DATA2,SDMMC:DATA3,SDMMC:CMD,NONE,NONE,NONE,NONE,NONE,NONE,NONE,NONE,GPIO1:IO16,GPIO1:IO17,NONE,NONE,NONE,NONE,MDIO0:MDIO,MDIO0:MDC" />
   <parameter name="MPU_clk_override" value="true" />
   <parameter name="FPGA_EMAC_PTP_clk_en" value="true" />
   <parameter name="hps_iob24_opd_en" value="false" />
@@ -2491,7 +2489,7 @@ reg {
   <parameter name="H2F_IRQ_USB0_Enable" value="false" />
   <parameter name="FPGA_EMAC2_tx_clk_en" value="true" />
   <parameter name="hps_iob4_opd_en" value="false" />
-  <parameter name="UART1_PinMuxing" value="IO" />
+  <parameter name="UART1_PinMuxing" value="FPGA" />
   <parameter name="H2F_IRQ_GPIO0_Enable" value="false" />
   <parameter
      name="NOC_clk_sources"
@@ -2627,10 +2625,10 @@ pinmux_select {
   value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
   value: 8
@@ -3122,7 +3120,7 @@ reg {
   <parameter name="MPU_core01_src_override" value="1" />
   <parameter name="MPLL_Override" value="true" />
   <parameter name="Pwr_mpu_l3_cache_size" value="2" />
-  <parameter name="UART0_PinMuxing" value="FPGA" />
+  <parameter name="UART0_PinMuxing" value="Unused" />
   <parameter name="PLL_CLK3" value="Unused" />
   <parameter name="I2CEMAC2_PinMuxing" value="Unused" />
   <parameter name="PLL_CLK4" value="Unused" />
@@ -3153,7 +3151,7 @@ reg {
      value="NOC,L4 Free,L4 Peripheral,L4 Slow Peripheral,SoftPHY,CoreSight,CoreSight Debug APB,CoreSight Trace IO" />
   <parameter name="Periph_clk_emac2_sel" value="250" />
   <parameter name="EMAC0_PTP" value="false" />
-  <parameter name="UART0_Mode" value="Flow_control" />
+  <parameter name="UART0_Mode" value="N/A" />
   <parameter name="H2F_IRQ_EMAC0_Enable" value="false" />
   <parameter name="hps_ioa21_opd_en" value="false" />
   <parameter name="EMAC2_Mode" value="N/A" />
@@ -3294,7 +3292,7 @@ reg {
   <parameter name="hps_ioa16_opd_en" value="false" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_vzqm2di.v"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/hps_axi4_ready_latency_adapter.sv"
@@ -3330,12 +3328,12 @@ reg {
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/ready_latency_reset_synchronizer.sv"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.sdc"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_vzqm2di.sdc"
        attributes="" />
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.v"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_vzqm2di.v"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/hps_axi4_ready_latency_adapter.sv"
@@ -3371,7 +3369,7 @@ reg {
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/ready_latency/ready_latency_reset_synchronizer.sv"
        attributes="" />
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_znzlgdq.sdc"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_hps_100/synth/agilex_hps_intel_sundancemesa_hps_100_vzqm2di.sdc"
        attributes="" />
   </childGeneratedFiles>
   <sourceFiles>
@@ -3463,15 +3461,15 @@ reg {
        path="/home/jari/altera_pro/26.1.1/qsys/lib/com.altera.tcl.interpreter.jar" />
   </sourceFiles>
   <childSourceFiles/>
-  <instantiator instantiator="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq" as="sm_hps" />
+  <instantiator instantiator="agilex_hps_intel_agilex_5_soc_1400_y7heerq" as="sm_hps" />
   <messages>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_znzlgdq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_hps_100_vzqm2di"</message>
   </messages>
  </entity>
  <entity
    kind="intel_sundancemesa_mpfe"
    version="1.0.0"
-   name="agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq">
+   name="agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq">
   <parameter
      name="HPS_HANDOFF_STRING"
      value="pinmux_select {
@@ -3589,10 +3587,10 @@ pinmux_select {
   value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
-  value: 5
+  value: 8
 }
 pinmux_select {
   value: 8
@@ -4088,7 +4086,7 @@ reg {
   <parameter name="MPFE_f2sdram_data_width" value="0" />
   <generatedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq.sv"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq.sv"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/ready_latency/mpfe_ready_latency_adapter.sv"
@@ -4126,7 +4124,7 @@ reg {
   </generatedFiles>
   <childGeneratedFiles>
    <file
-       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq.sv"
+       path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq.sv"
        attributes="" />
    <file
        path="/home/jari/dev/de25_nano_testproject/hps/ip/hps_subsys/agilex_hps/intel_sundancemesa_mpfe_100/synth/ready_latency/mpfe_ready_latency_adapter.sv"
@@ -4168,10 +4166,10 @@ reg {
   </sourceFiles>
   <childSourceFiles/>
   <instantiator
-     instantiator="agilex_hps_intel_agilex_5_soc_1400_7zw7mqq"
+     instantiator="agilex_hps_intel_agilex_5_soc_1400_y7heerq"
      as="sm_mpfe" />
   <messages>
-   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_ssuypgq"</message>
+   <message level="Info" culprit="agilex_hps">"Generating: agilex_hps_intel_sundancemesa_mpfe_100_5je2wnq"</message>
   </messages>
  </entity>
 </deploy>

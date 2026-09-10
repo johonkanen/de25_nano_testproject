@@ -124,8 +124,8 @@ entity de25_nano_uart_top is
         ;HPS_ENET_RX_DATA  : in    std_logic_vector(3 downto 0) := (others => '0')
         ;HPS_ENET_MDIO     : inout std_logic
         ;HPS_ENET_MDC      : out   std_logic
-        ;HPS_UART_TX       : out   std_logic                  -- HPS UART1 TX (IOB15)
-        ;HPS_UART_RX       : in    std_logic := '0'            -- HPS UART1 RX (IOB16)
+        -- ;HPS_UART_TX       : out   std_logic                  -- HPS UART1 TX (IOB15)
+        -- ;HPS_UART_RX       : in    std_logic := '0'            -- HPS UART1 RX (IOB16)
         ;HPS_KEY           : inout std_logic
         ;HPS_LED           : inout std_logic
 
@@ -294,16 +294,16 @@ architecture rtl of de25_nano_uart_top is
             lwhps2fpga_rlast                      : in    std_logic                     := 'X';             -- rlast
             lwhps2fpga_rvalid                     : in    std_logic                     := 'X';             -- rvalid
             lwhps2fpga_rready                     : out   std_logic;                                        -- rready
-            hps_uart0_cts_n                       : in    std_logic                     := 'X';             -- cts_n
-            hps_uart0_dcd_n                       : in    std_logic                     := 'X';             -- dcd_n
-            hps_uart0_dsr_n                       : in    std_logic                     := 'X';             -- dsr_n
-            hps_uart0_dtr_n                       : out   std_logic;                                        -- dtr_n
-            hps_uart0_out1_n                      : out   std_logic;                                        -- out1_n
-            hps_uart0_out2_n                      : out   std_logic;                                        -- out2_n
-            hps_uart0_ri_n                        : in    std_logic                     := 'X';             -- ri_n
-            hps_uart0_rts_n                       : out   std_logic;                                        -- rts_n
-            hps_uart0_rx                          : in    std_logic                     := 'X';             -- rx
-            hps_uart0_tx                          : out   std_logic;                                        -- tx
+            agilex_hps_uart1_cts_n                       : in    std_logic                     := 'X';             -- cts_n
+            agilex_hps_uart1_dcd_n                       : in    std_logic                     := 'X';             -- dcd_n
+            agilex_hps_uart1_dsr_n                       : in    std_logic                     := 'X';             -- dsr_n
+            agilex_hps_uart1_dtr_n                       : out   std_logic;                                        -- dtr_n
+            agilex_hps_uart1_out1_n                      : out   std_logic;                                        -- out1_n
+            agilex_hps_uart1_out2_n                      : out   std_logic;                                        -- out2_n
+            agilex_hps_uart1_ri_n                        : in    std_logic                     := 'X';             -- ri_n
+            agilex_hps_uart1_rts_n                       : out   std_logic;                                        -- rts_n
+            agilex_hps_uart1_rx                          : in    std_logic                     := 'X';             -- rx
+            agilex_hps_uart1_tx                          : out   std_logic;                                        -- tx
             hps_io_hps_osc_clk                    : in    std_logic                     := 'X';             -- hps_osc_clk
             hps_io_sdmmc_data0                    : inout std_logic                     := 'X';             -- sdmmc_data0
             hps_io_sdmmc_data1                    : inout std_logic                     := 'X';             -- sdmmc_data1
@@ -325,8 +325,8 @@ architecture rtl of de25_nano_uart_top is
             hps_io_emac0_rxd3                     : in    std_logic                     := 'X';             -- emac0_rxd3
             hps_io_mdio0_mdio                     : inout std_logic                     := 'X';             -- mdio0_mdio
             hps_io_mdio0_mdc                      : out   std_logic;                                        -- mdio0_mdc
-            hps_io_uart1_tx                       : out   std_logic;                                        -- uart1_tx
-            hps_io_uart1_rx                       : in    std_logic                     := 'X';             -- uart1_rx
+            -- hps_io_uart1_tx                       : out   std_logic;                                        -- uart1_tx
+            -- hps_io_uart1_rx                       : in    std_logic                     := 'X';             -- uart1_rx
             hps_io_gpio40                         : inout std_logic                     := 'X';             -- gpio40
             hps_io_gpio41                         : inout std_logic                     := 'X';             -- gpio41
             f2h_irq1_in_irq                       : in    std_logic_vector(31 downto 0) := (others => 'X'); -- irq
@@ -538,18 +538,18 @@ begin
     );
 
 ------------------------------------------------------------------------
-    u_fpga_communications : entity work.fpga_communications
-    generic map (
-        fpga_interconnect_pkg => work.fpga_interconnect_pkg
-        ,g_clock_divider      => g_clock_divider
-    )
-    port map (
-        clock                    => core_clock
-        ,uart_rx                 => FPGA_UART_RX
-        ,uart_tx                 => FPGA_UART_TX
-        ,bus_to_communications   => bus_to_communications
-        ,bus_from_communications => bus_from_communications
-    );
+    -- u_fpga_communications : entity work.fpga_communications
+    -- generic map (
+    --     fpga_interconnect_pkg => work.fpga_interconnect_pkg
+    --     ,g_clock_divider      => g_clock_divider
+    -- )
+    -- port map (
+    --     clock                    => core_clock
+    --     ,uart_rx                 => FPGA_UART_RX
+    --     ,uart_tx                 => FPGA_UART_TX
+    --     ,bus_to_communications   => bus_to_communications
+    --     ,bus_from_communications => bus_from_communications
+    -- );
 
 ------------------------------------------------------------------------
     u_axi_lwh2f_bridge : entity work.axi_lwh2f_bridge
@@ -639,16 +639,16 @@ begin
             lwhps2fpga_rlast                      => lwh2f_rlast,                          --                          .rlast
             lwhps2fpga_rvalid                     => lwh2f_rvalid,                         --                          .rvalid
             lwhps2fpga_rready                     => lwh2f_rready,                         --                          .rready
-            hps_uart0_cts_n                       => '0',                                  --                 hps_uart0.cts_n
-            hps_uart0_dcd_n                       => '0',                                  --                          .dcd_n
-            hps_uart0_dsr_n                       => '0',                                  --                          .dsr_n
-            hps_uart0_dtr_n                       => open,                                 --                          .dtr_n
-            hps_uart0_out1_n                      => open,                                 --                          .out1_n
-            hps_uart0_out2_n                      => open,                                 --                          .out2_n
-            hps_uart0_ri_n                        => '1',                                  --                          .ri_n
-            hps_uart0_rts_n                       => open,                                 --                          .rts_n
-            hps_uart0_rx                          => '1',                                  --                          .rx
-            hps_uart0_tx                          => open,                                 --                          .tx
+            agilex_hps_uart1_cts_n                       => '0',                                  --                 hps_uart0.cts_n
+            agilex_hps_uart1_dcd_n                       => '0',                                  --                          .dcd_n
+            agilex_hps_uart1_dsr_n                       => '0',                                  --                          .dsr_n
+            agilex_hps_uart1_dtr_n                       => open,                                 --                          .dtr_n
+            agilex_hps_uart1_out1_n                      => open,                                 --                          .out1_n
+            agilex_hps_uart1_out2_n                      => open,                                 --                          .out2_n
+            agilex_hps_uart1_ri_n                        => '1',                                  --                          .ri_n
+            agilex_hps_uart1_rts_n                       => open,                                 --                          .rts_n
+            agilex_hps_uart1_rx                          => FPGA_UART_RX,                                --                          .rx
+            agilex_hps_uart1_tx                          => FPGA_UART_TX ,                                --                          .tx
             hps_io_hps_osc_clk                    => HPS_CLK_25,                           --                    hps_io.hps_osc_clk
             hps_io_sdmmc_data0                    => HPS_SD_DATA(0),                       --                          .sdmmc_data0
             hps_io_sdmmc_data1                    => HPS_SD_DATA(1),                       --                          .sdmmc_data1
@@ -670,8 +670,8 @@ begin
             hps_io_emac0_rxd3                     => HPS_ENET_RX_DATA(3),                  --                          .emac0_rxd3
             hps_io_mdio0_mdio                     => HPS_ENET_MDIO,                        --                          .mdio0_mdio
             hps_io_mdio0_mdc                      => HPS_ENET_MDC,                         --                          .mdio0_mdc
-            hps_io_uart1_tx                       => HPS_UART_TX,                          --                          .uart1_tx
-            hps_io_uart1_rx                       => HPS_UART_RX,                          --                          .uart1_rx
+            -- hps_io_uart1_tx                       => HPS_UART_TX,                          --                          .uart1_tx
+            -- hps_io_uart1_rx                       => HPS_UART_RX,                          --                          .uart1_rx
             hps_io_gpio40                         => HPS_KEY,                              --                          .gpio40
             hps_io_gpio41                         => HPS_LED,                              --                          .gpio41
             f2h_irq1_in_irq                       => (others => '0'),                      --               f2h_irq1_in.irq
