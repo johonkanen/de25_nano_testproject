@@ -68,3 +68,10 @@ hps/baremetal-drivers
 # output_files/ above already covers the normal case; this project's own
 # build/ happened to use a differently-named directory once.
 /build/
+
+# linux/build_de25_nano_linux.sh output (ATF/U-Boot/kernel/rootfs build
+# tree) and linux/make_jic.sh output (the combined SPL+bitstream QSPI
+# image) - both fully reproducible from linux/ scripts, shouldn't be
+# committed. This was previously untracked only by omission, not by an
+# actual .gitignore rule - a 16.7 MB .jic sat unignored in here.
+linux/build_output/
