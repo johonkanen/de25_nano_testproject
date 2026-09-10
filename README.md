@@ -197,7 +197,11 @@ lightweight HPS-to-FPGA bridge) is enabled and wired** into the same
 fabric register block above via `axi_lwh2f_bridge.vhd` — reachable from
 the ARM cores as plain memory-mapped I/O, hardware-confirmed (see
 [hps/baremetal_lwh2f_regs/README.md](hps/baremetal_lwh2f_regs/README.md)),
-using the exact same register map `test_uart.py` reaches.
+using the exact same register map `test_uart.py` reaches. Getting this
+bridge to survive its very first real access took a multi-day bring-up
+investigation - see
+[docs/de25_nano_lwh2f_bringup.md](docs/de25_nano_lwh2f_bringup.md) for
+the handoff (root cause was a QSF boot-order setting, not RTL).
 
 `HPS_UART_TX`/`HPS_UART_RX` are HPS UART1, on IOB15/IOB16 in the HPS's own
 pin-mux table — confirmed directly from `agilex_hps.ip`'s pin-mux array,

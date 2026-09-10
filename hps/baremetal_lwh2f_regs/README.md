@@ -18,10 +18,12 @@ still passed; only those two QSF settings differed. Fixed by switching to
 `HPS_INITIALIZATION "AFTER INIT_DONE"` + `QSPI_OWNERSHIP SDM` (both
 defaults, and what Terasic's own GHRD reference design uses) — confirmed
 working through real Linux userspace, with QSPI cold boot and ethernet
-both still working too. See `memory/de25_nano_lwh2f_hps_first_regression.md`
-for the full investigation, including two red herrings (RTL reset wiring,
-an HDSKACK-poll timeout) and a second regression (ethernet PHY MDIO
-attach) hit and fixed along the way.
+both still working too. See
+[docs/de25_nano_lwh2f_bringup.md](../../docs/de25_nano_lwh2f_bringup.md)
+for the handoff writeup (root cause, what was ruled out, follow-on
+work), including two red herrings (RTL reset wiring, an HDSKACK-poll
+timeout) and a second regression (ethernet PHY MDIO attach) hit and
+fixed along the way.
 
 ## Register map
 
