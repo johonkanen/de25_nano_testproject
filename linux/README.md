@@ -25,7 +25,7 @@ the build script).
 | file | what |
 |------|------|
 | `build_de25_nano_linux.sh` | orchestrator — toolchain, ATF, U-Boot, kernel, toybox initramfs, `sdcard.img` |
-| `patches/` | ATF/U-Boot fixes this board's boot chain needs beyond Terasic's upstream forks, applied automatically by `build_de25_nano_linux.sh` — see [Session status](#session-status) |
+| `patches/` | ATF/U-Boot fixes found while chasing the LWH2F bring-up bug, proven unnecessary once the real root cause was found — kept for reference, **not applied** — see `patches/README.md` |
 | `make_jic.sh` | combines the SPL with `output_files/de25_nano_uart.sof` into a QSPI `.jic` |
 | `tools/setup_alpine_rootfs.sh` | replaces the toybox initramfs with a real, persistent Alpine Linux rootfs — see [Real rootfs](#real-rootfs-alpine-linux) |
 | `tools/push_to_nano.py` | pushes/runs a file on the board over the network, driven from the serial console — see [Writing and running your own software](#writing-and-running-your-own-software) |
@@ -272,24 +272,22 @@ connection. Needs `pip install pyserial`. `--serial`, `--nano-ip`, and
 ## Session status
 
 Real QSPI cold boot (SPL, confirmed via `Reset state: Cold`) through the
-whole chain using Terasic's own de25-nano forks, after applying (all via
-`build_de25_nano_linux.sh`, automatically):
+whole chain using Terasic's own de25-nano forks, after applying the
+`config_ddr_size` ATF bug fix (hardcoded to 2GB — same bug independently
+found and fixed in `de25_std_testproject` and in the `freertos-socfpga`
+QSPI work; this board's LPDDR4 is 1GB) — a `sed` in
+`build_de25_nano_linux.sh` itself.
 
-- the `config_ddr_size` ATF bug fix (hardcoded to 2GB — same bug
-  independently found and fixed in `de25_std_testproject` and in the
-  `freertos-socfpga` QSPI work; this board's LPDDR4 is 1GB) — a `sed` in
-  the script itself
-- `linux/patches/arm-trusted-firmware.patch` — ports `init_ncore_ccu()`
-  and `enable_nonsecure_access()` into BL31 (this boot chain uses
-  U-Boot's own SPL instead of ATF's BL2, which normally calls both very
-  early; without them the very first LWH2F AXI access from anything hangs
-  the issuing CPU core forever)
-- `linux/patches/u-boot-socfpga.patch` — relaxes `is_fpga_config_ready()`
-  to accept `EARLY_USERMODE` alone (`FPGA_COMPLETE` never sets on this
-  board after a cold-boot config)
-
-See [docs/de25_nano_lwh2f_bringup.md](../docs/de25_nano_lwh2f_bringup.md)
-for the full LWH2F bring-up investigation these patches came out of.
+`linux/patches/` holds two more fixes (`arm-trusted-firmware.patch` and
+`u-boot-socfpga.patch`) found while chasing a permanent LWH2F-bridge
+freeze, but **neither is applied** — both were proven unnecessary
+(hardware-confirmed on 2026-09-10: reverted both, rebuilt BL31 + U-Boot
+SPL from pristine upstream sources, still booted cleanly with LWH2F
+fully working across two independent power cycles) once the real root
+cause was fixed on the FPGA side instead. See `linux/patches/README.md`
+for what they do and why they're kept anyway, and
+[docs/de25_nano_lwh2f_bringup.md](../docs/de25_nano_lwh2f_bringup.md)
+for the full investigation.
 
 This also depends on `QSPI_OWNERSHIP SDM` + `HPS_INITIALIZATION
 "AFTER INIT_DONE"` in `build_de25_nano_uart.tcl` (the FPGA project, not

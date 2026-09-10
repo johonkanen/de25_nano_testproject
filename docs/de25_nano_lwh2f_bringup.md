@@ -98,15 +98,23 @@ the freeze:
   ATF-driven boot chain's identical handshake completes without a
   timeout), not a signal of anything wrong.
 
-These ATF-side fixes made during the investigation remain in the boot
-chain and are believed to still be necessary (not disproven by the QSF
-fix — they were already in place in every build tested, including the
-successful ones, so they weren't isolated as *unnecessary* either):
-`init_ncore_ccu()` and `enable_nonsecure_access()` ported into BL31 (this
-board's boot chain uses U-Boot's own SPL, not ATF's BL2, so these
-BL2-only init calls were simply missing), and `is_fpga_config_ready()`
-relaxed to accept `EARLY_USERMODE` alone (`FPGA_COMPLETE` never sets on
-this board even on a normal working boot).
+**Update (2026-09-10, later the same day)**: the two ATF/U-Boot fixes
+made during the investigation — `init_ncore_ccu()` +
+`enable_nonsecure_access()` ported into BL31, and `is_fpga_config_ready()`
+relaxed to accept `EARLY_USERMODE` alone — were tested directly and
+turned out to be **unnecessary**, not just unproven. Reverted both
+(rebuilt BL31 and U-Boot SPL from pristine upstream sources, keeping only
+the unrelated `config_ddr_size` DDR-size fix) on top of the corrected QSF
+settings: booted cleanly with no "FPGA not ready" error, and LWH2F worked
+fully (10/10 consecutive reads plus a write/readback round-trip),
+reproduced across two independent power cycles. Likely explanation: under
+`"AFTER INIT_DONE"`, the SDM has already finished its own hardware
+bring-up — including whatever it does for NCore CCU routing and the
+LWSOC2FPGA firewall — by the time HPS starts, so these BL2-only calls
+were compensating for the `"HPS FIRST"` race, not an unconditional
+hardware requirement. Both patches are kept in `linux/patches/` for
+reference (see that directory's own `README.md`) but are no longer
+applied by `build_de25_nano_linux.sh`.
 
 ## Related work built on top of this fix (separate incidents)
 

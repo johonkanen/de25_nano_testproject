@@ -86,13 +86,10 @@ pushd arm-trusted-firmware >/dev/null
         plat/intel/soc/agilex5/soc/agilex5_ddr.c
     grep -q 'config_ddr_size = hw_ddr_size;' plat/intel/soc/agilex5/soc/agilex5_ddr.c || {
         echo "ERROR: DDR-size patch didn't apply - upstream file changed, check by hand"; exit 1; }
-    # This boot chain uses U-Boot's own SPL instead of ATF's BL2, so BL2-only
-    # init calls (NCore CCU crossbar LWSOC2FPGA routing window, the
-    # LWSOC2FPGA bridge firewall unlock) never run, leaving the very first
-    # LWH2F AXI access from anything (Linux, U-Boot, bare metal) hanging the
-    # issuing CPU core forever at the hardware level. See
-    # docs/de25_nano_lwh2f_bringup.md for the full investigation.
-    git apply "${HERE}/patches/arm-trusted-firmware.patch"
+    # patches/arm-trusted-firmware.patch is NOT applied - see
+    # patches/README.md for why (kept for reference only, proven
+    # unnecessary once the FPGA project's HPS_INITIALIZATION/
+    # QSPI_OWNERSHIP settings were corrected).
     make PLAT=agilex5 clean >/dev/null
     make -j"${JOBS}" CROSS_COMPILE="${CROSS_PREFIX}" PLAT=agilex5 ENABLE_LTO=0 bl31
     cp build/agilex5/release/bl31.bin "${OUT}/bl31.bin"
@@ -104,14 +101,10 @@ if [[ ! -d u-boot-socfpga ]]; then
 fi
 pushd u-boot-socfpga >/dev/null
     git checkout -- . 2>/dev/null || true
-    # Upstream is_fpga_config_ready() requires both FPGA_COMPLETE and
-    # EARLY_USERMODE set in SYSMGR_SOC64_FPGA_CONFIG - but FPGA_COMPLETE
-    # never sets on this board after a cold-boot config (confirmed: stays
-    # EARLY_USERMODE-only indefinitely on a fully booted system). Without
-    # this, `bridge enable` (and hence any LWH2F access) fails with
-    # "FPGA not ready. Bridge reset aborted!" forever. See
-    # docs/de25_nano_lwh2f_bringup.md for the full investigation.
-    git apply "${HERE}/patches/u-boot-socfpga.patch"
+    # patches/u-boot-socfpga.patch is NOT applied - see patches/README.md
+    # for why (kept for reference only, proven unnecessary once the FPGA
+    # project's HPS_INITIALIZATION/QSPI_OWNERSHIP settings were
+    # corrected).
     ln -sf "${OUT}/bl31.bin" bl31.bin
     make mrproper
     make "${UBOOT_DEFCONFIG}"
