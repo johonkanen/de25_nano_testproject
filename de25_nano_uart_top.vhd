@@ -360,7 +360,7 @@ architecture rtl of de25_nano_uart_top is
 begin
 
 ------------------------------------------------------------------------
-    core_clock <= CLOCK0_50;
+    core_clock <= h2f_user0_clock;
 
 ------------------------------------------------------------------------
     -- hold reset for ~21 ms after configuration
@@ -548,7 +548,7 @@ begin
     )
     port map (
         clock   => core_clock
-        ,resetn => not h2f_reset_synchronized
+        ,resetn => not system_reset
 
         ,awid    => lwh2f_awid
         ,awaddr  => lwh2f_awaddr
@@ -593,7 +593,7 @@ begin
         port map (
             h2f_reset_reset                       => h2f_reset,                           --                 h2f_reset.reset
             lwhps2fpga_axi_clock_clk              => core_clock,                           --      lwhps2fpga_axi_clock.clk
-            lwhps2fpga_axi_reset_reset            => h2f_reset_synchronized,               --      lwhps2fpga_axi_reset.reset
+            lwhps2fpga_axi_reset_reset            => system_reset,                         --      lwhps2fpga_axi_reset.reset
             lwhps2fpga_awid                       => lwh2f_awid,                           --                lwhps2fpga.awid
             lwhps2fpga_awaddr                     => lwh2f_awaddr,                         --                          .awaddr
             lwhps2fpga_awlen                      => open,                                 --                          .awlen
