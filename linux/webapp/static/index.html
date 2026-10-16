@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DE25-Nano</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <h1>DE25-Nano</h1>
+  <span id="conn" class="pill pill-wait">connecting</span>
+  <span class="spacer"></span>
+  <span class="meta">design <code id="git">--------</code></span>
+  <span class="meta">uptime <code id="uptime">-</code></span>
+</header>
+
+<main class="layout">
+  <section class="board-wrap" aria-label="Board">
+    <div id="board" class="board-host"></div>
+    <div id="ledbar" class="ledbar" aria-label="User LEDs, enlarged"></div>
+    <p class="hint">Click the LED strip to pick a blinker. In <b>software</b> mode, click an LED to toggle it.</p>
+  </section>
+
+  <aside class="panels">
+    <section class="card" id="blinker-card">
+      <h2>LED blinker</h2>
+      <p id="hw-note" class="note" hidden>This bitstream has no hardware blinkers (register 16 bit 0 is clear) - load a build with source/led_blinkers.vhd.</p>
+      <div id="modes" class="modes" role="radiogroup" aria-label="Blinker mode"></div>
+      <p class="sub">Running in the FPGA: <code id="module-id">-</code></p>
+    </section>
+
+    <section class="card" id="leds-card">
+      <h2>LED register <span class="sub">(software mode)</span></h2>
+      <div id="led-bits" class="bits"></div>
+      <p class="sub">LED7 is the heartbeat in software mode.</p>
+    </section>
+
+    <section class="card" id="soc-card">
+      <h2>SoC sensors <span class="sub">(from the SDM)</span></h2>
+      <p id="soc-none" class="note" hidden>No SoC sensors: the kernel needs CONFIG_SENSORS_SOC64=y (linux/build_de25_nano_linux.sh).</p>
+      <div id="soc-temps" class="sensors"></div>
+      <details class="volts">
+        <summary>Supply voltages</summary>
+        <div id="soc-volts" class="sensors"></div>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Fan</h2>
+      <div class="row">
+        <input id="fan-duty" type="range" min="0" max="255" step="1" aria-label="Fan duty">
+        <code id="fan-duty-val" class="num">-</code>
+      </div>
+      <p class="sub"><span id="fan-rpm">-</span> rpm · controller <span id="fan-ok">-</span></p>
+    </section>
+
+    <section class="card">
+      <h2>GUI release</h2>
+      <p class="sub">Running <code id="ver">-</code> <span id="pending" class="pill pill-warn" hidden>on test</span></p>
+      <p class="sub">Previous: <code id="prev">-</code></p>
+      <form id="update-form" class="update">
+        <input id="update-file" type="file" accept=".tar.gz,.tgz" aria-label="Release archive">
+        <input id="update-token" type="password" placeholder="token" autocomplete="current-password" aria-label="Update token">
+        <div class="row">
+          <button type="submit">Upload</button>
+          <button type="button" id="rollback" class="secondary">Roll back</button>
+        </div>
+      </form>
+      <p id="update-msg" class="sub" role="status"></p>
+    </section>
+  </aside>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

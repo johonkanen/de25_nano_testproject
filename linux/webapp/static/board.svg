@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 610 390" class="board" role="img" aria-label="DE25-Nano board, top view">
+  <!-- Drawn after Figure 2-1 (top view) of the DE25-Nano User Manual:
+       positions are the photo's, 1 unit ~ 0.17 mm. Live parts have ids:
+       led0..led7, sw0..sw3, key0..key1, fan-rotor, fan-label. -->
+  <defs>
+    <filter id="glow" x="-150%" y="-150%" width="400%" height="400%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <pattern id="pins" width="11" height="11" patternUnits="userSpaceOnUse">
+      <rect width="11" height="11" fill="#151515"/>
+      <rect x="3.5" y="3.5" width="4" height="4" fill="#c9a94b"/>
+    </pattern>
+  </defs>
+
+  <!-- PCB -->
+  <rect x="1" y="1" width="608" height="388" rx="16" class="pcb"/>
+  <g class="hole">
+    <circle cx="18" cy="20" r="11"/><circle cx="590" cy="20" r="11"/>
+    <circle cx="18" cy="368" r="11"/><circle cx="590" cy="368" r="11"/>
+  </g>
+
+  <!-- headers -->
+  <rect x="132" y="6" width="286" height="24" fill="url(#pins)" class="header"/>
+  <text x="124" y="22" class="lbl" text-anchor="end">DE-GPIO 2x20</text>
+  <rect x="124" y="362" width="286" height="24" fill="url(#pins)" class="header"/>
+  <rect x="38" y="362" width="66" height="24" fill="url(#pins)" class="header"/>
+  <text x="71" y="356" class="lbl">ADC</text>
+
+  <!-- left edge: power, HDMI, MIPI, fan -->
+  <rect x="0" y="38" width="72" height="62" rx="4" class="metal dark"/>
+  <text x="36" y="114" class="lbl">DC 5V</text>
+  <rect x="0" y="136" width="48" height="78" rx="3" class="metal"/>
+  <text x="62" y="178" class="lbl" text-anchor="start">HDMI</text>
+  <rect x="4" y="238" width="22" height="96" rx="2" class="conn-white"/>
+  <text x="36" y="290" class="lbl" text-anchor="start">MIPI</text>
+
+  <g id="fan" class="part" tabindex="0" aria-label="Fan connector">
+    <rect x="92" y="262" width="44" height="34" rx="3" class="conn-white"/>
+    <g transform="translate(114 236)">
+      <circle r="17" class="fan-ring"/>
+      <g id="fan-rotor" class="fan-rotor">
+        <path d="M0 -14 C6 -10 6 -4 0 0 C-6 -4 -6 -10 0 -14Z"/>
+        <path d="M0 -14 C6 -10 6 -4 0 0 C-6 -4 -6 -10 0 -14Z" transform="rotate(120)"/>
+        <path d="M0 -14 C6 -10 6 -4 0 0 C-6 -4 -6 -10 0 -14Z" transform="rotate(240)"/>
+      </g>
+      <circle r="3.5" class="fan-hub"/>
+    </g>
+    <text id="fan-label" x="114" y="312" class="lbl live">FAN</text>
+  </g>
+
+  <!-- memories and the FPGA -->
+  <rect x="172" y="40" width="52" height="42" rx="2" class="chip"/>
+  <rect x="230" y="40" width="52" height="42" rx="2" class="chip"/>
+  <text x="227" y="96" class="lbl">SDRAM</text>
+  <rect x="288" y="38" width="84" height="54" rx="2" class="chip"/>
+  <text x="330" y="106" class="lbl">LPDDR4</text>
+  <rect x="242" y="292" width="86" height="54" rx="2" class="chip"/>
+  <text x="285" y="358" class="lbl">LPDDR4</text>
+
+  <g class="fpga">
+    <rect x="220" y="126" width="132" height="132" rx="4" class="fpga-sub"/>
+    <rect x="228" y="134" width="116" height="116" rx="3" class="fpga-die"/>
+    <text x="286" y="196" class="lbl lbl-on-chip">AGILEX 5</text>
+    <!-- The SoC's temperature sensors (SDM-read, soc64-hwmon), each at its
+         corner of the die - approximate: the three corner sensors by their
+         names; the SDM in the remaining (top left) corner by elimination;
+         the die assumed to sit in the same orientation as this drawing.
+         data-sensor matches the sensor's label; app.js fills them in. -->
+    <g id="soc-sensors">
+      <g class="tsd" data-sensor="SDM"><title>Main Die SDM (approximate position)</title>
+        <circle class="tsd-dot" cx="236" cy="142" r="4"/><text class="tsd-val" x="233" y="163"></text></g>
+      <g class="tsd" data-sensor="top right"><title>Main Die corner top right max (approximate position)</title>
+        <circle class="tsd-dot" cx="336" cy="142" r="4"/><text class="tsd-val" x="339" y="163" text-anchor="end"></text></g>
+      <g class="tsd" data-sensor="bottom left"><title>Main Die corner bottom left max (approximate position)</title>
+        <circle class="tsd-dot" cx="236" cy="242" r="4"/><text class="tsd-val" x="233" y="230"></text></g>
+      <g class="tsd" data-sensor="bottom right"><title>Main Die corner bottom right max (approximate position)</title>
+        <circle class="tsd-dot" cx="336" cy="242" r="4"/><text class="tsd-val" x="339" y="230" text-anchor="end"></text></g>
+    </g>
+  </g>
+
+  <!-- right edge: USB-C, Ethernet -->
+  <rect x="552" y="46" width="56" height="46" rx="8" class="metal"/>
+  <text x="544" y="73" class="lbl" text-anchor="end">HPS USB</text>
+  <rect x="552" y="116" width="56" height="46" rx="8" class="metal"/>
+  <text x="544" y="136" class="lbl" text-anchor="end">USB Blaster III</text>
+  <text x="544" y="148" class="lbl" text-anchor="end">HPS/FPGA UART</text>
+  <rect x="478" y="186" width="130" height="102" rx="4" class="metal"/>
+  <rect x="520" y="214" width="62" height="46" rx="3" class="metal dark"/>
+  <text x="470" y="240" class="lbl" text-anchor="end">Ethernet</text>
+
+  <!-- HPS LED / key (HPS side, not in the FPGA's register map) -->
+  <rect x="392" y="320" width="10" height="7" rx="1" class="led-off"/>
+  <rect x="408" y="314" width="18" height="18" rx="2" class="key-body"/>
+  <text x="408" y="345" class="lbl">HPS</text>
+
+  <!-- slide switches SW3..SW0, left to right -->
+  <g id="switches" class="part">
+    <g id="sw3" class="switch" transform="translate(460 308)"><rect width="22" height="46" rx="2" class="sw-body"/><rect class="sw-knob" x="4" y="25" width="14" height="17" rx="2"/><text x="11" y="-4" class="lbl">SW3</text></g>
+    <g id="sw2" class="switch" transform="translate(488 308)"><rect width="22" height="46" rx="2" class="sw-body"/><rect class="sw-knob" x="4" y="25" width="14" height="17" rx="2"/><text x="11" y="-4" class="lbl">SW2</text></g>
+    <g id="sw1" class="switch" transform="translate(516 308)"><rect width="22" height="46" rx="2" class="sw-body"/><rect class="sw-knob" x="4" y="25" width="14" height="17" rx="2"/><text x="11" y="-4" class="lbl">SW1</text></g>
+    <g id="sw0" class="switch" transform="translate(544 308)"><rect width="22" height="46" rx="2" class="sw-body"/><rect class="sw-knob" x="4" y="25" width="14" height="17" rx="2"/><text x="11" y="-4" class="lbl">SW0</text></g>
+  </g>
+
+  <!-- user LEDs LED7..LED0, left to right -->
+  <g id="leds" class="part" tabindex="0" aria-label="User LEDs - choose a blinker">
+    <rect x="414" y="360" width="84" height="24" rx="3" class="led-strip"/>
+    <g id="led7" class="led" data-led="7" transform="translate(419 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+    <g id="led6" class="led" data-led="6" transform="translate(429 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+    <g id="led5" class="led" data-led="5" transform="translate(439 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+    <g id="led4" class="led" data-led="4" transform="translate(449 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+    <g id="led3" class="led" data-led="3" transform="translate(459 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+    <g id="led2" class="led" data-led="2" transform="translate(469 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+    <g id="led1" class="led" data-led="1" transform="translate(479 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+    <g id="led0" class="led" data-led="0" transform="translate(489 366)"><circle class="led-glow" cx="3.5" cy="6" r="8" filter="url(#glow)"/><rect class="led-body" width="7" height="12" rx="1"/></g>
+  </g>
+
+  <!-- push-buttons KEY1, KEY0 -->
+  <g id="key1" class="key" transform="translate(506 361)"><rect width="24" height="24" rx="3" class="key-body"/><circle class="key-cap" cx="12" cy="12" r="7"/></g>
+  <g id="key0" class="key" transform="translate(538 361)"><rect width="24" height="24" rx="3" class="key-body"/><circle class="key-cap" cx="12" cy="12" r="7"/></g>
+
+  <text x="40" y="340" class="silk">DE25-Nano</text>
+</svg>
