@@ -1,6 +1,7 @@
 // DE25-Nano web GUI: the board drawing, live from /api/events (20 updates a
 // second, polling /api/board if the stream drops), the blinker picker, the
-// LED register, the fan, and GUI release updates.
+// LED register, the fan, the die temperature control loop (plot and
+// controls), and GUI release updates.
 "use strict";
 
 const $ = (id) => document.getElementById(id);
@@ -123,7 +124,9 @@ function buildPanels() {
   }
   const duty = $("fan-duty");
   duty.addEventListener("input", () => { $("fan-duty-val").textContent = duty.value; });
-  duty.addEventListener("change", () => api("/api/fan", { duty: Number(duty.value) }).catch(showError));
+  duty.addEventListener("change", () => api("/api/fan", { duty: Number(duty.value) })
+    .then((r) => { if (r.note) $("ctl-msg").textContent = "Fan slider: " + r.note + "."; })
+    .catch(showError));
   $("update-form").addEventListener("submit", (e) => { e.preventDefault(); upload(); });
   $("rollback").addEventListener("click", rollback);
 }
@@ -212,7 +215,12 @@ function setConn(kind, text) {
 }
 
 function onState(s) {
-  if (s.error) { setConn("bad", "register read failed"); return; }
+  renderControl(s.control);
+  if (s.error) {
+    setConn("bad", s.fpga_unavailable ? "FPGA access unavailable" : "register read failed");
+    renderSoc(s.soc);
+    return;
+  }
   state = s;
   setConn(s.id_ok ? "ok" : "bad", s.id_ok ? "live" : "unexpected id " + s.id.toString(16));
   renderBoard(s);
@@ -224,6 +232,7 @@ function onState(s) {
 function connect() {
   if (!window.EventSource) return poll();
   const es = new EventSource("/api/events");
+  es.onopen = () => loadControl();      // (re)fill the plot from the server's history
   es.onmessage = (e) => onState(JSON.parse(e.data));
   es.onerror = () => {
     setConn("wait", "reconnecting");
@@ -248,9 +257,18 @@ async function loadVersion() {
   if (!managed) $("update-msg").textContent = "Not an installed release - updates are off (development run).";
   // This page loaded and read the board: the release on test works. Keep it.
   if (managed && release.pending && release.pending === release.release) {
-    await api("/api/update/confirm", {});
-    $("update-msg").textContent = `Release ${release.release} confirmed.`;
-    $("pending").hidden = true;
+    // the server only confirms once all three processes answer; retry a while
+    for (let i = 0; i < 20; i++) {
+      try {
+        await api("/api/update/confirm", {});
+        $("update-msg").textContent = `Release ${release.release} confirmed.`;
+        $("pending").hidden = true;
+        return;
+      } catch (e) {
+        $("update-msg").textContent = "Not confirmed yet: " + e.message;
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+    }
   }
 }
 
@@ -345,7 +363,223 @@ function sha256Fallback(data) {
   return [...H].map((x) => x.toString(16).padStart(8, "0")).join("");
 }
 
+// ---------------------------------------------------------------- temperature control
+// The loop runs in temp_control.py on the board; this shows its state, the
+// last 10 minutes (from GET /api/control, then one point a second from the
+// event stream) and sends mode / setpoint changes.
+const ctl = { hist: [], boot: null, last: null, span: 600, hover: null, busy: false };
+const GAP_S = 3.5;           // samples further apart than this are drawn as a gap
+
+async function loadControl() {
+  try {
+    const r = await api("/api/control");
+    ctl.hist = r.history || [];
+    ctl.span = r.history_s || 600;
+    ctl.boot = r.state && r.state.boot;
+    renderControl(r.state);
+    drawPlots();
+  } catch (e) { /* the event stream shows the state anyway */ }
+}
+
+function buildControl() {
+  document.querySelectorAll("#ctl-modes button").forEach((b) => {
+    b.addEventListener("click", () => sendControl({ mode: b.dataset.mode }));
+  });
+  $("sp-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = Number($("sp-input").value);
+    if (!(v >= 25 && v <= 85)) { $("ctl-msg").textContent = "Setpoint 25..85 °C."; return; }
+    sendControl({ setpoint: v }).then(() => $("sp-input").blur());
+  });
+  ["plot-temp", "plot-duty"].forEach((id) => {
+    const host = $(id);
+    host.addEventListener("pointermove", (e) => hoverAt(host, e.clientX));
+    host.addEventListener("pointerdown", (e) => hoverAt(host, e.clientX));
+    host.addEventListener("pointerleave", () => { ctl.hover = null; drawPlots(); });
+  });
+  let rt = null;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawPlots, 100); });
+}
+
+async function sendControl(body) {
+  ctl.busy = true;
+  try {
+    const r = await api("/api/control", body);
+    $("ctl-msg").textContent = body.mode ? `Mode ${r.state.mode}.` : `Setpoint ${r.state.setpoint.toFixed(1)} °C.`;
+    renderControl({ available: true, ...r.state });
+  } catch (e) {
+    $("ctl-msg").textContent = "Refused: " + e.message;
+  } finally { ctl.busy = false; }
+}
+
+function renderControl(c) {
+  if (!c) return;
+  const ok = !!c.available;
+  $("ctl-none").hidden = ok;
+  document.querySelectorAll("#ctl-modes button, #sp-form input, #sp-form button")
+    .forEach((el) => { el.disabled = !ok; });
+  if (!ok) {
+    setPill("ctl-status", "bad", "not running");
+    $("fan-note").textContent = "Temperature control is not running: the slider writes the fan register directly.";
+    return;
+  }
+  if (c.boot && ctl.boot && c.boot !== ctl.boot) { ctl.boot = c.boot; loadControl(); }
+  ctl.boot = ctl.boot || c.boot;
+  if (c.t !== undefined && (!ctl.last || c.t > ctl.last.t)) {
+    const h = ctl.hist;
+    if (!h.length || c.t > h[h.length - 1][0]) {
+      h.push([c.t, c.measured, c.mode === "auto" ? c.setpoint : null, c.duty, c.rpm]);
+      while (h.length && h[0][0] < c.t - ctl.span - 30) h.shift();
+    }
+    ctl.last = c;
+    drawPlots();
+  }
+  document.querySelectorAll("#ctl-modes button").forEach((b) => {
+    b.setAttribute("aria-checked", String(b.dataset.mode === c.mode));
+  });
+  const sp = $("sp-input");
+  if (document.activeElement !== sp && !ctl.busy) sp.value = c.setpoint.toFixed(1);
+  const withUnit = (v, d) => v == null ? "-" : `${v.toFixed(d)}<span class="unit"> °C</span>`;
+  $("ctl-meas").innerHTML = withUnit(c.measured, 2);
+  $("ctl-hottest").textContent = c.hottest ? shortLabel(c.hottest) : "no sensor";
+  $("ctl-hottest").title = c.hottest || "";
+  $("ctl-sp").innerHTML = withUnit(c.setpoint, 1);
+  $("ctl-err").textContent = c.mode !== "auto" ? "loop " + c.mode
+    : c.error == null ? "-" : "error " + (c.error >= 0 ? "+" : "") + c.error.toFixed(2) + " °C";
+  $("ctl-duty").textContent = c.duty == null ? "-" : String(c.duty);
+  $("ctl-rpm").textContent = c.rpm == null ? "-" : c.rpm + " rpm";
+  // the pill: a word, not color alone
+  if (!c.fpga_ok) setPill("ctl-status", "bad", "FPGA access unavailable");
+  else if (c.mode === "off") setPill("ctl-status", "wait", "off");
+  else if (c.mode === "manual") setPill("ctl-status", "wait", "manual");
+  else if (!c.sensor_ok) setPill("ctl-status", "bad", "no temperature");
+  else if (c.saturated === "low") setPill("ctl-status", "warn", "saturated: fan at minimum");
+  else if (c.saturated === "high") setPill("ctl-status", "bad", "saturated: fan at full");
+  else if (c.settled) setPill("ctl-status", "ok", "settled ±" + c.settle_band + " °C");
+  else setPill("ctl-status", "wait", "regulating");
+  $("ctl-status").title = c.status || "";
+  const mean = c.mean_error == null ? "-" : (c.mean_error >= 0 ? "+" : "") + c.mean_error.toFixed(2) + " °C";
+  $("ctl-detail").textContent = `${c.status}. Kp ${c.kp} duty/°C, Ki ${c.ki} duty/(°C·s), ` +
+    `P ${c.p}, I ${c.i}, mean error over the last 30 s ${mean}, sample every ${c.period_s} s.`;
+  $("fan-note").textContent = c.mode === "auto"
+    ? "Temperature control is on auto: moving the slider switches it to manual."
+    : c.mode === "manual" ? `Manual: the slider sets the loop's duty (at least ${c.duty_min}).`
+    : "Temperature control is off: the slider writes the fan register directly.";
+}
+
+function setPill(id, kind, text) {
+  const el = $(id);
+  el.className = "pill pill-" + kind;
+  el.textContent = text;
+}
+
+function hoverAt(host, clientX) {
+  const svgEl = host.querySelector("svg");
+  if (!svgEl || !ctl.hist.length) return;
+  const r = svgEl.getBoundingClientRect();
+  const g = ctl.geom;
+  const x = (clientX - r.left) * (g.w / r.width);
+  const t = g.t1 - (g.x1 - x) / (g.x1 - g.x0) * ctl.span;
+  let best = null;
+  for (const p of ctl.hist) if (!best || Math.abs(p[0] - t) < Math.abs(best[0] - t)) best = p;
+  ctl.hover = best && Math.abs(best[0] - t) < 10 ? best : null;
+  drawPlots();
+}
+
+const fmtAgo = (s) => s < 1 ? "now" : s < 60 ? `${Math.round(s)} s ago` : `${Math.floor(s / 60)} min ${Math.round(s % 60)} s ago`;
+
+function drawPlots() {
+  const hostT = $("plot-temp"), hostD = $("plot-duty");
+  const w = Math.max(280, Math.round(hostT.clientWidth || 600));
+  const h = ctl.hist;
+  const t1 = h.length ? h[h.length - 1][0] : 0;
+  const t0 = t1 - ctl.span;
+  const x0 = 38, x1 = w - 8;
+  ctl.geom = { w, x0, x1, t1 };
+  const X = (t) => x0 + (t - t0) / ctl.span * (x1 - x0);
+  const pts = h.filter((p) => p[0] >= t0);
+
+  // temperature: span at least 3 C so sensor noise looks like noise
+  const vals = pts.flatMap((p) => [p[1], p[2]]).filter((v) => v != null);
+  const sp = ctl.last && ctl.last.mode === "auto" ? ctl.last.setpoint : null;
+  if (sp != null) vals.push(sp);
+  let lo = vals.length ? Math.min(...vals) : 40, hi = vals.length ? Math.max(...vals) : 44;
+  if (hi - lo < 3) { const m = (hi + lo) / 2; lo = m - 1.5; hi = m + 1.5; }
+  const step = hi - lo > 12 ? 5 : hi - lo > 6 ? 2 : hi - lo > 3 ? 1 : 0.5;
+  lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  hostT.innerHTML = plotSvg({
+    w, hgt: 170, x0, x1, X, t0, pts, lo, hi, step, key: 1, cls: "line-temp", dot: "dot-temp",
+    fmt: (v) => (step < 1 ? v.toFixed(1) : String(v)),
+    extra: (Y) => {
+      if (sp == null) return "";
+      const band = ctl.last.settle_band || 0.3;
+      return `<rect class="band" x="${x0}" y="${Y(sp + band).toFixed(1)}" width="${x1 - x0}" height="${(Y(sp - band) - Y(sp + band)).toFixed(1)}"/>` +
+        `<line class="sp" x1="${x0}" x2="${x1}" y1="${Y(sp).toFixed(1)}" y2="${Y(sp).toFixed(1)}"/>` +
+        `<text class="sp-label" x="${x1 - 4}" y="${(Y(sp) - 5).toFixed(1)}" text-anchor="end">setpoint ${sp.toFixed(1)} °C</text>`;
+    },
+  });
+  hostD.innerHTML = plotSvg({
+    w, hgt: 96, x0, x1, X, t0, pts, lo: 0, hi: 255, ticks: [0, 128, 255], key: 3, cls: "line-duty", dot: "dot-duty",
+    fmt: String, xAxis: true,
+    extra: (Y) => `<line class="floor" x1="${x0}" x2="${x1}" y1="${Y(30)}" y2="${Y(30)}"/>` +
+      `<text class="sp-label" x="${x1 - 4}" y="${Y(30) - 4}" text-anchor="end">min 30</text>`,
+  });
+  const tip = $("plot-tip");
+  const p = ctl.hover;
+  if (!p) { tip.hidden = true; return; }
+  tip.hidden = false;
+  tip.innerHTML = `${fmtAgo(t1 - p[0])}<br>hottest <b>${p[1] == null ? "-" : p[1].toFixed(2) + " °C"}</b>` +
+    (p[2] != null ? `<br>setpoint <b>${p[2].toFixed(1)} °C</b>` : "") +
+    `<br>fan duty <b>${p[3] == null ? "-" : p[3]}</b>${p[4] != null ? " · " + p[4] + " rpm" : ""}`;
+  const fig = hostT.parentElement.getBoundingClientRect();
+  const px = X(p[0]) / w * hostT.getBoundingClientRect().width;
+  const tw = tip.offsetWidth;
+  tip.style.left = Math.max(0, Math.min(fig.width - tw, px + (px > fig.width / 2 ? -tw - 12 : 12))) + "px";
+}
+
+function plotSvg(o) {
+  const top = 6, bottom = o.hgt - (o.xAxis ? 20 : 6);
+  const Y = (v) => bottom - (v - o.lo) / (o.hi - o.lo) * (bottom - top);
+  let out = `<svg viewBox="0 0 ${o.w} ${o.hgt}" width="${o.w}" height="${o.hgt}" aria-hidden="true">`;
+  const ticks = o.ticks || [];
+  if (!o.ticks) for (let v = o.lo; v <= o.hi + 1e-9; v += o.step) ticks.push(+v.toFixed(2));
+  for (const v of ticks) {
+    out += `<line class="grid" x1="${o.x0}" x2="${o.x1}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/>` +
+      `<text class="axis" x="${o.x0 - 6}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end">${o.fmt(v)}</text>`;
+  }
+  const every = o.w < 520 ? 5 : 2;          // minutes between time ticks
+  for (let m = 0; m <= ctl.span / 60; m += every) {
+    const x = o.X(o.t0 + ctl.span - m * 60);
+    out += `<line class="grid" x1="${x.toFixed(1)}" x2="${x.toFixed(1)}" y1="${top}" y2="${bottom}"/>`;
+    if (o.xAxis) {
+      const anchor = m === 0 ? "end" : m >= ctl.span / 60 ? "start" : "middle";
+      out += `<text class="axis" x="${x.toFixed(1)}" y="${o.hgt - 5}" text-anchor="${anchor}">${m === 0 ? "now" : "−" + m + " min"}</text>`;
+    }
+  }
+  out += o.extra(Y);
+  // the line, broken where samples are missing (a controller restart, a gap)
+  let d = "", prev = null;
+  for (const p of o.pts) {
+    const v = p[o.key];
+    if (v == null) { prev = null; continue; }
+    const cmd = prev && p[0] - prev[0] <= GAP_S ? "L" : "M";
+    d += `${cmd}${o.X(p[0]).toFixed(1)} ${Y(Math.max(o.lo, Math.min(o.hi, v))).toFixed(1)}`;
+    prev = p;
+  }
+  if (d) out += `<path class="${o.cls}" d="${d}"/>`;
+  else out += `<text class="empty" x="${(o.x0 + o.x1) / 2}" y="${(top + bottom) / 2}" text-anchor="middle">waiting for samples</text>`;
+  const hv = ctl.hover;
+  if (hv && hv[o.key] != null) {
+    const x = o.X(hv[0]).toFixed(1);
+    out += `<line class="cross" x1="${x}" x2="${x}" y1="${top}" y2="${bottom}"/>` +
+      `<circle class="${o.dot}" cx="${x}" cy="${Y(hv[o.key]).toFixed(1)}" r="4.5"/>`;
+  }
+  return out + "</svg>";
+}
+
 // ---------------------------------------------------------------- start
+buildControl();
+drawPlots();
 buildPanels();
 buildLedBar();
 loadBoard().then(connect);

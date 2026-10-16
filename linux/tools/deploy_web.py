@@ -29,7 +29,7 @@ import urllib.error
 import urllib.request
 
 WEBAPP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "webapp")
-FILES = ("fpga_web.py", "VERSION", "static")
+FILES = ("fpga_web.py", "fpga_access.py", "temp_control.py", "VERSION", "static")
 
 
 def git_describe():

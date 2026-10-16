@@ -20,6 +20,45 @@
     <div id="board" class="board-host"></div>
     <div id="ledbar" class="ledbar" aria-label="User LEDs, enlarged"></div>
     <p class="hint">Click the LED strip to pick a blinker. In <b>software</b> mode, click an LED to toggle it.</p>
+
+    <section class="card ctl" id="ctl-card" aria-labelledby="ctl-title">
+      <div class="ctl-head">
+        <h2 id="ctl-title">Die temperature control</h2>
+        <span id="ctl-status" class="pill pill-wait">-</span>
+      </div>
+      <p id="ctl-none" class="note" hidden>The temperature controller is not answering (temp_control.py) - the fan keeps its last duty.</p>
+      <div class="ctl-stats">
+        <div class="stat"><span class="stat-k">Hottest die</span><span class="stat-v" id="ctl-meas">-</span><span class="stat-s" id="ctl-hottest">-</span></div>
+        <div class="stat"><span class="stat-k">Setpoint</span><span class="stat-v" id="ctl-sp">-</span><span class="stat-s" id="ctl-err">-</span></div>
+        <div class="stat"><span class="stat-k">Fan duty</span><span class="stat-v" id="ctl-duty">-</span><span class="stat-s" id="ctl-rpm">-</span></div>
+      </div>
+      <figure class="plot">
+        <figcaption>Hottest die temperature (°C), last 10 minutes</figcaption>
+        <div id="plot-temp" class="plot-host" role="img" aria-label="Hottest die temperature over the last 10 minutes"></div>
+        <figcaption>Fan duty (0-255)</figcaption>
+        <div id="plot-duty" class="plot-host" role="img" aria-label="Fan duty over the last 10 minutes"></div>
+        <div id="plot-tip" class="plot-tip" hidden></div>
+      </figure>
+      <div class="ctl-controls">
+        <div id="ctl-modes" class="seg" role="radiogroup" aria-label="Control mode">
+          <button type="button" role="radio" data-mode="auto" aria-checked="false" title="PI loop holds the hottest die sensor at the setpoint">auto</button>
+          <button type="button" role="radio" data-mode="manual" aria-checked="false" title="A fixed fan duty (the Fan slider)">manual</button>
+          <button type="button" role="radio" data-mode="off" aria-checked="false" title="The loop leaves the fan alone">off</button>
+        </div>
+        <form id="sp-form" class="sp-form">
+          <label for="sp-input">Setpoint</label>
+          <input id="sp-input" type="number" min="25" max="85" step="0.1" inputmode="decimal">
+          <span class="unit">°C</span>
+          <button type="submit">Set</button>
+        </form>
+      </div>
+      <p id="ctl-msg" class="sub" role="status"></p>
+      <details class="volts">
+        <summary>Loop details</summary>
+        <p class="sub" id="ctl-detail">-</p>
+        <p class="sub">PI on the hottest sensor, once a second; the fan duty stays within 30..255 (below 30 the fan can stall). The fan can only cool: at minimum fan and still below the setpoint, or at full fan and still above it, the loop is <b>saturated</b> and says so. If the controller stops, the fan keeps its duty and is raised to 128 after 10 s; the fan chip's own over-temperature fail-safe stays on.</p>
+      </details>
+    </section>
   </section>
 
   <aside class="panels">
@@ -53,6 +92,7 @@
         <code id="fan-duty-val" class="num">-</code>
       </div>
       <p class="sub"><span id="fan-rpm">-</span> rpm · controller <span id="fan-ok">-</span></p>
+      <p class="sub" id="fan-note"></p>
     </section>
 
     <section class="card">

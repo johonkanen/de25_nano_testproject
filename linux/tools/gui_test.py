@@ -2,8 +2,11 @@
 """gui_test.py [url] [--shots DIR] - drive the DE25-Nano web GUI in a real
 (headless) Chromium over the DevTools protocol: open the page, click each
 blinker mode and check the page (and the register file behind it) follow,
-toggle an LED in software mode, then screenshot the page at desktop and
-phone widths. Exit status 1 when the page does not show what was expected.
+toggle an LED in software mode, check the temperature control plot renders
+and its mode buttons, setpoint and the fan slider reach the controller (the
+loop's settings are put back afterwards), then screenshot the page at
+desktop and phone widths. Exit status 1 when the page does not show what
+was expected.
 
 Works against the board or a local `fpga_web.py --sim`:
     python3 linux/webapp/fpga_web.py --sim --port 8000 &
@@ -103,8 +106,85 @@ class Page:
         return r.get("result", {}).get("value")
 
 
-def api(path):
-    return json.load(urllib.request.urlopen(URL.rstrip("/") + path, timeout=5))
+def api(path, body=None):
+    req = urllib.request.Request(URL.rstrip("/") + path,
+                                 data=None if body is None else json.dumps(body).encode(),
+                                 headers={"Content-Type": "application/json"})
+    return json.load(urllib.request.urlopen(req, timeout=5))
+
+
+def check(ok, text):
+    global failures
+    failures += not ok
+    print(f"{'PASS' if ok else 'FAIL'}  {text}")
+    return ok
+
+
+def wait_for(fn, timeout=4.0):
+    t0 = time.time()
+    while True:
+        v = fn()
+        if v or time.time() - t0 > timeout:
+            return v
+        time.sleep(0.3)
+
+
+def control_tests(page):
+    """the temperature control card: plot, mode buttons, setpoint, slider"""
+    c0 = api("/api/control")["state"]
+    if not check(c0.get("available"), f"temperature controller answers: {c0.get('status') or c0.get('error')}"):
+        return
+    time.sleep(2.5)                     # a few samples for the plot
+    plot = page.js('''(() => {
+        const t = document.querySelector("#plot-temp svg"), d = document.querySelector("#plot-duty svg");
+        const lt = t && t.querySelector("path.line-temp"), ld = d && d.querySelector("path.line-duty");
+        return {temp: lt ? lt.getAttribute("d").split(/[ML]/).length - 1 : 0,
+                duty: ld ? ld.getAttribute("d").split(/[ML]/).length - 1 : 0,
+                sp: !!(t && t.querySelector("line.sp")),
+                spText: (t && t.querySelector(".sp-label") || {}).textContent || "",
+                width: t ? t.getBoundingClientRect().width : 0,
+                pill: document.getElementById("ctl-status").textContent};
+    })()''')
+    check(plot["temp"] >= 2 and plot["duty"] >= 2 and plot["width"] > 200 and
+          (plot["sp"] or c0["mode"] != "auto"),
+          f"control plot: {plot['temp']} temperature points, {plot['duty']} duty points, "
+          f"setpoint line {plot['sp']} ({plot['spText']!r}), {plot['width']:.0f} px wide, status {plot['pill']!r}")
+    # hover: the crosshair and the tooltip
+    page.js('''(() => { const h = document.getElementById("plot-temp"), r = h.getBoundingClientRect();
+        h.dispatchEvent(new PointerEvent("pointermove", {clientX: r.right - 40, clientY: r.top + 40, bubbles: true})); })()''')
+    time.sleep(0.3)
+    tip = page.js('!document.getElementById("plot-tip").hidden && document.getElementById("plot-tip").textContent')
+    check(bool(tip) and "hottest" in tip, f"plot hover tooltip: {tip!r}")
+    page.js('document.getElementById("plot-temp").dispatchEvent(new PointerEvent("pointerleave"))')
+
+    try:
+        for mode in ("manual", "off", "auto"):
+            page.js(f'document.querySelector("#ctl-modes [data-mode={mode}]").click()')
+            got = wait_for(lambda: api("/api/control")["state"].get("mode") == mode)
+            shown = wait_for(lambda: (lambda m: m if m == mode else None)(page.js(
+                'document.querySelector("#ctl-modes [aria-checked=true]")?.dataset.mode')), 2.0)
+            check(got and shown == mode, f"mode button {mode}: controller {api('/api/control')['state']['mode']}, page {shown}")
+        sp_new = 43.5 if abs(c0["setpoint"] - 43.5) > 0.05 else 41.5
+        page.js(f'(() => {{ const i = document.getElementById("sp-input"); i.focus(); i.value = "{sp_new}";'
+                ' document.querySelector("#sp-form button").click(); })()')
+        got = wait_for(lambda: abs(api("/api/control")["state"]["setpoint"] - sp_new) < 0.01)
+        time.sleep(1.5)
+        label = page.js('document.querySelector("#plot-temp .sp-label")?.textContent')
+        check(got and label and f"{sp_new:.1f}" in label, f"setpoint {sp_new}: controller "
+              f"{api('/api/control')['state']['setpoint']}, plot label {label!r}")
+        # the fan slider, with the loop on auto, switches it to manual at that duty
+        page.js('(() => { const d = document.getElementById("fan-duty"); d.value = 90;'
+                ' d.dispatchEvent(new Event("change")); })()')
+        st = wait_for(lambda: (lambda s: s if s["mode"] == "manual" and s["manual_duty"] == 90 else None)(
+            api("/api/control")["state"]))
+        time.sleep(1.5)
+        duty = api("/api/board")["fan"]["duty"]
+        check(bool(st) and duty == 90, f"fan slider 90 in auto: controller {api('/api/control')['state']['mode']}, "
+              f"register 9 = {duty}")
+    finally:
+        api("/api/control", {"mode": c0["mode"], "setpoint": c0["setpoint"],
+                             "manual_duty": c0["manual_duty"]})
+        print(f"      (put back: mode {c0['mode']}, setpoint {c0['setpoint']}, manual duty {c0['manual_duty']})")
 
 
 def shot(page, name, width, height):
@@ -174,7 +254,11 @@ try:
     failures += not ok
     print(f"{'PASS' if ok else 'FAIL'}  click LED2 in software mode: register 5 {before:#04x} -> {after:#04x}")
 
+    control_tests(page)
+
     if SHOTS:
+        time.sleep(2)
+        shot(page, "control.png", 1280, 900)
         page.js('[...document.querySelectorAll("#modes button")].find(b => b.textContent === "sparkle").click()')
         time.sleep(1.0)
         failures += not shot(page, "phone.png", 390, 844)

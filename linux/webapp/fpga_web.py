@@ -2,71 +2,73 @@
 """
 fpga_web.py - the DE25-Nano's web GUI, served on the board's own IP: a
 drawing of the board with its LEDs, switches, keys and fan live, the LED
-blinker picker, and over-the-network updates of this GUI itself.
+blinker picker, the die temperature control loop, and over-the-network
+updates of this GUI itself.
 
-The FPGA side is the de25_nano_uart register file, reached over the LWH2F
-bridge (the same registers hps/baremetal_lwh2f_regs/ reaches from bare
-metal; de25_nano_uart_top.vhd's header has the map). The LED blinkers are FPGA
-modules (source/led_blinkers.vhd, source/blinkers/); this only picks the
-mode (register 13) and shows what the LEDs do (registers 14..17).
+One of three processes (linux/webapp/README.md, "Architecture"):
+    fpga_access.py   the only one that maps /dev/mem: registers over <run>/fpga.sock
+    temp_control.py  the die temperature loop: state and commands over <run>/control.sock
+    fpga_web.py      this: HTTP, talks to the other two
+The supervisor (linux/board/de25web-supervisor.sh) starts them in that order.
+
+The FPGA side is the de25_nano_uart register file (de25_nano_uart_top.vhd's
+header has the map). The LED blinkers are FPGA modules
+(source/led_blinkers.vhd, source/blinkers/); this only picks the mode
+(register 13) and shows what the LEDs do (registers 14..17).
 
 Stdlib only - runs on the Alpine rootfs (`apk add python3`).
 
 Usage:
-    python3 fpga_web.py [--port 80] [--bind 0.0.0.0]   # on the board
-    python3 fpga_web.py --sim --port 8000              # anywhere: simulated registers
+    python3 fpga_web.py [--port 80] [--bind 0.0.0.0] [--run /run/de25web]
+    python3 fpga_web.py --sim --port 8000      # with fpga_access.py --sim, temp_control.py --sim
 
 Layout on the board (installed by linux/tools/install_webapp.py; see
 linux/webapp/README.md):
-    /opt/de25web/releases/<name>/   one GUI release (this file, static/, VERSION)
+    /opt/de25web/releases/<name>/   one GUI release (the three .py, static/, VERSION)
     /opt/de25web/current            -> the release running
     /opt/de25web/previous           -> the one before (rollback target)
     /opt/de25web/pending            exists while a new release is on test
-    /opt/de25web/supervisor.sh      starts this, reverts a release that fails its test
+    /opt/de25web/supervisor.sh      starts the three, reverts a release that fails its test
     /opt/de25web/token              if present, required (X-Token) for updates
+    /opt/de25web/control.json       the temperature loop's settings
 
 API:
-    GET  /api/board                 every register, decoded
+    GET  /api/board                 every register, decoded, plus soc and control
     GET  /api/events                the same, as server-sent events, 20 a second
+    GET  /api/control               the temperature loop: state and the last 10 min
+    POST /api/control   {"mode": "auto"|"manual"|"off", "setpoint": 42.0, "manual_duty": 80}
     POST /api/blinker   {"mode": "scanner"}  (or 0..5)
     POST /api/leds      {"value": 0x55}      LED register 5 (blinker mode "software")
-    POST /api/fan       {"duty": 0..255}
+    POST /api/fan       {"duty": 0..255}     loop in auto/manual: becomes manual at this duty
     GET  /api/read?reg=N, POST /api/write {"reg": N, "value": V}   raw access
     GET  /api/version               GUI release, previous, whether on test
     POST /api/update                body: a release .tar.gz; headers X-Sha256, X-Token
-    POST /api/update/confirm        keep the release on test
+    POST /api/update/confirm        keep the release on test (only when all three answer)
     POST /api/update/rollback       back to the previous release (X-Token)
 """
 import argparse
+import collections
 import hashlib
 import io
 import json
-import math
-import mmap
 import os
-import random
-import re
 import shutil
-import struct
+import sys
 import tarfile
 import threading
 import time
 
 HERE = os.path.dirname(os.path.realpath(__file__))   # through the "current" link
+sys.path.insert(0, HERE)
 
-LWH2F_BASE = 0x20000000
-REG_STRIDE = 0x10          # each register is 16 bytes apart: LWH2F_BASE + (n << 4)
-MAP_SIZE = 0x1000          # 4 KB window: registers 0..255
-PAGE_SIZE = mmap.PAGESIZE
-
-# register numbers - de25_nano_uart_top.vhd's header has the full map
-REG_ID, REG_GIT, REG_LOOPBACK, REG_READ_COUNT, REG_LEDS = 1, 2, 3, 4, 5
-REG_SW, REG_KEY, REG_UPTIME = 6, 7, 8
-REG_FAN_DUTY, REG_FAN_RPM, REG_FAN_TACH, REG_FAN_STATUS = 9, 10, 11, 12
-REG_BLINKER, REG_LEVELS0, REG_LEVELS1, REG_FEATURES, REG_BLINKER_ID = 13, 14, 15, 16, 17
-
-BOARD_ID = 0x0000DE25
-FEATURE_HW_BLINKERS = 1 << 0
+from fpga_access import (BOARD_ID, FEATURE_HW_BLINKERS, FAN_MIN_DUTY,  # noqa: E402
+                         REG_BLINKER, REG_BLINKER_ID, REG_FAN_DUTY, REG_FAN_RPM,
+                         REG_FAN_STATUS, REG_FAN_TACH, REG_FEATURES, REG_GIT, REG_ID,
+                         REG_KEY, REG_LEDS, REG_LEVELS0, REG_LEVELS1, REG_LOOPBACK,
+                         REG_READ_COUNT, REG_SW, REG_UPTIME, FpgaClient, FpgaUnavailable,
+                         hwmon_root, run_dir)
+from temp_control import (HISTORY_S, ControlClient, ControlUnavailable,  # noqa: E402
+                          find_hwmon, read_hwmon)
 
 # blinker modes (register 13) - led_blinkers.vhd
 BLINKER_MODES = ["software", "off", "counter", "scanner", "breathing", "sparkle"]
@@ -79,110 +81,7 @@ REGISTER_NAMES = {
     REG_BLINKER: "blinker mode", REG_LEVELS0: "levels 3..0", REG_LEVELS1: "levels 7..4",
     REG_FEATURES: "features", REG_BLINKER_ID: "blinker id",
 }
-WRITABLE = {REG_LOOPBACK, REG_LEDS, REG_FAN_DUTY, REG_BLINKER}
-
-
-class Bridge:
-    """mmap-backed access to the LWH2F register window (/dev/mem, root)."""
-
-    def __init__(self):
-        self._fd = os.open("/dev/mem", os.O_RDWR | os.O_SYNC)
-        aligned_base = LWH2F_BASE & ~(PAGE_SIZE - 1)
-        self._offset_in_page = LWH2F_BASE - aligned_base
-        self._mm = mmap.mmap(
-            self._fd, MAP_SIZE + self._offset_in_page,
-            mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE,
-            offset=aligned_base,
-        )
-
-    def read(self, reg_num: int) -> int:
-        off = self._offset_in_page + reg_num * REG_STRIDE
-        return struct.unpack_from("<I", self._mm, off)[0]
-
-    def write(self, reg_num: int, value: int) -> None:
-        off = self._offset_in_page + reg_num * REG_STRIDE
-        struct.pack_into("<I", self._mm, off, value & 0xFFFFFFFF)
-
-
-class SimBridge:
-    """The register file without hardware, for developing the GUI: the same
-    registers, the blinker patterns roughly as the FPGA modules draw them,
-    switches and keys changing now and then."""
-
-    IDS = {2: b"BCNT", 3: b"BSCN", 4: b"BBRT", 5: b"BSPK"}
-
-    def __init__(self):
-        self._regs = {REG_ID: BOARD_ID, REG_GIT: 0x5151D00D, REG_FAN_DUTY: 30,
-                      REG_FEATURES: FEATURE_HW_BLINKERS, REG_FAN_STATUS: 0x011E0021}
-        self._t0 = time.monotonic()
-        self._levels = [0] * 8
-        self._last_frame = 0
-        self._lock = threading.Lock()
-
-    def _frames(self):
-        return int((time.monotonic() - self._t0) * 50)       # 50 Hz, as led_blinkers
-
-    def _step(self):
-        # advance the pattern to the current frame (only as far as it's read)
-        now = self._frames()
-        mode = self._regs.get(REG_BLINKER, 0) & 7
-        for f in range(max(self._last_frame + 1, now - 100), now + 1):
-            if mode == 2:
-                count = (f // 25 * 2 + (1 if f % 25 >= 12 else 0)) & 0xFF
-                self._levels = [255 if count >> i & 1 else 0 for i in range(8)]
-            elif mode == 3:
-                self._levels = [l - (l >> 2) if l >= 4 else 0 for l in self._levels]
-                pos = (f // 3) % 14
-                self._levels[pos if pos < 8 else 14 - pos] = 255
-            elif mode == 4:
-                p = f % 150
-                tri = p if p < 75 else 150 - p
-                t = min(255, tri * 3482 >> 10)
-                self._levels = [t * t >> 8] * 8
-            elif mode == 5:
-                self._levels = [l - (l >> 3) if l >= 8 else 0 for l in self._levels]
-                if random.random() < 0.25:
-                    self._levels[random.randrange(8)] = 255
-            else:
-                self._levels = [0] * 8
-        self._last_frame = now
-
-    def read(self, reg_num: int) -> int:
-        with self._lock:
-            t = time.monotonic() - self._t0
-            mode = self._regs.get(REG_BLINKER, 0) & 7
-            if reg_num in (REG_LEVELS0, REG_LEVELS1, REG_BLINKER_ID):
-                self._step()
-            if reg_num in (REG_LEVELS0, REG_LEVELS1):
-                if mode == 0:
-                    leds = (self._regs.get(REG_LEDS, 0) & 0x7F) | ((int(t / 1.34) & 1) << 7)
-                    lv = [255 if leds >> i & 1 else 0 for i in range(8)]
-                else:
-                    lv = self._levels
-                base = 0 if reg_num == REG_LEVELS0 else 4
-                return sum(lv[base + i] << (8 * i) for i in range(4))
-            if reg_num == REG_BLINKER_ID:
-                return int.from_bytes(self.IDS[mode], "big") if mode in self.IDS else 0
-            if reg_num == REG_UPTIME:
-                return int(t * 50_000_000) & 0xFFFFFFFF
-            if reg_num == REG_SW:
-                return int(t / 7) % 16
-            if reg_num == REG_KEY:
-                return 1 if int(t * 2) % 11 == 0 else 0
-            if reg_num in (REG_FAN_RPM, REG_FAN_TACH):
-                duty = self._regs.get(REG_FAN_DUTY, 0) & 0xFF
-                rpm = int(duty * 14.5 + 30 * math.sin(t)) if duty else 0
-                if reg_num == REG_FAN_RPM:
-                    return rpm
-                return 6_000_000 // rpm if rpm else 0xFFFF
-            if reg_num == REG_READ_COUNT:
-                self._regs[REG_READ_COUNT] = self._regs.get(REG_READ_COUNT, 0) + 1
-            return self._regs.get(reg_num, 0) & 0xFFFFFFFF
-
-    def write(self, reg_num: int, value: int) -> None:
-        with self._lock:
-            if reg_num in WRITABLE:
-                self._regs[reg_num] = value & 0xFFFFFFFF
+SAMPLED = [n for n in REGISTER_NAMES if n != REG_READ_COUNT]
 
 
 def linux_uptime():
@@ -194,100 +93,125 @@ def linux_uptime():
 
 
 # --------------------------------------------------------------------------
+# the temperature loop, as seen from here
+# --------------------------------------------------------------------------
+class ControlLink:
+    """Polls temp_control.py once a second and keeps its own 10-minute copy
+    of the loop's history - so the plot survives a restart of either
+    process (a controller restart leaves a gap, honestly)."""
+
+    def __init__(self, client, period=1.0):
+        self.client = client
+        self.period = period
+        self.latest = None              # the controller's state, or None
+        self.error = "starting"
+        self.boot = None
+        self.history = collections.deque(maxlen=int(HISTORY_S / period) + 30)
+        self.lock = threading.Lock()
+        threading.Thread(target=self._poller, daemon=True).start()
+
+    def _poller(self):
+        while True:
+            try:
+                st = self.client.call(op="state")["state"]
+                if st.get("boot") != self.boot:
+                    self._seed(st["boot"])
+                with self.lock:
+                    if "t" in st and (not self.history or st["t"] > self.history[-1][0]):
+                        self.history.append([st["t"], st.get("measured"),
+                                             st["setpoint"] if st.get("mode") == "auto" else None,
+                                             st.get("duty"), st.get("rpm")])
+                    self.latest, self.error = st, None
+            except (ControlUnavailable, ValueError) as e:
+                self.latest, self.error = None, str(e)
+            time.sleep(self.period)
+
+    def _seed(self, boot):
+        h = self.client.call(op="history")["history"]
+        with self.lock:
+            first = h[0][0] if h else float("inf")
+            kept = [x for x in self.history if x[0] < first]
+            self.history.clear()
+            self.history.extend(kept + h)
+            self.boot = boot
+
+    def fresh(self):
+        st = self.latest
+        return st if st and "t" in st and time.monotonic() - st["t"] < 5 else None
+
+    def summary(self):
+        """the loop's state for the 20 Hz board state (without the sensor list)"""
+        st = self.latest
+        if not st:
+            return {"available": False, "error": self.error}
+        return {"available": True, **{k: v for k, v in st.items() if k != "temps"}}
+
+    def full(self):
+        with self.lock:
+            hist = list(self.history)
+        return {"state": self.summary(), "history": hist, "now": round(time.monotonic(), 2),
+                "history_s": HISTORY_S}
+
+    def set(self, req):
+        st = self.client.call(op="set", **req)["state"]
+        self.latest = st                # the 20 Hz state shows it at once, not in a second
+        return st
+
+
+# --------------------------------------------------------------------------
 # the SoC's own sensors: temperatures and supply voltages, from the SDM
 # --------------------------------------------------------------------------
 class SocSensors:
     """The Agilex 5's temperature and voltage sensors, read by the SDM and
     exposed by the kernel's soc64-hwmon driver (CONFIG_SENSORS_SOC64=y,
     linux/build_de25_nano_linux.sh) as /sys/class/hwmon/hwmonN, name
-    "soc64hwmon": temp*_input in millidegrees C, in*_input in millivolts,
-    labels from the device tree. Every read is an SDM mailbox round trip,
-    so this samples once a second on its own thread and the 20 Hz board
-    state just takes the latest reading."""
+    "soc64hwmon". Every read is an SDM mailbox round trip, so the die
+    temperatures come from the temperature controller, which reads them
+    every second anyway; this reads them itself only while the controller
+    is not answering, and the supply voltages every 5 s."""
 
-    HWMON_NAME = "soc64hwmon"
-
-    def __init__(self, sim=False, period_s=1.0):
-        self._sim = sim
-        self._period = period_s
-        self._dir = None if sim else self._find()
-        self._latest = {"available": sim or self._dir is not None, "temps": [], "volts": []}
-        if self._latest["available"]:
-            threading.Thread(target=self._sampler, daemon=True).start()
-
-    @classmethod
-    def _find(cls):
-        root = "/sys/class/hwmon"
-        try:
-            for h in sorted(os.listdir(root)):
-                d = os.path.join(root, h)
-                with open(os.path.join(d, "name")) as f:
-                    if f.read().strip() == cls.HWMON_NAME:
-                        return d
-        except OSError:
-            pass
-        return None
-
-    def _read_dir(self):
-        temps, volts = [], []
-        for name in sorted(os.listdir(self._dir), key=lambda n: (len(n), n)):
-            m = re.fullmatch(r"(temp|in)(\d+)_input", name)
-            if not m:
-                continue
-            base = os.path.join(self._dir, f"{m.group(1)}{m.group(2)}")
-            try:
-                with open(base + "_input") as f:
-                    value = int(f.read())
-            except (OSError, ValueError):
-                continue            # the SDM can refuse a read now and then
-            try:
-                with open(base + "_label") as f:
-                    label = f.read().strip()
-            except OSError:
-                label = f"{m.group(1)}{m.group(2)}"
-            if m.group(1) == "temp":
-                temps.append({"label": label, "c": value / 1000})
-            else:
-                volts.append({"label": label, "v": value / 1000})
-        return temps, volts
-
-    def _read_sim(self):
-        t = time.monotonic()
-        base = 42 + 2 * math.sin(t / 30)
-        temps = [{"label": "Main Die SDM", "c": round(base + 1.5, 3)},
-                 {"label": "Main Die corner bottom left max", "c": round(base - 0.5, 3)},
-                 {"label": "Main Die corner bottom right max", "c": round(base + 2.8, 3)},
-                 {"label": "Main Die corner top right max", "c": round(base - 1.6, 3)}]
-        volts = [{"label": l, "v": v} for l, v in (
-            ("0.8V VCC", 0.842), ("1.8V VCCIO_SDM", 1.818), ("1.8V VCCPT", 1.815),
-            ("1.2V VCCCRCORE", 1.212), ("0.9V VCCH", 0.846), ("0.8V VCCL", 0.841))]
-        return temps, volts
+    def __init__(self, root, control):
+        self._root = root
+        self._control = control
+        self._dir = None
+        self._volts = []
+        self._own_temps = []
+        threading.Thread(target=self._sampler, daemon=True).start()
 
     def _sampler(self):
+        n = 0
         while True:
             try:
-                temps, volts = self._read_sim() if self._sim else self._read_dir()
-                self._latest = {"available": True, "temps": temps, "volts": volts}
+                if not self._dir or not os.path.isdir(self._dir):
+                    self._dir = find_hwmon(self._root)
+                if self._dir:
+                    if n % 5 == 0:
+                        _, self._volts = read_hwmon(self._dir, temps=False)
+                    if not self._control.fresh():
+                        self._own_temps, _ = read_hwmon(self._dir, volts=False)
             except OSError:
                 pass
-            time.sleep(self._period)
+            n += 1
+            time.sleep(1.0)
 
     def latest(self):
-        return self._latest
+        ctl = self._control.fresh()
+        temps = ctl["temps"] if ctl and ctl.get("temps") else self._own_temps
+        return {"available": self._dir is not None, "temps": temps, "volts": self._volts}
 
 
 # --------------------------------------------------------------------------
 # the board's state, sampled once for every client
 # --------------------------------------------------------------------------
 class Board:
-    """Owns the bridge. All register access goes through here, under one
-    lock, so a later bitstream load can pause it in one place
-    (docs/partial_reconfiguration_plan.md)."""
+    """All register access goes to fpga_access.py (which holds the lock
+    and the pause for bitstream loads); this samples the registers once
+    for every client, 20 times a second."""
 
-    def __init__(self, bridge, sensors, rate_hz=20):
-        self._bridge = bridge
+    def __init__(self, fpga, sensors, control, rate_hz=20):
+        self._fpga = fpga
         self._sensors = sensors
-        self._lock = threading.Lock()
+        self._control = control
         self._state = None
         self._seq = 0
         self._changed = threading.Condition()
@@ -295,16 +219,13 @@ class Board:
         threading.Thread(target=self._sampler, daemon=True).start()
 
     def read(self, reg):
-        with self._lock:
-            return self._bridge.read(reg)
+        return self._fpga.read(reg)
 
     def write(self, reg, value):
-        with self._lock:
-            self._bridge.write(reg, value)
+        self._fpga.write(reg, value)
 
     def _sample(self):
-        with self._lock:
-            r = {n: self._bridge.read(n) for n in REGISTER_NAMES if n != REG_READ_COUNT}
+        r = dict(zip(SAMPLED, self._fpga.read_many(SAMPLED)))
         levels = [(r[REG_LEVELS0] >> (8 * i)) & 0xFF for i in range(4)] + \
                  [(r[REG_LEVELS1] >> (8 * i)) & 0xFF for i in range(4)]
         mode = r[REG_BLINKER] & 7
@@ -334,15 +255,19 @@ class Board:
                 "init_done": bool(fan >> 24 & 1),
                 "i2c_error": bool(fan >> 25 & 1),
             },
-            "soc": self._sensors.latest(),
         }
 
     def _sampler(self):
         while True:
             try:
                 state = self._sample()
-            except Exception as e:                       # keep serving the GUI
-                state = {"error": str(e)}
+            except FpgaUnavailable as e:             # keep serving the GUI
+                state = {"error": str(e), "fpga_unavailable": True,
+                         "linux_uptime_s": linux_uptime()}
+            except Exception as e:
+                state = {"error": str(e), "linux_uptime_s": linux_uptime()}
+            state["soc"] = self._sensors.latest()
+            state["control"] = self._control.summary()
             with self._changed:
                 self._state = state
                 self._seq += 1
@@ -369,7 +294,7 @@ class Releases:
     is supervisor.sh, outside any release: it reverts a release still
     pending after its test time, or one that keeps crashing."""
 
-    REQUIRED = ("VERSION", "fpga_web.py", "static/index.html")
+    REQUIRED = ("VERSION", "fpga_web.py", "fpga_access.py", "temp_control.py", "static/index.html")
 
     def __init__(self, base):
         self.base = base
@@ -489,7 +414,8 @@ def parse_value(v) -> int:
     return int(s, 16) if s.lower().startswith("0x") else int(s, 10)
 
 
-def make_app(board: Board, releases: Releases, version: str, release_name: str):
+def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Releases,
+             version: str, release_name: str):
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
     from urllib.parse import urlparse, parse_qs
 
@@ -546,6 +472,8 @@ def make_app(board: Board, releases: Releases, version: str, release_name: str):
                 self._json(board.state())
             elif p == "/api/events":
                 self._events()
+            elif p == "/api/control":
+                self._json(control.full())
             elif p == "/api/version":
                 info = releases.info(version)
                 info["release"] = release_name
@@ -556,6 +484,8 @@ def make_app(board: Board, releases: Releases, version: str, release_name: str):
                     self._json({"reg": reg, "value": board.read(reg)})
                 except (KeyError, ValueError, IndexError) as e:
                     self._json({"error": str(e)}, 400)
+                except FpgaUnavailable as e:
+                    self._json({"error": str(e)}, 503)
             else:
                 self.send_error(404)
 
@@ -595,8 +525,14 @@ def make_app(board: Board, releases: Releases, version: str, release_name: str):
                     duty = parse_value(self._json_body()["duty"])
                     if not 0 <= duty <= 255:
                         raise ValueError("duty 0..255")
-                    board.write(REG_FAN_DUTY, duty)
-                    self._json({"duty": board.read(REG_FAN_DUTY)})
+                    self._fan(duty)
+                elif p == "/api/control":
+                    req = self._json_body()
+                    allowed = {"mode", "setpoint", "manual_duty", "kp", "ki"}
+                    bad = set(req) - allowed
+                    if bad:
+                        raise ValueError("unknown " + ", ".join(sorted(bad)))
+                    self._json({"state": control.set(req)})
                 elif p == "/api/write":
                     data = self._json_body()
                     reg = int(data["reg"])
@@ -608,15 +544,51 @@ def make_app(board: Board, releases: Releases, version: str, release_name: str):
                     self.send_error(404)
             except (KeyError, ValueError, json.JSONDecodeError) as e:
                 self._json({"error": str(e)}, 400)
+            except (FpgaUnavailable, ControlUnavailable) as e:
+                self._json({"error": str(e)}, 503)
+
+        def _fan(self, duty):
+            # The temperature loop owns the fan unless it is off: a duty from
+            # the GUI puts it in manual at that duty (never below the stall
+            # floor). Off, or the controller not running: the register, as is.
+            st = control.latest
+            if st and st.get("mode") in ("auto", "manual"):
+                st = control.set({"mode": "manual", "manual_duty": duty})
+                self._json({"duty": max(duty, FAN_MIN_DUTY), "mode": st["mode"],
+                            "note": "temperature control switched to manual" if duty >= FAN_MIN_DUTY
+                            else f"manual duty is at least {FAN_MIN_DUTY} (stall risk)"})
+                return
+            board.write(REG_FAN_DUTY, duty)
+            self._json({"duty": board.read(REG_FAN_DUTY), "mode": st["mode"] if st else None})
+
+        def _health(self):
+            """what a release on test must show before it is kept"""
+            problems = []
+            try:
+                fpga.call(op="ping")
+            except FpgaUnavailable as e:
+                problems.append(str(e))
+            if not control.latest:
+                problems.append(control.error or "temperature control not answering")
+            return problems
 
         def _update(self, p):
+            if p != "/api/update":
+                self._body()            # drain it: the connection is kept alive
             if not releases.enabled:
+                self.close_connection = True
                 self._json({"error": "not an installed release (no /opt/de25web)"}, 501)
                 return
             if p == "/api/update/confirm":
+                problems = self._health()
+                if problems:
+                    self._json({"error": "not confirming, the release is not healthy: "
+                                + "; ".join(problems)}, 503)
+                    return
                 self._json({"confirmed": releases.confirm(release_name)})
                 return
             if not releases.token_ok(self.headers.get("X-Token")):
+                self.close_connection = True        # an upload's body is left unread
                 self._json({"error": "bad or missing X-Token"}, 403)
                 return
             if p == "/api/update":
@@ -632,7 +604,7 @@ def make_app(board: Board, releases: Releases, version: str, release_name: str):
                 self.send_error(404)
 
         def log_message(self, fmt, *args):
-            if not self.path.startswith(("/api/events", "/api/board", "/api/version")):
+            if not self.path.startswith(("/api/events", "/api/board", "/api/version", "/api/control")):
                 print("%s - %s" % (self.address_string(), fmt % args), flush=True)
 
     class Server(ThreadingHTTPServer):
@@ -646,7 +618,9 @@ def main():
     ap = argparse.ArgumentParser(description="DE25-Nano web GUI")
     ap.add_argument("--port", type=int, default=80)
     ap.add_argument("--bind", default="0.0.0.0")
-    ap.add_argument("--sim", action="store_true", help="simulated registers, no /dev/mem")
+    ap.add_argument("--sim", action="store_true",
+                    help="against fpga_access.py --sim (simulated registers and sensors)")
+    ap.add_argument("--run", default=None, help="the sockets' directory (as fpga_access.py)")
     ap.add_argument("--base", default=os.environ.get("DE25WEB_BASE", ""),
                     help="release directory root (default: the parent of releases/ this runs from)")
     args = ap.parse_args()
@@ -657,11 +631,14 @@ def main():
     if not base and os.path.basename(os.path.dirname(HERE)) == "releases":
         base = os.path.dirname(os.path.dirname(HERE))
 
-    board = Board(SimBridge() if args.sim else Bridge(), SocSensors(sim=args.sim))
-    server_cls, handler_cls = make_app(board, Releases(base), version, release_name)
+    run = run_dir(args.run, args.sim)
+    fpga = FpgaClient(run)
+    control = ControlLink(ControlClient(run))
+    board = Board(fpga, SocSensors(hwmon_root(run, args.sim), control), control)
+    server_cls, handler_cls = make_app(board, control, fpga, Releases(base), version, release_name)
     httpd = server_cls((args.bind, args.port), handler_cls)
-    print(f"de25-nano web {version} ({release_name}) on http://{args.bind}:{args.port}/"
-          + (" [simulated registers]" if args.sim else ""), flush=True)
+    print(f"de25-nano web {version} ({release_name}) on http://{args.bind}:{args.port}/, "
+          f"sockets in {run}" + (" [simulated board]" if args.sim else ""), flush=True)
     httpd.serve_forever()
 
 
