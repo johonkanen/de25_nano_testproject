@@ -1,5 +1,9 @@
 # Research: booting the DE25-Nano with `HPS_INITIALIZATION "HPS FIRST"`
 
+> **Status 2026-10-17: implemented** - HPS-first is the default boot, and
+> Linux reloads the core with `fpga-reload`. How to build, install and use
+> it: docs/hps_first.md. This report is the research behind it.
+
 Status 2026-10-16: **research only, nothing in the build changed.** The board
 was not touched. Quartus experiments ran in a scratch copy of the project
 (`HPS FIRST` set, `quartus_asm` re-run, `quartus_pfg` outputs compared).

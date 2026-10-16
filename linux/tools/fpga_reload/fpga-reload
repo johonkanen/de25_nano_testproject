@@ -1,0 +1,53 @@
+#!/bin/sh
+# fpga-reload [CORE.rbf] - reload the FPGA core while Linux keeps running
+# (HPS-first images only - docs/hps_first.md).
+#
+#   fpga-reload                    reload /lib/firmware/de25_nano.core.rbf
+#   fpga-reload /tmp/new.core.rbf  install that core first, then load it
+#
+# The core must come from the same build as the first stage in QSPI (same
+# HPS I/O, DDR and Quartus version) - otherwise the SDM refuses it, or the
+# load stalls. Everything under /opt/de25web (the web GUI, and whatever
+# else touches the fabric over LWH2F) is paused during the load: an LWH2F
+# access while the fabric reconfigures can hang the CPU. The fabric comes
+# back in its reset state (blinker mode 0, fan duty 30, ...); the console
+# (HPS UART1 through the fabric) drops out for the ~2 s of the load.
+set -eu
+FW=/lib/firmware
+CORE=de25_nano.core.rbf
+DTBO=$FW/de25_nano_core_reload.dtbo
+OVL=/sys/kernel/config/device-tree/overlays/de25_core
+
+if [ $# -ge 1 ]; then
+    cp "$1" "$FW/$CORE.new" && mv "$FW/$CORE.new" "$FW/$CORE"
+fi
+[ -f "$FW/$CORE" ] || { echo "fpga-reload: no $FW/$CORE"; exit 1; }
+[ -f "$DTBO" ] || { echo "fpga-reload: no $DTBO"; exit 1; }
+[ -d /sys/class/fpga_manager/fpga0 ] || { echo "fpga-reload: no FPGA manager (kernel needs CONFIG_FPGA_MGR_STRATIX10_SOC=y)"; exit 1; }
+mountpoint -q /sys/kernel/config || mount -t configfs none /sys/kernel/config
+
+USERS=$(pgrep -f /opt/de25web/ || true)
+[ -n "$USERS" ] && kill -STOP $USERS
+resume() { [ -n "$USERS" ] && kill -CONT $USERS; }
+trap resume EXIT
+
+# a fresh overlay each time: re-applying is what triggers the load
+[ -d "$OVL" ] && rmdir "$OVL"
+mkdir "$OVL"
+t0=$(cut -d' ' -f1 /proc/uptime)
+cat "$DTBO" > "$OVL/dtbo"
+t1=$(cut -d' ' -f1 /proc/uptime)
+status=$(cat "$OVL/status")
+state=$(cat /sys/class/fpga_manager/fpga0/state)
+echo "fpga-reload: overlay $status, FPGA manager $state, $(awk "BEGIN{print $t1-$t0}") s"
+[ "$status" = applied ] && [ "$state" = operating ] || exit 1
+
+# the fabric answers over LWH2F again: register 1 is the board id 0xDE25
+python3 -c "
+import mmap, os, struct
+f = os.open('/dev/mem', os.O_RDONLY | os.O_SYNC)
+m = mmap.mmap(f, 4096, mmap.MAP_SHARED, mmap.PROT_READ, offset=0x20000000)
+v = struct.unpack_from('<I', m, 0x10)[0]
+print('fpga-reload: board id %#x' % v)
+raise SystemExit(0 if v == 0xDE25 else 1)
+"

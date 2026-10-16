@@ -204,7 +204,10 @@ HPS's free-running H2F User0 clock (50 MHz), which also blinks
 
 **Linux** (Altera's 6.18.20 kernel, Alpine rootfs on the SD card) boots
 from a real QSPI cold boot: SPL → ATF 2.14.1 → U-Boot 2026.04 → Linux,
-hands off - all from Altera upstream. The steps and settings, short: [docs/linux_boot.md](docs/linux_boot.md);
+hands off - all from Altera upstream. The boot is HPS-first: U-Boot loads
+the FPGA core, and a running Linux can reload it in ~2 s (`fpga-reload`,
+[docs/hps_first.md](docs/hps_first.md)). The steps and settings, short:
+[docs/linux_boot.md](docs/linux_boot.md);
 bring-up history: [linux/README.md](linux/README.md).
 
 Bare-metal bring-up programs from before Linux, kept as references:

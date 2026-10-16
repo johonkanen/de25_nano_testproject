@@ -31,7 +31,7 @@ STAGE="${OUT}/sdimage"
 for f in u-boot.itb Image "${DTB}"; do
     [[ -f "${OUT}/${f}" ]] || { echo "ERROR: ${OUT}/${f} missing - run build_de25_nano_linux.sh first"; exit 1; }
 done
-for t in fakeroot mkfs.ext4 sfdisk mformat mcopy mmd gzip; do
+for t in fakeroot mkfs.ext4 sfdisk mformat mcopy mmd gzip dtc; do
     command -v "${t}" >/dev/null || { echo "ERROR: ${t} not found"; exit 1; }
 done
 [[ -f "${TARBALL}" ]] || { echo ">> fetching Alpine ${ALPINE_VERSION} minirootfs"; wget -q -O "${TARBALL}" "${ALPINE_URL}"; }
@@ -56,6 +56,12 @@ rm -rf "${STAGE}"
 mkdir -p "${STAGE}/boot"
 mformat -i "${IMG}@@$(( P1_START * 512 ))" -F -c 1 -T "${P1_SECTORS}" -h 64 -s 32 -v NANOBOOT ::
 mcopy -i "${IMG}@@$(( P1_START * 512 ))" "${OUT}/u-boot.itb" "${OUT}/Image" "${OUT}/${DTB}" ::
+# an HPS-first build's FPGA core (make_jic.sh): U-Boot's preboot loads it
+# from here before anything touches the fabric
+if [[ -f "${OUT}/de25_nano.core.rbf" ]]; then
+    mcopy -i "${IMG}@@$(( P1_START * 512 ))" "${OUT}/de25_nano.core.rbf" ::
+    echo "   + de25_nano.core.rbf (HPS-first FPGA core)"
+fi
 
 echo ">> root partition (Alpine ${ALPINE_VERSION})"
 # one fakeroot session: extraction, configuration and mkfs see the same
@@ -65,8 +71,17 @@ fakeroot -- bash -euo pipefail -c '
     mkdir -p "$1/root"
     tar xzf "$2" -C "$1/root" --numeric-owner
     "$3/tools/alpine_rootfs_config.sh" "$1/root" "$1/boot"
+    # HPS-first images: the core and the reload tool, for fpga-reload
+    # (docs/hps_first.md)
+    if [ -f "$7/de25_nano.core.rbf" ]; then
+        install -D -m 644 "$7/de25_nano.core.rbf" "$1/root/lib/firmware/de25_nano.core.rbf"
+        dtc -q -@ -I dts -O dtb -o "$1/root/lib/firmware/de25_nano_core_reload.dtbo" \
+            "$3/tools/fpga_reload/core_reload.dts"
+        install -D -m 755 "$3/tools/fpga_reload/fpga-reload" "$1/root/usr/sbin/fpga-reload"
+        echo "   + /lib/firmware/de25_nano.core.rbf, de25_nano_core_reload.dtbo, /usr/sbin/fpga-reload"
+    fi
     mkfs.ext4 -q -F -L nano-root -E offset=$(( $4 * 512 )) -d "$1/root" "$5" "$(( $6 / 2 ))k"
-' _ "${STAGE}" "${TARBALL}" "${HERE}" "${P2_START}" "${IMG}" "${P2_SECTORS}"
+' _ "${STAGE}" "${TARBALL}" "${HERE}" "${P2_START}" "${IMG}" "${P2_SECTORS}" "${OUT}"
 
 mmd   -i "${IMG}@@$(( P1_START * 512 ))" ::extlinux
 mcopy -i "${IMG}@@$(( P1_START * 512 ))" "${STAGE}/boot/extlinux/extlinux.conf" ::extlinux/

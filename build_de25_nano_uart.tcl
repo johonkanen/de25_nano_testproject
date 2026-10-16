@@ -113,7 +113,23 @@ set_global_assignment -name DEVICE_INITIALIZATION_CLOCK OSC_CLK_1_125MHZ
 # the board: the ethernet PHY - see the MDIO note above, seen with this
 # same combination under Terasic's U-Boot/kernel.
 set_global_assignment -name QSPI_OWNERSHIP HPS
-set_global_assignment -name HPS_INITIALIZATION "AFTER INIT_DONE"
+#
+# Default since 2026-10-17: "HPS FIRST" (docs/hps_first.md). The SDM
+# configures only the HPS I/O, DDR I/O and the SPL from QSPI; U-Boot's
+# preboot loads the FPGA core (de25_nano.core.rbf, from make_jic.sh) before
+# anything touches the fabric, and Linux can reload the core later without
+# a reboot. The old "HPS FIRST" hang (docs/de25_nano_lwh2f_bringup.md) was
+# the core never being loaded at all. Until a core is loaded the console is
+# silent: HPS UART1 reaches the USB serial port through the fabric.
+#
+# FPGA_FIRST=1 (environment): "AFTER INIT_DONE" instead - the SDM
+# configures the whole FPGA before the HPS starts; no core reload from
+# Linux, but the console works from the first SPL line (the fallback).
+if {[info exists ::env(FPGA_FIRST)] && $::env(FPGA_FIRST) == 1} {
+    set_global_assignment -name HPS_INITIALIZATION "AFTER INIT_DONE"
+} else {
+    set_global_assignment -name HPS_INITIALIZATION "HPS FIRST"
+}
 set_global_assignment -name PWRMGT_VOLTAGE_OUTPUT_FORMAT "LINEAR FORMAT"
 set_global_assignment -name PWRMGT_LINEAR_FORMAT_N "-12"
 

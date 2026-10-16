@@ -47,6 +47,10 @@ TOYBOX_REPO="https://github.com/landley/toybox.git"
 # CONFIG_SYS_SPI_U_BOOT_OFFS for this board, checked below; make_jic.sh
 # uses the same default
 QSPI_UBOOT_OFFS="${QSPI_UBOOT_OFFS:-0x00A00000}"
+# where an HPS-first image's FPGA core sits in QSPI (U-Boot's preboot
+# loads it from there when the SD card has none) - make_jic.sh uses the
+# same default
+QSPI_CORE_OFFS="${QSPI_CORE_OFFS:-0x00C00000}"
 
 # ARM GNU aarch64-linux toolchain (has the LTO plugin ATF's release build
 # needs). Point CROSS_TOOLCHAIN at an existing install (dir with
@@ -132,6 +136,20 @@ pushd "${UBOOT_DIR}" >/dev/null
     make olddefconfig
     grep -q '^CONFIG_BOOTCOMMAND="bridge enable; run distro_bootcmd"$' .config || {
         echo "ERROR: CONFIG_BOOTCOMMAND not set"; exit 1; }
+    # HPS-first images (build_de25_nano_uart.tcl, HPS_FIRST=1): the SDM
+    # leaves the FPGA core unconfigured, so load it before anything else -
+    # preboot runs before the autoboot prompt. Only when the fabric isn't
+    # configured already (FPGA-first images, a JTAG .sof load): sysmgr
+    # FPGA_CONFIG (0x10d120dc) reads 3 once configured and in user mode.
+    # From the SD card's FAT partition, else from the QSPI copy make_jic.sh
+    # writes at QSPI_CORE_OFFS: a 4 KB text header "core_size=0x..." for
+    # `env import`, the core right after it. The console is silent until
+    # the core is in (HPS UART1 runs through the fabric).
+    scripts/config --enable CONFIG_USE_PREBOOT
+    scripts/config --set-str CONFIG_PREBOOT "if itest.l *0x10d120dc != 3; then if load mmc 0:1 \${loadaddr} de25_nano.core.rbf; then fpga load 0 \${loadaddr} \${filesize}; else sf probe && sf read \${loadaddr} $(printf '%#x' "${QSPI_CORE_OFFS}") 0x1000 && env import -t \${loadaddr} && sf read \${loadaddr} $(printf '%#x' $(( QSPI_CORE_OFFS + 0x1000 ))) \${core_size} && fpga load 0 \${loadaddr} \${core_size}; fi; fi"
+    make olddefconfig
+    grep -q '^CONFIG_PREBOOT="if itest.l \*0x10d120dc != 3; then' .config || {
+        echo "ERROR: CONFIG_PREBOOT not set"; exit 1; }
     # U-Boot proper from QSPI as well as from the SD card, so a blank or
     # broken card still reaches a U-Boot prompt (linux/tools/sd_recover.py).
     # make_jic.sh puts u-boot.itb at QSPI_UBOOT_OFFS in the .jic.
@@ -157,6 +175,17 @@ pushd "${LINUX_DIR}" >/dev/null
     scripts/config --enable CONFIG_SENSORS_SOC64
     make olddefconfig
     grep -q '^CONFIG_SENSORS_SOC64=y$' .config || { echo "ERROR: CONFIG_SENSORS_SOC64 not built in"; exit 1; }
+    # FPGA reload from a running Linux (HPS-first images): the FPGA manager
+    # (SDM mailbox), bridges and the fpga-region driver, built in for the
+    # same reason; an overlay on /fpga-region with firmware-name then loads
+    # a .core.rbf from /lib/firmware (docs/hps_first_boot_research.md)
+    for c in FPGA_MGR_STRATIX10_SOC FPGA_BRIDGE FPGA_REGION OF_FPGA_REGION; do
+        scripts/config --enable "CONFIG_${c}"
+    done
+    make olddefconfig
+    for c in FPGA_MGR_STRATIX10_SOC FPGA_BRIDGE FPGA_REGION OF_FPGA_REGION OF_OVERLAY OF_CONFIGFS; do
+        grep -q "^CONFIG_${c}=y$" .config || { echo "ERROR: CONFIG_${c} not built in"; exit 1; }
+    done
     make -j"${JOBS}" Image "intel/${LINUX_DTB}"
     cp arch/arm64/boot/Image                       "${OUT}/Image"
     cp "arch/arm64/boot/dts/intel/${LINUX_DTB}"     "${OUT}/${LINUX_DTB}"

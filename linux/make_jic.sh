@@ -7,8 +7,10 @@
 #   ./linux/make_jic.sh
 #
 # QSPI layout (16 MB MT25QU128):
-#   0x000000  boot info + bitstream + SPL (~3 MB)
+#   0x000000  boot info + phase 1 (HPS-first: HPS I/O, DDR I/O; FPGA-first:
+#             the whole bitstream) + SPL
 #   0xA00000  u-boot.itb (QSPI_UBOOT_OFFS, the SPL's CONFIG_SYS_SPI_U_BOOT_OFFS)
+#   0xC00000  HPS-first only: the FPGA core (QSPI_CORE_OFFS) - docs/hps_first.md
 # The SPL loads u-boot.itb from the SD card's FAT partition if it can, else
 # this QSPI copy - so a blank or broken card still reaches a U-Boot prompt,
 # from which linux/tools/sd_recover.py rewrites the card over TFTP.
@@ -30,6 +32,8 @@ SPL="${SPL:-${HERE}/build_output/spl/u-boot-spl-dtb.hex}"
 JIC="${JIC:-${HERE}/build_output/de25_nano.jic}"
 UBOOT_ITB="${UBOOT_ITB-${HERE}/build_output/u-boot.itb}"
 QSPI_UBOOT_OFFS="${QSPI_UBOOT_OFFS:-0x00A00000}"
+QSPI_CORE_OFFS="${QSPI_CORE_OFFS:-0x00C00000}"
+CORE_RBF="${CORE_RBF:-${HERE}/build_output/de25_nano.core.rbf}"
 
 # DE25-Nano: Micron MT25QU128 QSPI flash (128Mb/16MB - same part as the
 # DE25-Standard, confirmed via Terasic's own sof_to_jic.bat), device
@@ -41,6 +45,21 @@ FLASH_LOADER="${FLASH_LOADER:-A5EB013BB23BCS}"
 
 [[ -f "${SOF}" ]] || { echo "missing ${SOF} - build the FPGA first"; exit 1; }
 [[ -f "${SPL}" ]] || { echo "missing ${SPL} - run build_de25_nano_linux.sh first"; exit 1; }
+
+# HPS-first .sof (build_de25_nano_uart.tcl, HPS_FIRST=1): the .jic gets
+# only the first stage (SDM firmware, HPS + DDR I/O, SPL); the FPGA core is
+# a separate .core.rbf that U-Boot loads (preboot, build_de25_nano_linux.sh)
+# from the SD card or from its QSPI copy at QSPI_CORE_OFFS. quartus_pfg
+# refuses hps_core_only on an AFTER INIT_DONE .sof - that is the test.
+HPS_FIRST=0
+rm -f "${CORE_RBF}"
+if quartus_pfg -c "${SOF}" "${CORE_RBF}" -o hps_core_only=ON > "${JIC%.jic}_core.log" 2>&1 && [[ -s "${CORE_RBF}" ]]; then
+    HPS_FIRST=1
+    echo ">> HPS-first .sof: core in ${CORE_RBF} ($(stat -c %s "${CORE_RBF}") bytes) - copy it to the SD card's FAT partition"
+else
+    rm -f "${CORE_RBF}"
+    echo ">> FPGA-first .sof (AFTER INIT_DONE): the core is in the .jic"
+fi
 
 if [[ -z "${UBOOT_ITB}" ]]; then
     echo ">> bitstream + SPL only"
@@ -62,6 +81,28 @@ else
     # image goes in under a .bin name, as the GSRD does
     UBOOT_BIN="${JIC%.jic}_u-boot.bin"
     cp "${UBOOT_ITB}" "${UBOOT_BIN}"
+    CORE_RAW="" CORE_PART="" CORE_ASSIGN=""
+    if (( HPS_FIRST )); then
+        # the QSPI copy of the core: a 4 KB "core_size=0x..." text header
+        # (U-Boot's preboot `env import`s it), then the core
+        CORE_BIN="${JIC%.jic}_core.bin"
+        core_size=$(stat -c %s "${CORE_RBF}")
+        (( QSPI_CORE_OFFS >= QSPI_UBOOT_OFFS + $(stat -c %s "${UBOOT_ITB}") && \
+           QSPI_CORE_OFFS + 0x1000 + core_size <= 0x1000000 )) || {
+            echo "QSPI_CORE_OFFS ${QSPI_CORE_OFFS} does not fit the core (${core_size} bytes) after U-Boot"; exit 1; }
+        python3 - "${CORE_RBF}" "${CORE_BIN}" << 'PYCORE'
+import sys
+core = open(sys.argv[1], "rb").read()
+head = ("core_size=%#x\n" % len(core)).encode().ljust(0x1000, b"\0")
+open(sys.argv[2], "wb").write(head + core)
+PYCORE
+        CORE_RAW="        <raw_file bitswap=\"1\" type=\"RBF\" id=\"Raw_File_2\">${CORE_BIN}</raw_file>"
+        CORE_PART="            <partition reserved=\"0\" fixed_s_addr=\"0\" s_addr=\"${QSPI_CORE_OFFS}\" e_addr=\"auto\" fixed_e_addr=\"0\" id=\"CORE\" size=\"0\"/>"
+        CORE_ASSIGN="        <assignment page=\"0\" partition_id=\"CORE\">
+            <raw_file_id>Raw_File_2</raw_file_id>
+        </assignment>"
+        echo ">> QSPI core copy at ${QSPI_CORE_OFFS} (header + ${core_size} bytes)"
+    fi
     # after Intel's Agilex 5 GSRD (software/yocto_linux/scripts/uboot_only.pfg)
     cat > "${PFG}" << PFGEOF
 <pfg version="1">
@@ -82,6 +123,7 @@ else
     </bitstreams>
     <raw_files>
         <raw_file bitswap="1" type="RBF" id="Raw_File_1">${UBOOT_BIN}</raw_file>
+${CORE_RAW}
     </raw_files>
     <flash_devices>
         <flash_loader>${FLASH_LOADER}</flash_loader>
@@ -89,6 +131,7 @@ else
             <partition reserved="1" fixed_s_addr="1" s_addr="0x00000000" e_addr="0x001FFFFF" fixed_e_addr="1" id="BOOT_INFO" size="0"/>
             <partition reserved="0" fixed_s_addr="0" s_addr="auto" e_addr="auto" fixed_e_addr="0" id="P1" size="0"/>
             <partition reserved="0" fixed_s_addr="0" s_addr="${QSPI_UBOOT_OFFS}" e_addr="auto" fixed_e_addr="0" id="UBOOT" size="0"/>
+${CORE_PART}
         </flash_device>
     </flash_devices>
     <assignments>
@@ -98,6 +141,7 @@ else
         <assignment page="0" partition_id="UBOOT">
             <raw_file_id>Raw_File_1</raw_file_id>
         </assignment>
+${CORE_ASSIGN}
     </assignments>
 </pfg>
 PFGEOF

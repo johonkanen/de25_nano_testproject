@@ -2,19 +2,24 @@
 
 How the board gets from power-on to Linux and the web GUI, what each piece
 is, and the settings that matter. Verified on hardware 2026-10-16, hands
-off: power-on → SPL → ATF 2.14.1 → U-Boot 2026.04 → Linux 6.18.20 → web GUI
-with the FPGA registers live over LWH2F. All three come from Altera
-upstream (`altera-fpga`), which carries the DE25-Nano itself.
+off: power-on → SPL → ATF 2.14.1 → U-Boot 2026.04 (loads the FPGA core) →
+Linux 6.18.20 on all four cores → web GUI with the FPGA registers live over
+LWH2F. All three come from Altera upstream (`altera-fpga`), which carries
+the DE25-Nano itself. The boot is **HPS-first** - docs/hps_first.md has the
+details, and how to reload the FPGA from a running Linux.
 
 ## The chain
 
 ```
 power-on
-  SDM          configures the FPGA from QSPI, loads the U-Boot SPL into HPS on-chip RAM
+  SDM          phase 1 from QSPI: HPS I/O, DDR I/O; loads the U-Boot SPL into
+               HPS on-chip RAM (the FPGA fabric stays unconfigured)
   SPL          initialises the 1 GB LPDDR4; loads u-boot.itb from the SD card's
                FAT partition, or - if that fails - from QSPI at 0xA00000
   ATF BL31     secure monitor (EL3), part of u-boot.itb
-  U-Boot       `bridge enable`, then distro boot finds /extlinux/extlinux.conf
+  U-Boot       preboot loads the FPGA core (de25_nano.core.rbf: SD, else QSPI
+               0xC00000) - the console appears only now; then `bridge enable`,
+               and distro boot finds /extlinux/extlinux.conf
   Linux        Image + dtb from the FAT partition, root = SD partition 2 (ext4)
   Alpine init  rc.local: static IP, NTP, python3 (first boot) ; inittab starts
                /opt/de25web/supervisor.sh -> the web GUI on port 80
@@ -37,14 +42,15 @@ power-on
 | setting | value | why |
 |---|---|---|
 | `QSPI_OWNERSHIP` | `HPS` | the SPL reads U-Boot from QSPI; with `SDM` its first QSPI access stalls the bus |
-| `HPS_INITIALIZATION` | `"AFTER INIT_DONE"` | the fabric is configured before the ARM cores run; `"HPS FIRST"` let Linux touch LWH2F too early and hung it (docs/de25_nano_lwh2f_bringup.md; what HPS-first would take: docs/hps_first_boot_research.md) |
-| HPS IP `Pwr_a76_core2_on`/`_core3_on` | `true` | power for the two Cortex-A76 cores (Terasic's GHRD had them off) - they still don't start, see [Known gaps](#known-gaps) |
+| `HPS_INITIALIZATION` | `"HPS FIRST"` (default; `FPGA_FIRST=1` gives `"AFTER INIT_DONE"`) | software loads the FPGA core, so Linux can reload it without a reboot (docs/hps_first.md). The old HPS-first hang was the core never being loaded (docs/de25_nano_lwh2f_bringup.md) |
+| HPS IP `Pwr_a76_core2_on`/`_core3_on` | `true` | power for the two Cortex-A76 cores; `hps/hps_subsys.tcl` (commit aa10d49) had them off. After editing a `.ip`, regenerate it explicitly (docs/hps_first.md, Build) - stale generated HDL kept the cores off once (docs/a76_cores_research.md) |
 | MSEL (SW5) | AS / QSPI | the SDM boots from QSPI |
 
 **U-Boot** (applied by the build script)
 
 | setting | value | why |
 |---|---|---|
+| `CONFIG_PREBOOT` | load the FPGA core if FPGA_CONFIG (`0x10d120dc`) isn't 3 | HPS-first: nothing else configures the fabric (docs/hps_first.md) |
 | `CONFIG_BOOTCOMMAND` | `bridge enable; run distro_bootcmd` | upstream U-Boot leaves the HPS↔FPGA bridges in reset; Linux's first LWH2F read then dies with SIGBUS |
 | `CONFIG_SYS_SPI_U_BOOT_OFFS` | `0x00A00000` | where the SPL looks for U-Boot in QSPI (upstream default; `make_jic.sh` puts it there) |
 | `sdram_agilex5.c` | `dualport = 0` | Terasic's DE25-Nano DDR setting (single-port EMIF), kept from their U-Boot |
@@ -53,7 +59,9 @@ power-on
 **Kernel**: `make defconfig` plus `CONFIG_SENSORS_SOC64=y` - the SoC's
 temperature and voltage sensors (read by the SDM, `soc64-hwmon`) built in,
 since the rootfs carries no modules. They appear as
-`/sys/class/hwmon/hwmon0` (`soc64hwmon`); the web GUI shows them.
+`/sys/class/hwmon/hwmon0` (`soc64hwmon`); the web GUI shows them. And the
+FPGA manager, bridges and fpga-region driver (`FPGA_MGR_STRATIX10_SOC`,
+`FPGA_BRIDGE`, `FPGA_REGION`, `OF_FPGA_REGION` `=y`) for `fpga-reload`.
 
 **ATF**: `SOCFPGA_UART_CONFIG=1` (console on UART1, this board's);
 `config_ddr_size` patched to the detected size (the board has 1 GB;
@@ -74,13 +82,14 @@ port (`/dev/serial/by-id/usb-TERASIC_DE25-Nano_*-if03-port0`, 115200). No
 | QSPI (16 MB) | |
 |---|---|
 | `0x000000` | boot info |
-| `0x200000` | bitstream + SPL (~0.7 MB) |
+| `0x200000` | phase 1: HPS I/O, DDR I/O + SPL (~0.4 MB) |
 | `0xA00000` | `u-boot.itb` - the fallback when the card has none |
+| `0xC00000` | the FPGA core - the fallback when the card has none (4 KB size header + core) |
 
 | SD card (768 MB image, rest of the card unused) | |
 |---|---|
-| p1, FAT32, bootable, 128 MB | `u-boot.itb`, `Image`, the `.dtb`, `extlinux/extlinux.conf` |
-| p2, ext4 | Alpine; `/opt/de25web` (web GUI), static IP `192.168.1.222` |
+| p1, FAT32, bootable, 128 MB | `u-boot.itb`, `Image`, the `.dtb`, `extlinux/extlinux.conf`, `de25_nano.core.rbf` |
+| p2, ext4 | Alpine; `/opt/de25web` (web GUI), static IP `192.168.1.222`; `/lib/firmware/de25_nano.core.rbf` + the reload overlay, `/usr/sbin/fpga-reload` |
 
 ## Build and install
 
@@ -93,14 +102,20 @@ quartus_syn de25_nano_uart && quartus_fit de25_nano_uart && quartus_sta de25_nan
 # 2. ATF, U-Boot, kernel (~5 min with a cached toolchain: CROSS_TOOLCHAIN=...)
 ./linux/build_de25_nano_linux.sh
 
-# 3. QSPI image (bitstream + SPL + U-Boot) and program it
+# 3. QSPI image (phase 1 + SPL + U-Boot + core) and the core file
 ./linux/make_jic.sh
-quartus_pgm -c "DE25-Nano [1-3-iface0]" -m jtag -o "pvi;linux/build_output/de25_nano.jic"
 
 # 4. SD card image, written over the network (or: gunzip -c ... | sudo dd of=/dev/sdX)
 ./linux/tools/make_sdcard_image.sh
 python3 linux/tools/sd_recover.py          # power-cycle when it asks
+
+# 5. then program QSPI, and restart (JTAG .sof load or power cycle)
+quartus_pgm -c "DE25-Nano [1-3-iface0]" -m jtag -o "pvi;linux/build_output/de25_nano.jic"
+quartus_pgm -c "DE25-Nano [1-3-iface0]" -m jtag -o "p;output_files/de25_nano_uart_hps_auto.sof@1"
 ```
+
+Card before QSPI: an HPS-first `.jic` needs a U-Boot with the preboot core
+loader on the card (docs/hps_first.md, Install).
 
 `sd_recover.py` works with a blank or broken card: the SPL falls back to
 U-Boot in QSPI, the script stops autoboot over the console, downloads the
@@ -113,6 +128,7 @@ and boots it. The first boot installs `python3` (needs internet); copy
 
 | symptom on the console | cause |
 |---|---|
+| nothing at all, ever | HPS-first and the core not loaded: the card's U-Boot lacks the preboot loader, or core and `.jic` are from different builds (docs/hps_first.md) |
 | `spl_register_fat_device: fat register err` then `Trying to boot from SPI` | no FAT/u-boot.itb on the card - expected on a blank card; QSPI U-Boot takes over |
 | SPL stops after `WDT: Started watchdog`, board resets every ~30 s | `QSPI_OWNERSHIP SDM`: the SPL's QSPI probe stalls |
 | `Waiting for PHY auto negotiation ... TIMEOUT`, `phy_startup() failed: -110` | no ethernet link: cable or switch port |
@@ -121,22 +137,26 @@ and boots it. The first boot installs `python3` (needs internet); copy
 
 ## Applying a new FPGA image without a power cycle
 
-After programming the `.jic`, load the matching `.sof` with the SPL
-embedded (written by `make_jic.sh`) over JTAG - the device reconfigures
-and the board boots again, as from power-on:
+- **New fabric, Linux keeps running:** `fpga-reload [new.core.rbf]` on the
+  board - ~2 s, docs/hps_first.md. The core must come from a build with the
+  same phase 1 (HPS/DDR configuration).
+- **New phase 1 / everything:** program the `.jic`, then load the matching
+  `.sof` with the SPL embedded over JTAG - the device reconfigures and boots
+  again, as from power-on:
 
 ```bash
 quartus_pgm -c "DE25-Nano [1-3-iface0]" -m jtag -o "p;output_files/de25_nano_uart_hps_auto.sof@1"
 ```
 
-From Linux over the network, without JTAG: docs/remote_system_update_plan.md
-(planned); fabric-only changes without a reboot:
+From Linux over the network, without JTAG, for phase 1 too:
+docs/remote_system_update_plan.md (planned); parts of the fabric only:
 docs/partial_reconfiguration_plan.md (planned).
 
 ## Known gaps
 
 | what | state |
 |---|---|
-| Cortex-A76 cores (CPU2, CPU3) | `CPU2: failed to come online` with ATF 2.12 and 2.14.1 alike, even with their power enabled in the HPS IP; Linux runs on the two A55s. The parts have A76s (Intel's Agilex 5 docs) - a firmware/configuration gap to investigate |
+| `reboot` from Linux | hangs silently after `reboot: Restarting system` since ATF v2.14.1 (worked with 2.12) - restart with the JTAG `.sof` load or a power cycle |
+| ethernet after boot | receive stalled once (link up, no RX); `ip link set eth0 down/up` recovered it - cause unknown. The MAC is random on every boot |
 | QSPI flash in Linux | upstream's DT enables it, but the ID read is garbled (`unrecognized JEDEC id bytes: 90 5d 8c 08 22 00`, expected `20 bb 18`); U-Boot reads it fine with `cdns,read-delay` deleted - tune the Linux DT (read delay, clock) before RSU (docs/remote_system_update_plan.md, R0) |
 | fan controller | reports its sticky `i2c_error` bit while working normally - not investigated |
