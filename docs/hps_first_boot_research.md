@@ -35,7 +35,7 @@ The facts that decide it:
    (SDM firmware, HPS I/O, HPS EMIF I/O, FSBL). The core and the FPGA I/O
    are phase 2, and the HPS has to ask the SDM for that phase. This repo
    never did. That explains why `FPGA_COMPLETE` "genuinely never set"
-   (`linux/patches/README.md`). The relaxed `is_fpga_config_ready()` patch
+   (`linux/patches/README.md`, in git history up to `b2351c3`). The relaxed `is_fpga_config_ready()` patch
    then let `bridge enable` open LWH2F onto an unconfigured fabric, and the
    CPU hung. [V: Altera HPS Booting UG 813762, "HPS Boot First" / "Phase 1
    / Phase 2"; V: scratch trial below, the HPS-first P1 is 0x63000 bytes

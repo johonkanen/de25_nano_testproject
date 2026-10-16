@@ -33,7 +33,6 @@ the build script).
 | file | what |
 |------|------|
 | `build_de25_nano_linux.sh` | orchestrator — toolchain, ATF, U-Boot, kernel, toybox initramfs, `sdcard.img` |
-| `patches/` | ATF/U-Boot fixes found while chasing the LWH2F bring-up bug, proven unnecessary once the real root cause was found — kept for reference, **not applied** — see `patches/README.md` |
 | `make_jic.sh` | combines the SPL with `output_files/de25_nano_uart.sof` into a QSPI `.jic` |
 | `tools/setup_alpine_rootfs.sh` | replaces the toybox initramfs with a real, persistent Alpine Linux rootfs — see [Real rootfs](#real-rootfs-alpine-linux) |
 | `tools/push_to_nano.py` | pushes/runs a file on the board over the network, driven from the serial console — see [Writing and running your own software](#writing-and-running-your-own-software) |
@@ -296,14 +295,14 @@ found and fixed in `de25_std_testproject` and in the `freertos-socfpga`
 QSPI work; this board's LPDDR4 is 1GB) — a `sed` in
 `build_de25_nano_linux.sh` itself.
 
-`linux/patches/` holds two more fixes (`arm-trusted-firmware.patch` and
-`u-boot-socfpga.patch`) found while chasing a permanent LWH2F-bridge
-freeze, but **neither is applied** — both were proven unnecessary
+Two more fixes (`arm-trusted-firmware.patch` and `u-boot-socfpga.patch`,
+in git history up to commit `b2351c3`, `linux/patches/`) were found while
+chasing a permanent LWH2F-bridge freeze, but **neither was needed** — both were proven unnecessary
 (hardware-confirmed on 2026-09-10: reverted both, rebuilt BL31 + U-Boot
 SPL from pristine upstream sources, still booted cleanly with LWH2F
 fully working across two independent power cycles) once the real root
-cause was fixed on the FPGA side instead. See `linux/patches/README.md`
-for what they do and why they're kept anyway, and
+cause was fixed on the FPGA side instead. `linux/patches/README.md` in
+that commit says what they did; see also
 [docs/de25_nano_lwh2f_bringup.md](../docs/de25_nano_lwh2f_bringup.md)
 for the full investigation.
 

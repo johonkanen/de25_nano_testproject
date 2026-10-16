@@ -8,6 +8,7 @@
 
 `communications.vhd` and `serial_protocol_generic_pkg.vhd` came from the
 same place for the fabric register UART, retired when HPS UART1 took over
-the `FPGA_UART` pins (commit `247409b`); they are no longer built.
+the `FPGA_UART` pins (commit `247409b`); they were removed from the tree
+(git history has them).
 
 To update: copy the newer version from upstream and re-run the build.

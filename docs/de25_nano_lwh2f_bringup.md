@@ -112,9 +112,9 @@ reproduced across two independent power cycles. Likely explanation: under
 bring-up — including whatever it does for NCore CCU routing and the
 LWSOC2FPGA firewall — by the time HPS starts, so these BL2-only calls
 were compensating for the `"HPS FIRST"` race, not an unconditional
-hardware requirement. Both patches are kept in `linux/patches/` for
-reference (see that directory's own `README.md`) but are no longer
-applied by `build_de25_nano_linux.sh`.
+hardware requirement. Both patches were removed from the tree (they are
+in git history up to commit `b2351c3`, `linux/patches/` with its own
+`README.md`); `build_de25_nano_linux.sh` never applied them after that.
 
 ## Related work built on top of this fix (separate incidents)
 

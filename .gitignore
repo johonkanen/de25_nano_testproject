@@ -75,3 +75,4 @@ hps/baremetal-drivers
 # committed. This was previously untracked only by omission, not by an
 # actual .gitignore rule - a 16.7 MB .jic sat unignored in here.
 linux/build_output/
+IpUpgradeLog.xml
