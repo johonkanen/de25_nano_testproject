@@ -1,12 +1,14 @@
 # ------------------------------------------------------------------------
-# Quartus Prime Pro project script - minimal UART bring-up build
+# Quartus Prime Pro project script - DE25-Nano HPS + fabric register file
 # Target board: Terasic DE25-Nano (Agilex 5 A5EB013BB23BE4SCS)
 #
-# Scope: fpga_communication UART block + an fpga_interconnect register file.
-# Everything runs on the 50 MHz board clock - no PLL, no DSP, no processors.
+# Scope: the Agilex 5 HPS (Linux) and, over its LWH2F bridge, an
+# fpga_interconnect register file with the LED blinkers, the fan
+# controller, switches and buttons - see de25_nano_uart_top.vhd's header
+# for the register map. The fabric runs on the HPS's h2f_user0 clock.
 #
-# VHDL sources live under source/ : hVHDL_uart and hVHDL_fpga_interconnect
-# are submodules; the three fpga_communication glue files are vendored
+# VHDL sources live under source/ : hVHDL_fpga_interconnect is a submodule,
+# fpga_interconnect_16bit_pkg.vhd is vendored
 # (see source/fpga_communication/README.md).
 #
 # First checkout:
@@ -14,20 +16,15 @@
 #
 # Build (run every command from this directory):
 #     quartus_sh  -t build_de25_nano_uart.tcl
+#     quartus_ipgenerate de25_nano_uart -c de25_nano_uart --run_default_mode_op
 #     quartus_syn de25_nano_uart
 #     quartus_fit de25_nano_uart
 #     quartus_sta de25_nano_uart
 #     quartus_asm de25_nano_uart
 #
-# Program (cable INDEX - see program.sh / jtagconfig):
-#     quartus_pgm -c 1 -m jtag -o "p;output_files/de25_nano_uart.sof@1"
-#
-# The fan runs at minimum speed out of reset; register 9 is its duty cycle
-# and register 10 reads back the measured RPM.
-#
-# Talk to it - on-board USB serial, no adapter needed
-# (50e6 / 434 ~= 115200 baud, 32-bit data words):
-#     python test_uart.py /dev/ttyUSB0 115200
+# Program: the .sof carries the HPS, so it goes to QSPI with the U-Boot SPL
+# (linux/make_jic.sh, then quartus_pgm "pvi;linux/build_output/de25_nano.jic")
+# - see linux/README.md.
 #     >>> Uart(...).read(1)   # -> 0x0000DE25
 # ------------------------------------------------------------------------
 
@@ -88,8 +85,8 @@ set_global_assignment -name DEVICE_INITIALIZATION_CLOCK OSC_CLK_1_125MHZ
 # copied from the same reference-design diff, never tested independently)
 # but turned out to let the ARM cores start before the FPGA fabric is
 # guaranteed ready, permanently hanging the first LWH2F bridge access - see
-# hps/baremetal_lwh2f_regs/README.md and
-# memory/de25_nano_lwh2f_hps_first_regression.md. "AFTER INIT_DONE" fixed
+# hps/baremetal_lwh2f_regs/README.md and docs/de25_nano_lwh2f_bringup.md.
+# "AFTER INIT_DONE" fixed
 # LWH2F (confirmed on hardware through real Linux userspace, 2026-09-10)
 # but then the ethernet PHY stopped attaching to MDIO
 # ("mdio_bus stmmac-0: MDIO device at address 1 is missing", reproducible
@@ -106,7 +103,16 @@ set_global_assignment -name DEVICE_INITIALIZATION_CLOCK OSC_CLK_1_125MHZ
 # cold-boot hang this assignment was added for still needs QSPI_OWNERSHIP
 # HPS specifically under "AFTER INIT_DONE" ordering, or if that hang was
 # actually specific to "HPS FIRST" timing.
-set_global_assignment -name QSPI_OWNERSHIP SDM
+#
+# 2026-10-16: back to QSPI_OWNERSHIP HPS (with "AFTER INIT_DONE" kept). The
+# U-Boot SPL now falls back to U-Boot proper in QSPI when the SD card has
+# none (linux/make_jic.sh, linux/tools/sd_recover.py), and with SDM
+# ownership the SPL's first QSPI-controller access stalls the bus - both
+# Terasic's 2025.01 and Altera's 2026.04 SPL hung there (the latter reset
+# by its watchdog). Intel's Agilex 5 GSRD designs all set HPS. To check on
+# the board: the ethernet PHY - see the MDIO note above, seen with this
+# same combination under Terasic's U-Boot/kernel.
+set_global_assignment -name QSPI_OWNERSHIP HPS
 set_global_assignment -name HPS_INITIALIZATION "AFTER INIT_DONE"
 set_global_assignment -name PWRMGT_VOLTAGE_OUTPUT_FORMAT "LINEAR FORMAT"
 set_global_assignment -name PWRMGT_LINEAR_FORMAT_N "-12"
@@ -125,11 +131,16 @@ set_global_assignment -name VHDL_FILE $this_file_path/source/fpga_communication/
 set_global_assignment -name VHDL_FILE $this_file_path/source/fan_control/i2c_master_pkg.vhd
 set_global_assignment -name VHDL_FILE $this_file_path/source/fan_control/amc6821_fan_control.vhd
 
-# uart rx / tx (entity + package in the same file) and the serial protocol
-set_global_assignment -name VHDL_FILE $this_file_path/source/hVHDL_uart/uart_rx/uart_rx_pkg.vhd
-set_global_assignment -name VHDL_FILE $this_file_path/source/hVHDL_uart/uart_tx/uart_tx_pkg.vhd
-set_global_assignment -name VHDL_FILE $this_file_path/source/fpga_communication/serial_protocol_generic_pkg.vhd
-set_global_assignment -name VHDL_FILE $this_file_path/source/fpga_communication/communications.vhd
+# LED blinkers: the static part (frame tick, PWM, modes) and the pattern
+# modules, each its own entity with blinker_pkg's common ports - see
+# source/led_blinkers.vhd and docs/partial_reconfiguration_plan.md
+set_global_assignment -name VHDL_FILE $this_file_path/source/blinkers/blinker_pkg.vhd
+set_global_assignment -name VHDL_FILE $this_file_path/source/blinkers/blinker_counter.vhd
+set_global_assignment -name VHDL_FILE $this_file_path/source/blinkers/blinker_scanner.vhd
+set_global_assignment -name VHDL_FILE $this_file_path/source/blinkers/blinker_breathing.vhd
+set_global_assignment -name VHDL_FILE $this_file_path/source/blinkers/blinker_sparkle.vhd
+set_global_assignment -name VHDL_FILE $this_file_path/source/blinkers/blinker_slot.vhd
+set_global_assignment -name VHDL_FILE $this_file_path/source/led_blinkers.vhd
 
 # git hash constant (refresh with ./write_githash.sh)
 set_global_assignment -name VHDL_FILE $this_file_path/git_hash_pkg.vhd
@@ -142,14 +153,13 @@ set_global_assignment -name VHDL_FILE $this_file_path/axi_lwh2f_bridge.vhd
 # section and h2f_user0_clk_heartbeat.vhd (ported verbatim)
 set_global_assignment -name VHDL_FILE $this_file_path/h2f_user0_clk_heartbeat.vhd
 
-# bring-up top level
+# top level
 set_global_assignment -name VHDL_FILE $this_file_path/de25_nano_uart_top.vhd
 
 # ------------------------------------------------------------ HPS + IP
-# Agilex 5 HPS + LPDDR4 EMIF (hps_min, a real Platform Designer system -
-# see hps/hps_min.qsys / hps/README.md). Instantiated from
-# de25_nano_uart_top.vhd; every FPGA<->HPS bridge is disabled, so it is a
-# standalone ARM host independent of the fabric logic.
+# Agilex 5 HPS + LPDDR4 EMIF (hps/hps_subsys.qsys, see hps/README.md).
+# Instantiated from de25_nano_uart_top.vhd; the LWH2F bridge is enabled
+# and wired into the register file, the other bridges are disabled.
 #
 # Generate once (or after editing hps/hps_subsys.qsys):
 #     qsys-generate hps/hps_subsys.qsys --synthesis=VHDL --part=A5EB013BB23BE4SCS

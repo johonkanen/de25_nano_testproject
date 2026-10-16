@@ -1,15 +1,13 @@
 # vendored from johonkanen/fpga_communication
 
-These three files are copied verbatim from
-<https://github.com/johonkanen/fpga_communication> (same set the
-`axc3000_test` build vendors):
+`fpga_interconnect_16bit_pkg.vhd` - the 32 data / 16 address instance of
+`hVHDL_fpga_interconnect`'s generic package - is copied verbatim from
+<https://github.com/johonkanen/fpga_communication> (same file the
+`axc3000_test` build vendors). It is vendored, not a submodule, because
+`fpga_communication` pulls in several unrelated nested submodules.
 
-- `communications.vhd`             — the `fpga_communications` entity
-- `serial_protocol_generic_pkg.vhd`
-- `fpga_interconnect_16bit_pkg.vhd` — 32 data / 16 address instance of the generic pkg
+`communications.vhd` and `serial_protocol_generic_pkg.vhd` came from the
+same place for the fabric register UART, retired when HPS UART1 took over
+the `FPGA_UART` pins (commit `247409b`); they are no longer built.
 
-They are vendored (not a submodule) because `fpga_communication` pulls in
-several unrelated nested submodules. The packages they depend on come from
-the `hVHDL_uart` and `hVHDL_fpga_interconnect` submodules under `../`.
-
-To update: copy the newer versions from upstream and re-run the build.
+To update: copy the newer version from upstream and re-run the build.

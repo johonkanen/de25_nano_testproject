@@ -1,34 +1,32 @@
 ------------------------------------------------------------------------
--- Minimal Agilex 5 UART bring-up build for the Terasic DE25-Nano board.
+-- Agilex 5 HPS + fabric register file for the Terasic DE25-Nano board.
 --
--- Same skeleton as johonkanen/axc3000_test and de25_std_testproject,
--- trimmed to the essentials: the fpga_communication UART block + an
--- fpga_interconnect register file. No PLL, no DSP, no processors - the
--- 50 MHz board clock drives everything.
+-- The HPS (hps/hps_subsys.qsys: the ARM cores + LPDDR4 EMIF) runs Linux;
+-- its lightweight HPS-to-FPGA bridge (LWH2F, 0x2000_0000) reaches an
+-- fpga_interconnect register file here through axi_lwh2f_bridge.vhd. The
+-- fabric runs on the HPS's h2f_user0 clock (50 MHz) - CLOCK0_50 is kept as
+-- a port for its pin assignment only. Around the register file: the LED
+-- blinkers (source/led_blinkers.vhd), the AMC6821 fan controller, the
+-- switches and buttons. The board's web GUI (linux/webapp/) is the user of
+-- all of it.
 --
 -- Board / pinout from the DE25-Nano golden top (Demonstration/FPGA):
---   CLOCK0_50      PIN_DJ35  1.1-V          50 MHz oscillator
+--   CLOCK0_50      PIN_DJ35  1.1-V          50 MHz oscillator (unused)
 --   LED[7:0]       ...       1.1-V          green user LEDs
 --   SW[3:0]        ...       1.1-V          slide switches
 --   KEY[1:0]       ...       3.3-V LVCMOS   push-buttons, active low
 --   FPGA_UART_RX   PIN_BR19  3.3-V LVCMOS   board TX -> FPGA RX
 --   FPGA_UART_TX   PIN_CJ1   3.3-V LVCMOS   FPGA TX -> board RX
 --
--- Unlike the DE25-Standard - where the on-board USB bridge is wired to the
--- HPS and the UART has to be broken out to the GPIO header - the DE25-Nano
--- has a dedicated FPGA-fabric UART on FPGA_UART_TX / FPGA_UART_RX. No
--- jumper wires and no external adapter: the on-board USB serial port is the
--- register interface. Terasic's own Demonstration/FPGA/UART demo loops
--- these two pins back through KEY[0], which is where the pins are from.
+-- FPGA_UART_TX/RX - the board's main USB serial port - carry HPS UART1,
+-- the Linux console, routed through the fabric (commit 247409b). The
+-- register file has no UART master any more: LWH2F is its only bus.
 --
 -- Reset: the DE25-Nano has no CPU_RESET_n push-button, so reset is the
 -- ~21 ms power-on counter only (g_por_cycles). Both push-buttons stay free
 -- as readable inputs on register 7.
 --
--- Clocking / baud:
---   g_clock_divider = 434  ->  50e6 / 434 = 115207 baud (~115200, 0.006% err)
---
--- Register map reachable over UART (32 bit data, 16 bit address):
+-- Register map over LWH2F (register n at byte offset n * 0x10):
 --   addr 1 : constant id      0x0000DE25   (read only)
 --   addr 2 : git hash                       (read only)
 --   addr 3 : loopback register              (read / write)
@@ -41,15 +39,23 @@
 --   addr 10: fan speed measured, RPM                    (read only)
 --   addr 11: fan raw TACH count                         (read only)
 --   addr 12: fan controller status                       (read only)
+--   addr 13: LED blinker mode, low 3 bits (read / write) - 0 software,
+--            1 off, 2 counter, 3 scanner, 4 breathing, 5 sparkle
+--   addr 14: LED 3..0 brightness, a byte each, LED 0 in 7:0 (read only)
+--   addr 15: LED 7..4 brightness                         (read only)
+--   addr 16: features - bit 0: the blinkers are in hardware (read only)
+--   addr 17: blinker module id, four ASCII chars, 0 in modes 0/1 (read only)
 --
--- LED[6:0] follow addr-5 bits 6..0; LED[7] is a ~1 Hz heartbeat so the
--- board shows life without a terminal attached.
+-- In blinker mode 0 (the reset default) LED[6:0] follow addr-5 bits 6..0
+-- and LED[7] is a ~1 Hz heartbeat so the board shows life without a
+-- terminal attached; modes 2..5 hand all eight LEDs to a pattern module
+-- (source/led_blinkers.vhd, source/blinkers/).
 --
 -- Fan control (see source/fan_control/amc6821_fan_control.vhd): the board's
 -- AMC6821 PWM fan controller hangs off the HDMI I2C bus, and register 9 is
 -- its duty cycle - 0 = off, 255 = full. It resets to g_fan_min_duty, so the
 -- fan comes up at minimum speed and stays there until something writes a
--- new value over the UART.
+-- new value.
 --
 -- Register 12 packs the fan controller's status:
 --   bits  7..0 : AMC6821 device ID, reads 0x21 when the I2C link is good
@@ -58,18 +64,6 @@
 --   bit  24    : init_done  - configuration sequence completed
 --   bit  25    : i2c_error  - sticky, a write went unacknowledged
 --   bit  26    : FAN_ALERT_n pin level (active low, straight from the pad)
---
--- HPS (see hps/README.md): hps_min is a Platform Designer system (agilex
--- HPS + its LPDDR4 EMIF, see hps/hps_min.qsys) with every FPGA<->HPS bridge
--- disabled - it is a standalone ARM host with no memory-mapped path into this
--- entity's register file, entirely independent of the fabric UART/fan
--- logic above. It clocks and resets itself (HPS_CLK_25 in, its own POR),
--- so it needs no generic or port from the rest of this design.
---
--- HPS_UART_TX/RX (IOB15/IOB16 in the HPS pin-mux table) are HPS UART1,
--- the HPS's own console - a second, independent UART from FPGA_UART_TX/RX
--- above, reachable only from software running on the ARM cores (bare-metal
--- or Linux), never from the register interface.
 ------------------------------------------------------------------------
 library ieee;
     use ieee.std_logic_1164.all;
@@ -77,10 +71,8 @@ library ieee;
 
 entity de25_nano_uart_top is
     generic (
-        -- core clock (Hz) / baud rate.  50 MHz / 115200 = 434.
-        g_clock_divider : natural := 434
         -- power-on reset length in core-clock cycles (~21 ms at 50 MHz).
-        ;g_por_cycles   : natural := 1_048_575
+        g_por_cycles   : natural := 1_048_575
         -- fan duty cycle after reset: minimum speed.  0..255 maps to 0..100 %
         -- PWM. Trimmed on hardware (docs/de25_nano_fan.md): the fan gets
         -- erratic (saturated/spiking TACH readings) below ~18-22, so 30
@@ -94,21 +86,21 @@ entity de25_nano_uart_top is
         ;g_fan_por_cycles  : natural := 5_000_000                 -- 100 ms
     );
     port (
-        CLOCK0_50      : in  std_logic                       -- 50 MHz (PIN_DJ35)
+        CLOCK0_50      : in  std_logic                       -- 50 MHz (PIN_DJ35), unused: core_clock is h2f_user0
         ;SW            : in  std_logic_vector(3 downto 0)     -- slide switches
         ;KEY           : in  std_logic_vector(1 downto 0)     -- push-buttons, active low
         ;LED           : out std_logic_vector(7 downto 0)     -- green user LEDs
-        ;FPGA_UART_RX  : in  std_logic                        -- PIN_BR19
-        ;FPGA_UART_TX  : out std_logic                        -- PIN_CJ1
+        ;FPGA_UART_RX  : in  std_logic                        -- PIN_BR19, HPS UART1 RX (console)
+        ;FPGA_UART_TX  : out std_logic                        -- PIN_CJ1, HPS UART1 TX (console)
         -- AMC6821 fan controller, on the shared HDMI I2C bus
         ;HDMI_I2C_SCL  : inout std_logic                      -- PIN_BT1
         ;HDMI_I2C_SDA  : inout std_logic                      -- PIN_BW2
         ;FAN_ALERT_n   : in  std_logic                        -- PIN_DK32
         ;H2F_CLK_TEST  : out std_logic                        -- GPIO0_D[2] (PIN_C2) - see h2f_user0_clk_heartbeat.vhd
 
-        -- ---- HPS (hps_min - see hps/README.md) ----
+        -- ---- HPS (hps_subsys - see hps/README.md) ----
         -- 'in' ports default to '0'/all-zero so existing testbenches that
-        -- instantiate this entity without driving them (hps_min is a
+        -- instantiate this entity without driving them (hps_subsys is a
         -- separate, self-clocking subsystem no simulation here touches)
         -- still elaborate; real hardware always drives every physical pin
         -- regardless of these defaults.
@@ -129,7 +121,7 @@ entity de25_nano_uart_top is
         ;HPS_KEY           : inout std_logic
         ;HPS_LED           : inout std_logic
 
-        -- ---- HPS LPDDR4 EMIF (hps_min) ----
+        -- ---- HPS LPDDR4 EMIF (hps_subsys) ----
         ;LPDDR4A_REFCLK_p : in    std_logic := '0'
         ;LPDDR4A_CS_n     : out   std_logic
         ;LPDDR4A_CA       : out   std_logic_vector(5 downto 0)
@@ -163,7 +155,7 @@ architecture rtl of de25_nano_uart_top is
     --
     -- (The actual root cause of this project's LWH2F bring-up hang turned
     -- out to be unrelated to this wiring entirely - see
-    -- memory/de25_nano_lwh2f_hps_first_regression.md - it was the QSF
+    -- docs/de25_nano_lwh2f_bringup.md - it was the QSF
     -- HPS_INITIALIZATION/QSPI_OWNERSHIP boot-order assignments. This
     -- synchronizer is being wired back in on its own merits, as a more
     -- correct design than gating the bridge/HPS interface on an unrelated
@@ -184,15 +176,9 @@ architecture rtl of de25_nano_uart_top is
     -- other as h2f_reset was against the independent CLOCK0_50 board
     -- oscillator - needs more margin to resolve reliably). 10 stages
     -- confirmed reliable: 30 consecutive LWH2F reads across 2 independent
-    -- boots, plus the webapp's HTTP write/read round-trip. See
-    -- memory/de25_nano_h2f_user0_clock_core_clock.md for the full
-    -- investigation.
+    -- boots, plus the webapp's HTTP write/read round-trip (commit 72c21ef).
     signal h2f_reset_sync        : std_logic_vector(9 downto 0) := (others => '1');
     signal h2f_reset_synchronized : std_logic;
-
-    signal bus_to_communications   : fpga_interconnect_record := init_fpga_interconnect;
-    signal bus_from_communications : fpga_interconnect_record := init_fpga_interconnect;
-    signal bus_from_top            : fpga_interconnect_record := init_fpga_interconnect;
 
     signal bus_to_axi     : fpga_interconnect_record := init_fpga_interconnect;
     signal bus_from_axi   : fpga_interconnect_record := init_fpga_interconnect;
@@ -230,6 +216,16 @@ architecture rtl of de25_nano_uart_top is
     -- ~1 Hz heartbeat: 50 MHz / 2**26 ~= 0.75 Hz toggle
     signal heartbeat_count : unsigned(25 downto 0) := (others => '0');
     signal heartbeat       : std_logic := '0';
+
+    -- LED blinkers (source/led_blinkers.vhd): register 13 picks the mode,
+    -- 0 = software (register 5 + heartbeat, as before), 2..5 a pattern
+    -- module in the fabric. levels/id are read back by the web GUI.
+    signal blinker_mode_register : std_logic_vector(31 downto 0) := (others => '0');
+    signal blinker_levels        : std_logic_vector(63 downto 0);
+    signal blinker_id            : std_logic_vector(31 downto 0);
+    -- register 16: bit 0 = the blinkers are in hardware (the GUI's cue to
+    -- use registers 13..17 rather than blinking register 5 itself)
+    constant c_features : std_logic_vector(31 downto 0) := x"00000001";
 
     -- double-flop the async inputs before they reach the register file
     signal sw_meta,  sw_sync  : std_logic_vector(3 downto 0) := (others => '0');
@@ -423,44 +419,26 @@ begin
         end if;
     end process heartbeat_gen;
 
-    LED(6 downto 0) <= led_register(6 downto 0);
-    LED(7)          <= heartbeat;
+    u_led_blinkers : entity work.led_blinkers
+    generic map (
+        g_clock_hz => 50_000_000
+    )
+    port map (
+        clock    => core_clock
+        ,reset   => system_reset
+        ,mode    => unsigned(blinker_mode_register(2 downto 0))
+        ,sw_leds => heartbeat & led_register(6 downto 0)
+        ,leds    => LED
+        ,levels  => blinker_levels
+        ,id      => blinker_id
+    );
 
 ------------------------------------------------------------------------
     test_registers : process (core_clock) is
     begin
         if rising_edge(core_clock) then
-            init_bus(bus_from_top);
             init_bus(bus_from_top_axi);
 
-            -- ---- fabric UART master ----
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 1, x"0000DE25");
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 2, work.git_hash_pkg.git_hash);
-            connect_data_to_address(bus_from_communications, bus_from_top, 3, loopback_register);
-
-            if data_is_requested_from_address(bus_from_communications, 4) then
-                read_counter <= std_logic_vector(unsigned(read_counter) + 1);
-                write_data_to_address(bus_from_top, 0, read_counter);
-            end if;
-
-            connect_data_to_address(bus_from_communications, bus_from_top, 5, led_register);
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 6,
-                std_logic_vector(resize(unsigned(sw_sync), 32)));
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 7,
-                std_logic_vector(resize(unsigned(not key_sync), 32)));   -- KEY is active low
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 8,
-                std_logic_vector(uptime_counter));
-
-            -- fan speed setpoint and measurements
-            connect_data_to_address(bus_from_communications, bus_from_top, 9, fan_duty_register);
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 10,
-                std_logic_vector(resize(unsigned(fan_rpm), 32)));
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 11,
-                std_logic_vector(resize(unsigned(fan_tach), 32)));
-            connect_read_only_data_to_address(bus_from_communications, bus_from_top, 12,
-                fan_status_word);
-
-            -- ---- LWH2F (AXI) master - same registers ----
             connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 1, x"0000DE25");
             connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 2, work.git_hash_pkg.git_hash);
             connect_data_to_address(bus_from_axi, bus_from_top_axi, 3, loopback_register);
@@ -484,19 +462,23 @@ begin
                 std_logic_vector(resize(unsigned(fan_tach), 32)));
             connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 12,
                 fan_status_word);
+            connect_data_to_address(bus_from_axi, bus_from_top_axi, 13, blinker_mode_register);
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 14, blinker_levels(31 downto 0));
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 15, blinker_levels(63 downto 32));
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 16, c_features);
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 17, blinker_id);
 
             uptime_counter <= uptime_counter + 1;
 
-            bus_to_communications <= bus_from_top;
             bus_to_axi            <= bus_from_top_axi;
 
             if system_reset = '1' then
                 loopback_register     <= (others => '0');
                 read_counter          <= (others => '0');
                 led_register          <= (others => '0');
+                blinker_mode_register <= (others => '0');
                 uptime_counter        <= (others => '0');
                 fan_duty_register     <= c_fan_min_duty;
-                bus_to_communications <= init_fpga_interconnect;
                 bus_to_axi            <= init_fpga_interconnect;
             end if;
         end if;
@@ -536,20 +518,6 @@ begin
         ,sda_low    => i2c_sda_low
         ,scl_low    => i2c_scl_low
     );
-
-------------------------------------------------------------------------
-    -- u_fpga_communications : entity work.fpga_communications
-    -- generic map (
-    --     fpga_interconnect_pkg => work.fpga_interconnect_pkg
-    --     ,g_clock_divider      => g_clock_divider
-    -- )
-    -- port map (
-    --     clock                    => core_clock
-    --     ,uart_rx                 => FPGA_UART_RX
-    --     ,uart_tx                 => FPGA_UART_TX
-    --     ,bus_to_communications   => bus_to_communications
-    --     ,bus_from_communications => bus_from_communications
-    -- );
 
 ------------------------------------------------------------------------
     u_axi_lwh2f_bridge : entity work.axi_lwh2f_bridge

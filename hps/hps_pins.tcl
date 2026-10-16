@@ -1,4 +1,4 @@
-# HPS + LPDDR4A pin and IO-standard assignments for hps_min, extracted
+# HPS + LPDDR4A pin and IO-standard assignments for hps_subsys, extracted
 # verbatim from the DE25-Nano GHRD's golden_top.qsf
 # (Demonstration/SoC_FPGA/GHRD/golden_top.qsf) - see hps/README.md.
 

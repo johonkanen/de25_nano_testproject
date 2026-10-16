@@ -18,11 +18,11 @@
 #
 # Env overrides:  QUARTUS_BIN=...  CABLE=<index>  DEVICE=<jtag index, default 1>
 #
-# NOTE: the UART for test_uart.py is NOT this cable.  The DE25-Nano has a
-# dedicated FPGA-fabric UART (FPGA_UART_TX/RX) on the board's own USB serial
-# bridge - no external adapter - which enumerates as its own /dev/ttyUSB* .
-# Forward that interface into WSL with usbipd as well if you want to run
-# test_uart.py from here.
+# NOTE: the .sof contains the HPS, and quartus_pgm refuses an HPS .sof
+# without a boot payload - for the normal Linux boot use linux/make_jic.sh
+# and program the .jic to QSPI instead (README.md "Program"). The board's
+# USB serial port (the Linux console) is a separate USB interface: forward
+# it into WSL with usbipd as well.
 # ---------------------------------------------------------------------------
 set -uo pipefail
 
