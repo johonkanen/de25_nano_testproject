@@ -1,33 +1,36 @@
-# de25_nano_testproject — UART bring-up build
+# de25_nano_testproject — DE25-Nano: HPS Linux, FPGA LED blinkers, web GUI
 
-Minimal Quartus Prime Pro build for the **Terasic DE25-Nano**
-(Agilex 5 `A5EB013BB23BE4SCS`), structured like
+Quartus Prime Pro build for the **Terasic DE25-Nano** (Agilex 5
+`A5EB013BB23BE4SCS`), structured like
 [`johonkanen/axc3000_test`](https://github.com/johonkanen/axc3000_test) and
 its sibling `de25_std_testproject`.
 
-Scope: a UART + `fpga_interconnect` register block plus fan control, running
-straight off the 50 MHz board oscillator. No PLL, no DSP, no processors —
-just enough to prove the toolchain, the pins, the serial register interface
-and the board's fan controller work on a fresh board.
+- **HPS** (`hps/hps_subsys.qsys`: the ARM cores + LPDDR4) boots Linux from
+  QSPI + SD card — [linux/README.md](linux/README.md).
+- **Fabric**: an `fpga_interconnect` register file reached from Linux over
+  the lightweight HPS-to-FPGA bridge (LWH2F), with the
+  [LED blinkers](#led-blinkers) (each pattern its own module), the
+  board's [fan](#fan) controller, switches and buttons.
+- **Web GUI** served by the board: a drawing of the board with the LEDs,
+  switches, keys and fan live, the blinker picker, and updates of the GUI
+  over the network — [linux/webapp/README.md](linux/webapp/README.md).
+- Next: the blinkers as partial bitstreams loaded from Linux —
+  [docs/partial_reconfiguration_plan.md](docs/partial_reconfiguration_plan.md).
 
-Unlike the DE25-Standard, the DE25-Nano has a **dedicated FPGA-fabric UART
-wired to the board's own USB serial bridge**, so there are no jumper wires
-and no external adapter: plug in the USB cable and talk to the registers.
+The board's main USB serial port (`FPGA_UART_TX`/`FPGA_UART_RX`) carries
+the HPS's Linux console, routed through the fabric (commit `247409b`); the
+register file's own UART master that used to sit on those pins is retired.
 
 ## Sources
 
-`source/` holds two submodules and three vendored files:
-
 | path | origin |
 |------|--------|
-| `source/hVHDL_uart` | `hVHDL/hVHDL_uart` |
-| `source/hVHDL_fpga_interconnect` | `hVHDL/hVHDL_fpga_interconnect` |
-| `source/fpga_communication/*.vhd` | vendored from `johonkanen/fpga_communication` |
+| `source/hVHDL_fpga_interconnect` | submodule, `hVHDL/hVHDL_fpga_interconnect` |
+| `source/fpga_communication/fpga_interconnect_16bit_pkg.vhd` | vendored from `johonkanen/fpga_communication` |
 | `source/fan_control/*.vhd` | written here — I2C master + AMC6821 fan controller |
-
-The vendored `communications.vhd` has one local change from upstream: the
-two UART config signals are given initial values so `number_of_clocks_per_bit`
-is never 0 on the first clock edge (see the comment in the file).
+| `source/led_blinkers.vhd`, `source/blinkers/*.vhd` | the LED blinkers, ported from `~/dev/pr_testing` |
+| `axi_lwh2f_bridge.vhd` | LWH2F AXI4 → `fpga_interconnect`, from `de25_std_testproject` |
+| `hps/` | the HPS Platform Designer system and its IP — [hps/README.md](hps/README.md) |
 
 ## Build (run from this directory)
 
@@ -35,6 +38,7 @@ is never 0 on the first clock edge (see the comment in the file).
 git submodule update --init
 ./write_githash.sh                       # stamp git_hash_pkg.vhd (optional)
 quartus_sh  -t build_de25_nano_uart.tcl
+quartus_ipgenerate de25_nano_uart -c de25_nano_uart --run_default_mode_op
 quartus_syn de25_nano_uart
 quartus_fit de25_nano_uart
 quartus_sta de25_nano_uart
@@ -43,48 +47,30 @@ quartus_asm de25_nano_uart
 
 The `.tcl` writes `de25_nano_uart.qpf` / `de25_nano_uart.qsf` (both
 git-ignored) and sets every device / pin / config-scheme assignment.
+`quartus_ipgenerate` regenerates the HPS IP output, which is not tracked.
 
-**Verified end to end through `quartus_asm` with Quartus Prime Pro 26.1.0**
-(the DE25-Nano demos themselves ship for 25.1), with the HPS (`hps_min`,
-see [HPS](#hps)) present. Results:
+Last clean build, Quartus Prime Pro 26.1.1, 2026-10-16:
 
 | stage | result |
 |---|---|
-| `quartus_syn` | 0 errors, 1 warning (Critical Warning 20759, see [Note](#note)) |
-| `quartus_fit` | 0 errors — 133 pins placed, 639 / 46,800 ALMs (1 %), HSSI HPS 1/1 |
-| `quartus_sta` | fully constrained; worst-case setup slack **+17.098 ns**, hold **+0.096 ns** |
+| `quartus_syn` | 0 errors, 0 warnings |
+| `quartus_fit` | 0 errors — 116 pins, 1,180 / 46,800 ALMs (3 %), HSSI HPS 1/1 |
+| `quartus_sta` | timing met on `h2f_user0_clk_src`: setup slack **+15.448 ns**, hold **+0.004 ns**; one unconstrained output, `H2F_CLK_TEST` |
 | `quartus_asm` | 0 errors, 0 warnings → `output_files/de25_nano_uart.sof` |
 
-The fabric register interface (UART + fan control, unaffected by the HPS —
-same register map) has been repeatedly loaded and exercised on real
-hardware; see [Talk to it](#talk-to-it) and [Fan](#fan). Quartus refuses to
-program an HPS-inclusive `.sof` at all until an HPS boot payload is
-embedded (confirmed directly: `quartus_pgm` errors "HPS is present but
-bootloader information is missing" otherwise), so that requires one extra
-step — embed the [`hps/baremetal_uart1_test`](hps/baremetal_uart1_test/)
-program via `quartus_pfg -o hps_path=...` — documented in
-[docs/de25_nano_hps.md](docs/de25_nano_hps.md).
+## Program
 
-**This exact HPS-inclusive `.sof` (this build, this bitstream) has now been
-loaded onto hardware and verified end to end**, both halves at once:
-HPS UART1's bare-metal test banners and byte-echoes correctly over
-`/dev/ttyUSB0` (see [HPS](#hps)), and the fabric register interface still
-passes **20/20** over `/dev/ttyUSB1` via `test_uart.py` — including the fan
-controller — confirming the HPS and the fabric register block coexist
-correctly on one bitstream, not just individually.
-
-## Program (volatile JTAG load)
-
-On-board **Intel FPGA Download Cable II** (USB-Blaster II).
+The `.sof` contains the HPS, so it goes to the QSPI flash together with
+the U-Boot SPL; Linux then comes from the SD card:
 
 ```
-quartus_pgm -c 1 -m jtag -o "p;output_files/de25_nano_uart.sof@1"
+./linux/make_jic.sh
+quartus_pgm -c "DE25-Nano [1-3-iface0]" -m jtag -o "pvi;linux/build_output/de25_nano.jic"
 ```
 
-`@1` is the FPGA's position in the JTAG chain — run `jtagconfig` to confirm
-(the Agilex 5 SoC puts the SDM in the chain; Terasic's own `demo_batch`
-scripts omit the index entirely). Use the cable **index** (`-c 1`), not a
-name.
+Name the cable as `jtagconfig` lists it when more than one board is
+attached. Power-cycle afterwards. Details:
+[linux/README.md](linux/README.md#boot-media).
 
 ### From WSL2
 
@@ -99,32 +85,21 @@ usbipd attach --wsl --busid <b-p>
 ```
 
 Then [`program.sh`](program.sh) does the WSL side (perms, `jtagd`,
-`jtagconfig`, `quartus_pgm`):
+`jtagconfig`):
 
 ```
-./program.sh                            # flash output_files/de25_nano_uart.sof
-./program.sh path/to/other.sof          # flash a specific file
 ./program.sh --check                    # set up + jtagconfig, don't flash
 sudo ./program.sh --install-udev        # once: persistent 0666 rule
 ```
 
-`QUARTUS_BIN=`, `CABLE=` and `DEVICE=` env vars override the tool path,
-cable index and JTAG device index. Forward the board's **USB serial**
-interface into WSL too if you want to run `test_uart.py` from there.
+Forward the board's **USB serial** interface into WSL too: it is the Linux
+console (`/dev/serial/by-id/usb-TERASIC_DE25-Nano_*-if03-port0`), which
+`linux/tools/install_webapp.py` and `push_to_nano.py` use.
 
-## Talk to it
+## Registers
 
-The UART **is** the on-board USB port — `FPGA_UART_TX` / `FPGA_UART_RX` are
-FPGA-fabric pins wired to the board's USB serial bridge. No adapter, no
-jumper wires. Find the `/dev/ttyUSB*` it enumerates as and run:
-
-```
-python test_uart.py [/dev/ttyUSB0] [115200]
-```
-
-50 MHz / `g_clock_divider` (434) = 115207 baud, 32-bit data words.
-`test_uart.py` is self-contained (`pip install pyserial`) and exercises every
-register. Exit status 0 = all passed.
+Over LWH2F at `0x2000_0000`, register *n* at byte offset *n* × `0x10` (see
+`de25_nano_uart_top.vhd`'s header):
 
 | addr | meaning |
 |-----:|---------|
@@ -140,13 +115,42 @@ register. Exit status 0 = all passed.
 | 10 | fan speed measured, RPM (RO) |
 | 11 | fan raw TACH count (RO) |
 | 12 | fan controller status (RO) — see [Fan](#fan) |
+| 13 | LED blinker mode, low 3 bits (R/W) — see [LED blinkers](#led-blinkers) |
+| 14 | LED 3..0 brightness, a byte each, LED 0 in bits 7..0 (RO) |
+| 15 | LED 7..4 brightness (RO) |
+| 16 | features — bit 0: the blinkers are in hardware (RO) |
+| 17 | blinker module id, four ASCII characters, 0 in modes 0/1 (RO) |
 
-`LED[7]` is a ~1 Hz heartbeat so the board shows life with nothing attached.
+In blinker mode 0 (the reset default) `LED[7]` is a ~1 Hz heartbeat so the
+board shows life with nothing attached. From Linux: the web GUI, or
+`GET /api/read?reg=N` / `POST /api/write` on it.
 
-If the link doesn't come up, sanity-check the cable and terminal with
-Terasic's prebuilt UART loopback demo
-(`~/dev/de25_nano/Demonstration/FPGA/UART/demo_batch/golden_top.sof`): hold
-`KEY[0]` and anything you type should echo back.
+## LED blinkers
+
+The LED patterns run in the fabric, each one its own module with the same
+ports (`source/blinkers/blinker_pkg.vhd`: clock, reset, a 50 Hz `frame`
+tick in, eight 8-bit brightness levels and a four-character id out) -
+ported from `~/dev/pr_testing` so that each can later become a partial
+reconfiguration persona
+([docs/partial_reconfiguration_plan.md](docs/partial_reconfiguration_plan.md)).
+`source/led_blinkers.vhd` is the static part: the frame tick, ~1 kHz PWM
+with 256 steps, and the modes that are not patterns.
+`source/blinkers/blinker_slot.vhd` holds all four modules for now, one
+selected by register 13:
+
+| mode | LEDs | id |
+|-----:|------|----|
+| 0 | software: register 5 on `LED[6:0]`, heartbeat on `LED[7]` | 0 |
+| 1 | off | 0 |
+| 2 | counter - a binary count, 4 a second | `BCNT` |
+| 3 | scanner - a light sweeping 0..7..0 with a fading trail | `BSCN` |
+| 4 | breathing - all LEDs fading in and out, 3 s a breath | `BBRT` |
+| 5 | sparkle - random flashes fading out | `BSPK` |
+
+`sim/led_blinkers_tb.vhd` checks every pattern, the PWM duty and the modes
+(`python3 vunit_run_de25_nano_test.py de25_nano_lib.led_blinkers_tb.all`).
+The board's web GUI picks the mode and shows the LEDs live -
+[linux/webapp/README.md](linux/webapp/README.md).
 
 ## Fan
 
@@ -176,9 +180,7 @@ controller status:
 | 25 | `i2c_error` — sticky, a write went unacknowledged |
 | 26 | `FAN_ALERT_n` pin level |
 
-```
-python test_uart.py --fan-sweep     # drive the fan up, check RPM rises, restore minimum
-```
+The web GUI's fan slider writes register 9 and shows register 10.
 
 Two things worth knowing: the AMC6821's own **thermal fail-safe is left
 enabled**, so the chip forces the fan to 100 % on over-temperature whatever
@@ -187,86 +189,36 @@ FPGA, register 9 just holds what it was given. Details, the register-by-
 register configuration and how to trim the minimum are in
 [docs/de25_nano_fan.md](docs/de25_nano_fan.md).
 
-## HPS
+## HPS and Linux
 
-`de25_nano_uart_top.vhd` also instantiates `hps_subsys` (see
+`de25_nano_uart_top.vhd` instantiates `hps_subsys` (see
 [hps/README.md](hps/README.md)): the Agilex 5 hard processor system plus
 its LPDDR4 EMIF, generated from the DE25-Nano GHRD's own `agilex_hps.ip` /
-`emif_io96b_hps.ip`. `H2F`/`F2SDRAM` are disabled, but **`LWH2F` (the
-lightweight HPS-to-FPGA bridge) is enabled and wired** into the same
-fabric register block above via `axi_lwh2f_bridge.vhd` — reachable from
-the ARM cores as plain memory-mapped I/O, hardware-confirmed (see
-[hps/baremetal_lwh2f_regs/README.md](hps/baremetal_lwh2f_regs/README.md)),
-using the exact same register map `test_uart.py` reaches. Getting this
-bridge to survive its very first real access took a multi-day bring-up
-investigation - see
-[docs/de25_nano_lwh2f_bringup.md](docs/de25_nano_lwh2f_bringup.md) for
-the handoff (root cause was a QSF boot-order setting, not RTL).
+`emif_io96b_hps.ip`. `H2F`/`F2SDRAM` are disabled; **`LWH2F` is enabled and
+wired** into the register file via `axi_lwh2f_bridge.vhd`. Getting that
+bridge to survive its first access took a multi-day bring-up — see
+[docs/de25_nano_lwh2f_bringup.md](docs/de25_nano_lwh2f_bringup.md) (the
+root cause was a QSF boot-order setting, not RTL). The fabric runs on the
+HPS's free-running H2F User0 clock (50 MHz), which also blinks
+`GPIO0_D[2]` via [`h2f_user0_clk_heartbeat.vhd`](h2f_user0_clk_heartbeat.vhd).
 
-`HPS_UART_TX`/`HPS_UART_RX` are HPS UART1, on IOB15/IOB16 in the HPS's own
-pin-mux table — confirmed directly from `agilex_hps.ip`'s pin-mux array,
-not hand-derived. This is a **second, independent** UART from
-`FPGA_UART_TX`/`FPGA_UART_RX` above: reachable only from software running
-on the HPS ARM cores, never from the `test_uart.py` register interface.
+**Linux** (Altera's 6.18.20 kernel, Alpine rootfs on the SD card) boots
+from a real QSPI cold boot: SPL → ATF 2.14.1 → U-Boot 2026.04 → Linux,
+hands off - all from Altera upstream. The steps and settings, short: [docs/linux_boot.md](docs/linux_boot.md);
+bring-up history: [linux/README.md](linux/README.md).
 
-Synthesizes/fits/times cleanly as part of this same build (see the table
-above). **HPS UART1 is confirmed working on real hardware** — a
-from-scratch bare-metal program ([hps/baremetal_uart1_test/](hps/baremetal_uart1_test/),
-no ATF, no U-Boot, no Linux, no SD card) brings up pin-mux and clock-manager
-PLLs from the same SDM-provided handoff data Quartus already computes, then
-banners and byte-perfect echoes over `/dev/ttyUSB0`:
-
-```
-=== de25_nano_testproject HPS bare-metal UART1 test (v3) ===
-IOB15 (UART1 TX) pinmux sel = 0x00000005
-IOB16 (UART1 RX) pinmux sel = 0x00000005
-clkmgr_bringup() rc = 0x00000000
-measured UART (L4_SP) clock = 100000000 Hz
-divisor programmed = 54
-```
-
-Confirmed on **this project's own generated `de25_nano_uart.sof`** (HPS
-boot payload embedded via `quartus_pfg -o hps_path=...`, see [Build](#build)
-above) — running at the same time as, and without disturbing, the fabric
-register interface on `FPGA_UART_TX`/`FPGA_UART_RX`.
-
-Full detail — including the clock-manager PLL bring-up ported from
-`arm-trusted-firmware` (Altera's own official bare-metal example doesn't do
-this step, so it wasn't reused from a working reference) and a UART driver
-byte-order bug found along the way — is in
-[docs/de25_nano_hps.md](docs/de25_nano_hps.md).
-
-**LWH2F is also hardware-confirmed**: a second bare-metal program
-([hps/baremetal_lwh2f_regs/](hps/baremetal_lwh2f_regs/)) reads and writes
-the fabric register file above from the ARM cores over the HPS's
-lightweight bridge — the same registers `test_uart.py` reaches, now also
-reachable as plain memory-mapped I/O from HPS software. Worked on the
-first attempt, applying two fixes
-[`de25_std_testproject`](https://github.com/johonkanen/de25_std_testproject)
-found the hard way (a fabric RTL reset-polarity bug — not present here,
-checked first — and a missing Ncore CCU crossbar routing window, which
-is die-level and did apply here) — see that test's own README for the
-full account.
-
-**The HPS's dedicated H2F User0 free-running clock is also
-hardware-confirmed**: 50 MHz, independent of `CLOCK0_50`, blinking
-`GPIO0_D[2]` at ~0.75 Hz via
-[`h2f_user0_clk_heartbeat.vhd`](h2f_user0_clk_heartbeat.vhd) — see
-[hps/README.md](hps/README.md)'s own section for how this got wired up
-(needed the Platform Designer GUI for one step, a genuine tooling
-limitation, not a preference).
-
-### Booting Linux
-
-**Full Linux boot is hardware-confirmed**: real QSPI cold boot (SPL) → ATF
-BL31 → U-Boot → Linux 6.12.11, live toybox root shell over the HPS UART1
-console. Build instructions, the exact boot commands, and the full boot
-trace are in [linux/README.md](linux/README.md).
+Bare-metal bring-up programs from before Linux, kept as references:
+[hps/baremetal_uart1_test/](hps/baremetal_uart1_test/) (HPS UART1 + the
+clock-manager PLL bring-up, [docs/de25_nano_hps.md](docs/de25_nano_hps.md))
+and [hps/baremetal_lwh2f_regs/](hps/baremetal_lwh2f_regs/) (the register
+file over LWH2F from bare metal). Both were written when UART1 was on its
+own IOB15/IOB16 pins, before it was routed through the fabric.
 
 ## Simulate
 
-Two [VUnit](https://vunit.github.io/) testbenches, both run by
-`vunit_run_de25_nano_test.py`. Needs `nvc` ≥ 1.14
+Two [VUnit](https://vunit.github.io/) testbenches, run by
+`vunit_run_de25_nano_test.py`, which also compiles every other source
+including the top level. Needs `nvc` ≥ 1.14
 ([nickg/nvc](https://github.com/nickg/nvc)) on `PATH` and
 `pip install vunit_hdl`:
 
@@ -276,24 +228,21 @@ python3 vunit_run_de25_nano_test.py -v       # verbose
 python3 vunit_run_de25_nano_test.py --list   # list test cases
 ```
 
-- `de25_nano_uart_top_tb` drives the real UART pins of `de25_nano_uart_top`
-  and checks every register response. An `amc6821_model` hangs off the I2C
-  pins, so the fan registers are exercised end to end — a UART write to
-  register 9 is checked to actually land in the model's DCY register.
-- `fan_control_tb` points `amc6821_fan_control` at the same model on its own
-  and checks the configuration it writes, the startup kick, the settle to
-  minimum, the RPM conversion, and that an unacknowledged write raises
-  `i2c_error`, releases the bus rather than wedging it, and recovers.
+- `fan_control_tb` points `amc6821_fan_control` at an `amc6821_model` I2C
+  slave and checks the configuration it writes, the startup kick, the
+  settle to minimum, the RPM conversion, and that an unacknowledged write
+  raises `i2c_error`, releases the bus rather than wedging it, and recovers.
+- `led_blinkers_tb` checks every blinker pattern, the PWM duty and the
+  modes.
 
-Expected: `pass 2 of 2` — 16 checks in `de25_nano_uart_top_tb`, 21 in
-`fan_control_tb` (verified with VUnit 4.7.0 / nvc 1.18.2).
+Expected: `pass 2 of 2`.
 
 ## Differences from `de25_std_testproject`
 
 | | DE25-Standard | DE25-Nano |
 |---|---|---|
 | device | `A5ED013BB32AE4SCS` | `A5EB013BB23BE4SCS` |
-| UART | **no fabric UART** — CP2105 goes to the HPS, so the UART is broken out to `GPIO_D[0]/[1]` for an external 3.3 V adapter | **`FPGA_UART_TX` CJ1 / `FPGA_UART_RX` BR19** on the on-board USB bridge |
+| UART | **no fabric UART** — CP2105 goes to the HPS, so the UART is broken out to `GPIO_D[0]/[1]` for an external 3.3 V adapter | **`FPGA_UART_TX` CJ1 / `FPGA_UART_RX` BR19** on the on-board USB bridge — now carrying the HPS console |
 | clock | `CLOCK0_50` CH128, 3.3-V LVCMOS | `CLOCK0_50` DJ35, **1.1-V** (plus `CLOCK1_50` V16 / `CLOCK2_50` BF23, 3.3-V) |
 | reset button | `CPU_RESET_n` BM78 | **none** — power-on counter only |
 | push-buttons | `KEY[3:0]`, 1.2-V | `KEY[1:0]`, **3.3-V LVCMOS** |
@@ -302,24 +251,23 @@ Expected: `pass 2 of 2` — 16 checks in `de25_nano_uart_top_tb`, 21 in
 | AS config clock | `AS_FREQ_100MHZ` | **`AS_FREQ_125MHZ`** |
 | `USE_INIT_DONE` | `SDM_IO13` | *not set* |
 | fan | not addressed in that project | **AMC6821 on the HDMI I2C bus**, duty + RPM on registers 9..12 |
-| HPS | separate `de25_soc_top` + `linux/` (HPS + DDR4) | **`hps_subsys` instantiated directly in `de25_nano_uart_top`** (HPS + LPDDR4, LWH2F bridge wired) — see below |
+| HPS | separate `de25_soc_top` + `linux/` (HPS + DDR4) | **`hps_subsys` instantiated directly in `de25_nano_uart_top`** (HPS + LPDDR4, LWH2F bridge wired) |
 
 Unlike the DE25-Standard, where the HPS lives in a separate `de25_soc`
 build, the DE25-Nano's HPS (`hps_subsys`, LPDDR4 instead of DDR4) is
 instantiated straight into `de25_nano_uart_top` — one bitstream, one top
-level, both the fabric register block and the HPS present together. See
-[HPS](#hps) below.
+level, both the fabric register block and the HPS present together.
 
 ## Pinout
 
 | signal | pin | IO standard |
 |--------|-----|-------------|
-| `CLOCK0_50` | DJ35 | 1.1-V (50 MHz) |
+| `CLOCK0_50` | DJ35 | 1.1-V (50 MHz, unused — the fabric runs on the HPS's h2f_user0 clock) |
 | `KEY[1:0]` | C8 / C11 | 3.3-V LVCMOS (active low) |
 | `SW[3:0]` | DK24 DD24 DD27 DF27 | 1.1-V |
 | `LED[7:0]` | DF35 DJ32 DN22 DP23 DN25 DP25 DJ27 DP30 | 1.1-V |
-| `FPGA_UART_RX` | BR19 | 3.3-V LVCMOS |
-| `FPGA_UART_TX` | CJ1 | 3.3-V LVCMOS |
+| `FPGA_UART_RX` | BR19 | 3.3-V LVCMOS (HPS UART1 RX, the console) |
+| `FPGA_UART_TX` | CJ1 | 3.3-V LVCMOS (HPS UART1 TX, the console) |
 | `HDMI_I2C_SCL` | BT1 | 3.3-V LVCMOS (AMC6821 + ADV7513) |
 | `HDMI_I2C_SDA` | BW2 | 3.3-V LVCMOS (AMC6821 + ADV7513) |
 | `FAN_ALERT_n` | DK32 | 1.1-V (active low) |
@@ -329,13 +277,6 @@ fan specifics in [docs/de25_nano_fan.md](docs/de25_nano_fan.md).
 
 ## Note
 
-- Critical Warning 20759 (missing Reset Release IP) is expected, exactly as
-  in `axc3000_test` and `de25_std_testproject`. Startup is covered here by a
-  ~21 ms power-on-reset counter (`g_por_cycles`); add the **Reset Release
-  IP** (`ninit_done`) for a production build — the Nano demos have
-  ready-made ones for this device at
-  `Demonstration/FPGA/LPDDR4_Test_NiosV/reset_release.ip` and
-  `Demonstration/FPGA/RTL_LPDDR4_AXI4_Test/agilex_reset_release.ip`.
 - The DE25-Nano has no reset button, so reset is the power-on counter alone
   and both push-buttons stay readable on register 7. To spend `KEY[0]` on a
   manual reset instead, see `docs/de25_nano_pinout.md`.

@@ -1,5 +1,13 @@
 # linux/ — Linux for the DE25-Nano
 
+> **Current boot flow: [docs/linux_boot.md](../docs/linux_boot.md)** - Altera
+> upstream ATF 2.14.1, U-Boot 2026.04 (also in QSPI, as a fallback) and
+> Linux 6.18.20, `extlinux.conf` on the card
+> (no manual `booti` / `saveenv`), the SD card written over TFTP with
+> `tools/sd_recover.py`. The sections below are the bring-up history and
+> still accurate on the hardware facts; their manual boot commands are no
+> longer needed.
+
 > ✅ **Booted to a live root shell on hardware** — real QSPI cold boot
 > (SPL) → ATF BL31 → U-Boot → Linux 6.12.11 (Terasic's own kernel fork),
 > toybox userspace, over the HPS UART1 console. See
@@ -29,6 +37,11 @@ the build script).
 | `make_jic.sh` | combines the SPL with `output_files/de25_nano_uart.sof` into a QSPI `.jic` |
 | `tools/setup_alpine_rootfs.sh` | replaces the toybox initramfs with a real, persistent Alpine Linux rootfs — see [Real rootfs](#real-rootfs-alpine-linux) |
 | `tools/push_to_nano.py` | pushes/runs a file on the board over the network, driven from the serial console — see [Writing and running your own software](#writing-and-running-your-own-software) |
+| `webapp/` | the board's web GUI (board drawing, LED blinker picker, fan) — see [webapp/README.md](webapp/README.md) |
+| `board/de25web-supervisor.sh` | runs the web GUI on the board, reverts a GUI update that fails its test |
+| `tools/install_webapp.py` | one-time web GUI install on a running board (serial console) |
+| `tools/deploy_web.py` | web GUI update over HTTP, with test and automatic rollback |
+| `tools/gui_test.py` | drives the web GUI in headless Chromium (board or `fpga_web.py --sim`) |
 
 ## Prerequisites
 
@@ -65,10 +78,10 @@ Outputs in `linux/build_output/`:
 
 | file | ~size | from |
 |------|------:|------|
-| `bl31.bin` | 60 KB | ARM Trusted Firmware, Terasic's `de25-nano-v2.12.0` |
+| `bl31.bin` | 60 KB | ARM Trusted Firmware, Altera `socfpga_v2.14.1` |
 | `u-boot.itb` | ~1 MB | U-Boot proper (FIT, contains BL31) |
 | `spl/u-boot-spl-dtb.hex` | ~700 KB | first-stage loader → goes in the `.jic` |
-| `Image` | ~47 MB | Linux kernel 6.12.11 |
+| `Image` | ~47 MB | Linux kernel 6.18.20 (Altera `socfpga-6.18.20-lts`) |
 | `socfpga_agilex5_de25_nano.dtb` | 24 KB | Terasic's own device tree for this exact board |
 | `initramfs.cpio` | ~7 MB | toybox `mkroot` rootfs (architecture-generic, reused as-is from `de25_std_testproject`) |
 | `sdcard.img` | 96 MB | FAT32: `u-boot.itb` + `Image` + `.dtb` + `initramfs.cpio` |
@@ -94,7 +107,12 @@ go on the SD card**.
    set for QSPI/AS boot — same setting used for the working `de25_nano_uart.sof`
    JTAG-loadable image; see the repo root README's [HPS](../README.md#hps)
    section for the switch table if you need to change it).
-4. Console on the HPS UART1 (`/dev/ttyUSB0` on this board) @ 115200.
+4. Console on HPS UART1 @ 115200. Since commit `247409b` it is routed
+   through the fabric onto the board's main USB serial port: interface 3 of
+   the DE25-Nano's USB device,
+   `/dev/serial/by-id/usb-TERASIC_DE25-Nano_*-if03-port0` (the `ttyUSB`
+   number moves with whatever else is plugged in). The serial tools here
+   default to it.
 
 Boot flow: SDM → SPL (QSPI, DDR init) → ATF BL31 + U-Boot proper (loaded
 from the SD card's FAT partition) → U-Boot prompt → manual `booti` (below)
@@ -294,8 +312,8 @@ This also depends on `QSPI_OWNERSHIP SDM` + `HPS_INITIALIZATION
 this directory) — **not** `QSPI_OWNERSHIP HPS` + `HPS_INITIALIZATION
 "HPS FIRST"`, which was tried first and fixed the original QSPI-cold-boot
 hang but broke LWH2F and the ethernet PHY as a side effect. See
-`memory/de25_nano_qspi_ownership_fix.md` and
-`memory/de25_nano_lwh2f_hps_first_regression.md` for the full story.
+[docs/de25_nano_lwh2f_bringup.md](../docs/de25_nano_lwh2f_bringup.md) for
+the full story.
 
 Full boot trace (SPL → BL31 → U-Boot → kernel → shell):
 - SPL: `LPDDR4: 1024 MiB`, `DDR: size check success`, `DDR: init success`
@@ -306,23 +324,17 @@ Full boot trace (SPL → BL31 → U-Boot → kernel → shell):
   mmc0@10808000: 0`, EMAC (`eth0`, KSZ9031 PHY) probed
 - Linux 6.12.11: `Machine model: SoCFPGA Agilex5 Terasic DE25-Nano`, SD
   card (`mmcblk0`, 29.1 GiB, partition table read), KSZ9031 Gigabit PHY
-  driver bound, live toybox shell reachable and responsive over
-  `/dev/ttyUSB0`
+  driver bound, live toybox shell reachable and responsive over the
+  serial console
 
-**Not yet done**: no real rootfs (still the in-RAM toybox one), no DT
-hardening beyond what Terasic ships, HPS↔FPGA bridge nodes not added to
-the DT (this design's LWH2F bridge is already wired and hardware-confirmed
-working from the FreeRTOS/bare-metal work — see the repo root README's
-[HPS](../README.md#hps) section — just not yet exposed to Linux).
+Since then: the [Alpine rootfs](#real-rootfs-alpine-linux) boots
+unattended, and Linux userspace reaches the fabric register file over
+LWH2F (`mmap` of `/dev/mem` at `0x2000_0000`, no device-tree node needed) -
+the [web GUI](webapp/README.md) is built on that.
 
 ## From here
 
-- **Real rootfs**: build Buildroot or drop a Debian arm64 tarball onto an
-  ext4 partition, matching `de25_std_testproject/linux/README.md`'s
-  approach.
-- **Automate the boot**: the `setenv bootcmd` / `saveenv` snippet above
-  persists across power cycles (saved to `uboot.env` on the SD card's FAT
-  partition).
-- **HPS↔FPGA comms from Linux**: add a `soc2fpga`/`lwsoc2fpga` node to
-  `socfpga_agilex5_de25_nano.dts` if you want the LWH2F bridge (already
-  wired and working at the bare-metal level) reachable from userspace.
+- **FPGA loading from Linux**: the LED blinkers as partial bitstreams -
+  [docs/partial_reconfiguration_plan.md](../docs/partial_reconfiguration_plan.md).
+- **DT hardening**: nothing beyond what Terasic ships; a `uio` node for the
+  LWH2F window would let the web GUI drop `/dev/mem`.

@@ -1,11 +1,18 @@
 # HPS UART1 bare-metal test
 
+> **Status (2026-10-16):** a record of the bare-metal bring-up. Since then
+> HPS UART1 has moved off its own IOB15/IOB16 pins and is routed through the
+> fabric onto `FPGA_UART_TX`/`FPGA_UART_RX` (commit `247409b`) as the Linux
+> console, and the fabric register UART (`test_uart.py`) it mentions is
+> retired - the register file is reached over LWH2F only. The HPS system is
+> `hps/hps_subsys.qsys` (once called `hps_subsys`).
+
 A minimal, from-scratch bare-metal program proving HPS UART1
 (`HPS_UART_TX`/`HPS_UART_RX`, IOB15/IOB16) works, with **no ATF, no
 U-Boot, no Linux, no SD card, no QSPI flash** — it runs straight out of
 HPS OCRAM as the very first and only thing the ARM cores execute.
 
-**Hardware-verified working**, DE25-Nano, `de25_nano_uart_top`'s `hps_min`:
+**Hardware-verified working**, DE25-Nano, `de25_nano_uart_top`'s `hps_subsys`:
 
 ```
 === de25_nano_testproject HPS bare-metal UART1 test (v3) ===

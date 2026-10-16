@@ -142,7 +142,10 @@ For reference, Terasic's automatic fan curve for this board ramps between
 To trim it yourself, walk register 9 down and watch register 10:
 
 ```
-python test_uart.py --fan-sweep      # confirms speed follows the register
+# on the board's web GUI: the fan slider (register 9) and the rpm readout
+# (register 10), or from any shell on the LAN:
+curl -X POST -d '{"duty": 40}' http://192.168.1.222/api/fan
+curl -s http://192.168.1.222/api/board      # fan.rpm
 ```
 
 then set `g_fan_min_duty` to the lowest value that still reports a stable

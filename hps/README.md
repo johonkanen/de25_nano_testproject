@@ -66,6 +66,11 @@ this uses the same underlying HPS IP.
 
 ## Talking to HPS UART1
 
+Since commit `247409b`, UART1 is routed through the fabric onto
+`FPGA_UART_TX`/`FPGA_UART_RX` - the board's main USB serial port - as the
+Linux console, and the fabric register UART is retired. The paragraph
+below describes the bring-up setup before that.
+
 `HPS_UART_TX`/`HPS_UART_RX` are a **second, independent** UART from this
 project's `FPGA_UART_TX`/`FPGA_UART_RX` (the fabric register interface
 `test_uart.py` talks to) — HPS UART1 is reachable only from software

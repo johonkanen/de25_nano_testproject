@@ -1,6 +1,13 @@
 # HPS on the DE25-Nano
 
-`de25_nano_uart_top.vhd` instantiates `hps_min` (see
+> **Status (2026-10-16):** a record of the bare-metal bring-up. Since then
+> HPS UART1 has moved off its own IOB15/IOB16 pins and is routed through the
+> fabric onto `FPGA_UART_TX`/`FPGA_UART_RX` (commit `247409b`) as the Linux
+> console, and the fabric register UART (`test_uart.py`) it mentions is
+> retired - the register file is reached over LWH2F only. The HPS system is
+> `hps/hps_subsys.qsys` (once called `hps_subsys`).
+
+`de25_nano_uart_top.vhd` instantiates `hps_subsys` (see
 [hps/README.md](../hps/README.md)): the Agilex 5 hard processor system plus
 its LPDDR4 EMIF, generated from the DE25-Nano GHRD's own
 `agilex_hps.ip` / `emif_io96b_hps.ip`, with every FPGA↔HPS bridge disabled.
@@ -25,7 +32,7 @@ disables the F2H IRQ. That means:
 - The fabric cannot see HPS memory or peripherals.
 
 The two halves of the design share a die and a board, nothing else. This
-was a deliberate choice, matching `de25_std_testproject`'s own `hps_min` —
+was a deliberate choice, matching `de25_std_testproject`'s own `hps_subsys` —
 a UART bring-up test doesn't need HPS↔fabric memory-mapped access, and
 disabling the bridges keeps the fabric design exactly as it was before the
 HPS was added (same register map, same behaviour, verified unaffected by
@@ -54,10 +61,10 @@ on the ARM cores; nothing in the fabric register file touches it.
 
 ## Simulation
 
-`hps_min` is not simulatable in the VUnit/nvc environment this project uses
+`hps_subsys` is not simulatable in the VUnit/nvc environment this project uses
 (the HPS hard IP has no RTL model here — Altera's own bare-metal flow uses
 Simics for that). `vunit_run_de25_nano_test.py` compiles and runs unaffected:
-nvc elaborates `u_hps_min` as an unbound black box —
+nvc elaborates `u0` as an unbound black box —
 
 ```
 ** Warning: (init): cannot find entity for component HPS_MIN without binding indication
@@ -138,5 +145,5 @@ on-board USB-serial channel, distinct from `/dev/ttyUSB1` which is
 succeeding → ATF BL31 → U-Boot proper → Linux 6.12 → a working Ubuntu
 22.04 console. That confirms the HPS, its LPDDR4 EMIF, and UART1 all work
 on this exact board when built the way Terasic ships it (bridges enabled,
-stock SD card). `hps_min` here is the same IP, same UART1 pin-mux, with
+stock SD card). `hps_subsys` here is the same IP, same UART1 pin-mux, with
 only the bridges turned off.

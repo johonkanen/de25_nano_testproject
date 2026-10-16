@@ -32,9 +32,10 @@ CP2105 USB bridge is wired to the **HPS**, there is no FPGA-fabric UART, and
 have you attach an external 3.3 V USB-serial adapter.
 
 The DE25-Nano has a dedicated FPGA-fabric UART: `FPGA_UART_TX` (PIN_CJ1) and
-`FPGA_UART_RX` (PIN_BR19) go to the board's own USB serial bridge. Plug in
-the USB cable, find the `/dev/ttyUSB*` it enumerates as, and run
-`test_uart.py` against it.
+`FPGA_UART_RX` (PIN_BR19) go to the board's own USB serial bridge. This
+project routes HPS UART1 - the Linux console - onto them through the
+fabric (commit `247409b`); it enumerates as interface 3 of the DE25-Nano's
+USB device (`/dev/serial/by-id/usb-TERASIC_DE25-Nano_*-if03-port0`).
 
 Terasic's own `Demonstration/FPGA/UART` demo is the reference for these two
 pins — its entire body is a loopback gated by a key:
