@@ -8,9 +8,9 @@
 # necessary for working SD access), this goes straight to Terasic's own
 # complete stack - they publish a dedicated branch on all three repos for
 # this exact board:
-#   terasic/arm-trusted-firmware  @ de25-nano-v2.12.0
-#   terasic/u-boot-socfpga        @ de25-nano-v2025.01  (defconfig socfpga_agilex5_de25_nano_defconfig)
-#   terasic/linux-socfpga         @ de25-nano-6.12.11-lts (in-tree DTS: socfpga_agilex5_de25_nano.dts)
+#   altera-fpga/arm-trusted-firmware @ socfpga_v2.14.1  (SOCFPGA_UART_CONFIG=1)
+#   altera-fpga/u-boot-socfpga    @ socfpga_v2026.04    (defconfig socfpga_agilex5_de25_nano_defconfig)
+#   altera-fpga/linux-socfpga     @ socfpga-6.18.20-lts (in-tree DTS: socfpga_agilex5_de25_nano.dts)
 # This combination booted to a live root shell on real hardware first try
 # (aside from one already-known ATF bug, patched below).
 #
@@ -23,15 +23,30 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUT="${HERE}/build_output"
 JOBS="$(nproc)"
 
-ATF_REPO="https://github.com/terasic/arm-trusted-firmware"
-ATF_BRANCH="de25-nano-v2.12.0"
-UBOOT_REPO="https://github.com/terasic/u-boot-socfpga"
-UBOOT_BRANCH="de25-nano-v2025.01"
+# ATF, U-Boot and the kernel all from Altera upstream (2026-10-16). Each
+# Terasic de25-nano branch was Altera's spring-2025 release + one board
+# commit; upstream now carries the DE25-Nano itself.
+ATF_REPO="https://github.com/altera-fpga/arm-trusted-firmware"
+ATF_BRANCH="socfpga_v2.14.1"
+ATF_DIR="atf-altera"
+# U-Boot from Altera upstream: socfpga_v2026.04 carries the DE25-Nano
+# itself (board support added 2026-04-23), with the QSPI controller enabled
+# and U-Boot proper in QSPI at 10 MB - Terasic's de25-nano-v2025.01 had QSPI
+# disabled, and with it patched on, its SPL corrupted its own boot list
+# while probing the flash (2026-10-16).
+UBOOT_REPO="https://github.com/altera-fpga/u-boot-socfpga"
+UBOOT_BRANCH="socfpga_v2026.04"
+UBOOT_DIR="u-boot-altera"
 UBOOT_DEFCONFIG="socfpga_agilex5_de25_nano_defconfig"
-LINUX_REPO="https://github.com/terasic/linux-socfpga"
-LINUX_BRANCH="de25-nano-6.12.11-lts"
+LINUX_REPO="https://github.com/altera-fpga/linux-socfpga"
+LINUX_BRANCH="socfpga-6.18.20-lts"
+LINUX_DIR="linux-altera"
 LINUX_DTB="socfpga_agilex5_de25_nano.dtb"
 TOYBOX_REPO="https://github.com/landley/toybox.git"
+# where U-Boot proper sits in the 16 MB QSPI flash - upstream's
+# CONFIG_SYS_SPI_U_BOOT_OFFS for this board, checked below; make_jic.sh
+# uses the same default
+QSPI_UBOOT_OFFS="${QSPI_UBOOT_OFFS:-0x00A00000}"
 
 # ARM GNU aarch64-linux toolchain (has the LTO plugin ATF's release build
 # needs). Point CROSS_TOOLCHAIN at an existing install (dir with
@@ -71,11 +86,11 @@ echo ">> toolchain: $(command -v ${CROSS_PREFIX}gcc)  ($(${CROSS_PREFIX}gcc -dum
 # despite CROSS_COMPILE/PATH both being set correctly).
 [[ -x "${TC_BIN}/${CROSS_PREFIX}cc" ]] || ln -sf "${CROSS_PREFIX}gcc" "${TC_BIN}/${CROSS_PREFIX}cc"
 
-# ---- ARM Trusted Firmware (Terasic fork) --------------------------------
-if [[ ! -d arm-trusted-firmware ]]; then
-    git clone --depth 1 -b "${ATF_BRANCH}" "${ATF_REPO}" arm-trusted-firmware
+# ---- ARM Trusted Firmware (Altera upstream) ------------------------------
+if [[ ! -d "${ATF_DIR}" ]]; then
+    git clone --depth 1 -b "${ATF_BRANCH}" "${ATF_REPO}" "${ATF_DIR}"
 fi
-pushd arm-trusted-firmware >/dev/null
+pushd "${ATF_DIR}" >/dev/null
     git checkout -- . 2>/dev/null || true
     # Known upstream bug (also hit in de25_std_testproject and in the
     # freertos-socfpga QSPI work): config_ddr_size is hardcoded to 0x80000000
@@ -86,41 +101,62 @@ pushd arm-trusted-firmware >/dev/null
         plat/intel/soc/agilex5/soc/agilex5_ddr.c
     grep -q 'config_ddr_size = hw_ddr_size;' plat/intel/soc/agilex5/soc/agilex5_ddr.c || {
         echo "ERROR: DDR-size patch didn't apply - upstream file changed, check by hand"; exit 1; }
-    # patches/arm-trusted-firmware.patch is NOT applied - see
-    # patches/README.md for why (kept for reference only, proven
-    # unnecessary once the FPGA project's HPS_INITIALIZATION/
-    # QSPI_OWNERSHIP settings were corrected).
+    # SOCFPGA_UART_CONFIG=1: console on UART1, this board's (Terasic's
+    # fork hard-patched platform_def.h for the same thing)
     make PLAT=agilex5 clean >/dev/null
-    make -j"${JOBS}" CROSS_COMPILE="${CROSS_PREFIX}" PLAT=agilex5 ENABLE_LTO=0 bl31
+    make -j"${JOBS}" CROSS_COMPILE="${CROSS_PREFIX}" PLAT=agilex5 ENABLE_LTO=0 SOCFPGA_UART_CONFIG=1 bl31
     cp build/agilex5/release/bl31.bin "${OUT}/bl31.bin"
 popd >/dev/null
 
-# ---- U-Boot (Terasic fork, board-specific defconfig) --------------------
-if [[ ! -d u-boot-socfpga ]]; then
-    git clone --depth 1 -b "${UBOOT_BRANCH}" "${UBOOT_REPO}" u-boot-socfpga
+# ---- U-Boot (Altera upstream, board defconfig) ---------------------------
+if [[ ! -d "${UBOOT_DIR}" ]]; then
+    git clone --depth 1 -b "${UBOOT_BRANCH}" "${UBOOT_REPO}" "${UBOOT_DIR}"
 fi
-pushd u-boot-socfpga >/dev/null
+pushd "${UBOOT_DIR}" >/dev/null
     git checkout -- . 2>/dev/null || true
-    # patches/u-boot-socfpga.patch is NOT applied - see patches/README.md
-    # for why (kept for reference only, proven unnecessary once the FPGA
-    # project's HPS_INITIALIZATION/QSPI_OWNERSHIP settings were
-    # corrected).
+    # Terasic's one DDR change for this board (their de25-nano-v2025.01
+    # commit d0f8813, the U-Boot that has booted this board): single-port
+    # EMIF, not the dual-port bit from the hand-off data.
+    sed -i 's|^\(\s*\)plat->dualport = FIELD_GET(IO96B0_DUAL_PORT_MASK, handoff_table\[PORT_EMIF_CONFIG_OFFSET\]);|\1plat->dualport = 0;  /* DE25-Nano: single port (Terasic) */|' \
+        drivers/ddr/altera/sdram_agilex5.c
+    grep -q 'plat->dualport = 0;  /\* DE25-Nano' drivers/ddr/altera/sdram_agilex5.c || {
+        echo "ERROR: the dual-port DDR patch didn't apply - sdram_agilex5.c changed, check by hand"; exit 1; }
     ln -sf "${OUT}/bl31.bin" bl31.bin
     make mrproper
     make "${UBOOT_DEFCONFIG}"
+    # Release the HPS<->FPGA bridges before booting Linux: upstream U-Boot
+    # leaves them all in reset (rstmgr brgmodrst = 0xf), and the first
+    # LWH2F access from Linux then dies with SIGBUS (the web GUI's register
+    # reads). Terasic's U-Boot released them; upstream needs `bridge enable`.
+    scripts/config --set-str CONFIG_BOOTCOMMAND "bridge enable; run distro_bootcmd"
+    make olddefconfig
+    grep -q '^CONFIG_BOOTCOMMAND="bridge enable; run distro_bootcmd"$' .config || {
+        echo "ERROR: CONFIG_BOOTCOMMAND not set"; exit 1; }
+    # U-Boot proper from QSPI as well as from the SD card, so a blank or
+    # broken card still reaches a U-Boot prompt (linux/tools/sd_recover.py).
+    # make_jic.sh puts u-boot.itb at QSPI_UBOOT_OFFS in the .jic.
+    got="$(sed -n 's/^CONFIG_SYS_SPI_U_BOOT_OFFS=//p' .config)"
+    [[ -n "${got}" ]] && (( got == QSPI_UBOOT_OFFS )) || {
+        echo "ERROR: CONFIG_SYS_SPI_U_BOOT_OFFS is '${got}', make_jic.sh expects ${QSPI_UBOOT_OFFS}"; exit 1; }
     make -j"${JOBS}"
     mkdir -p "${OUT}/spl"
     cp u-boot.itb              "${OUT}/u-boot.itb"
     cp spl/u-boot-spl-dtb.hex  "${OUT}/spl/u-boot-spl-dtb.hex"
 popd >/dev/null
 
-# ---- Linux kernel (Terasic fork, in-tree board DTS) ----------------------
-if [[ ! -d linux-socfpga ]]; then
-    git clone --depth 1 -b "${LINUX_BRANCH}" "${LINUX_REPO}" linux-socfpga
+# ---- Linux kernel (Altera upstream, in-tree DE25-Nano DTS) ---------------
+if [[ ! -d "${LINUX_DIR}" ]]; then
+    git clone --depth 1 -b "${LINUX_BRANCH}" "${LINUX_REPO}" "${LINUX_DIR}"
 fi
-pushd linux-socfpga >/dev/null
+pushd "${LINUX_DIR}" >/dev/null
     git checkout -- . 2>/dev/null || true
     make defconfig
+    # The SoC's temperature/voltage sensors (SDM mailbox, the dtsi's
+    # intel,soc64-hwmon node) for the web GUI: defconfig has the driver as a
+    # module, and the rootfs carries no modules - build it in.
+    scripts/config --enable CONFIG_SENSORS_SOC64
+    make olddefconfig
+    grep -q '^CONFIG_SENSORS_SOC64=y$' .config || { echo "ERROR: CONFIG_SENSORS_SOC64 not built in"; exit 1; }
     make -j"${JOBS}" Image "intel/${LINUX_DTB}"
     cp arch/arm64/boot/Image                       "${OUT}/Image"
     cp "arch/arm64/boot/dts/intel/${LINUX_DTB}"     "${OUT}/${LINUX_DTB}"

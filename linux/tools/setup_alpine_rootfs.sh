@@ -80,43 +80,12 @@ cp "${BOOT_FILES}/u-boot.itb" "${BOOT_FILES}/Image" \
 echo ">> extracting Alpine minirootfs"
 tar xzf "${TARBALL}" -C "${ROOT_MNT}" --numeric-owner
 
-echo ">> configuring inittab, networking, hostname, time sync"
-cat > "${ROOT_MNT}/etc/inittab" << EOF
-::sysinit:/bin/mount -t proc proc /proc
-::sysinit:/bin/mount -t sysfs sysfs /sys
-::sysinit:/bin/mount -t devtmpfs devtmpfs /dev
-::sysinit:/etc/rc.local
-ttyS0::respawn:/bin/sh
-::ctrlaltdel:/sbin/reboot
-::shutdown:/bin/umount -a -r
-EOF
-
-cat > "${ROOT_MNT}/etc/rc.local" << EOF
-#!/bin/sh
-ifconfig lo 127.0.0.1
-ifconfig eth0 ${NANO_IP} netmask 255.255.255.0 up
-route add default gw ${NANO_GW}
-echo "nameserver ${NANO_GW}" > /etc/resolv.conf
-hostname de25-nano
-# There's no RTC - the clock boots at the epoch, which fails TLS cert
-# validation for apk. Sync it. -w waits for the link to actually come up
-# first (link training takes a couple seconds after ifconfig up returns) -
-# without it this races and silently fails on a fair number of boots.
-sleep 2
-ntpd -q -n -p pool.ntp.org
-EOF
-chmod +x "${ROOT_MNT}/etc/rc.local"
-
-echo de25-nano > "${ROOT_MNT}/etc/hostname"
-
-cat > "${ROOT_MNT}/etc/fstab" << 'EOF'
-/dev/mmcblk0p2  /       ext4    rw,relatime     0 1
-/dev/mmcblk0p1  /boot   vfat    rw,relatime     0 0
-proc            /proc   proc    defaults        0 0
-sysfs           /sys    sysfs   defaults        0 0
-devtmpfs        /dev    devtmpfs defaults       0 0
-EOF
-mkdir -p "${ROOT_MNT}/boot"
+# init, networking, time sync, fstab, the web GUI, extlinux.conf - shared
+# with make_sdcard_image.sh
+NANO_IP="${NANO_IP}" NANO_GW="${NANO_GW}" \
+    "${HERE}/tools/alpine_rootfs_config.sh" "${ROOT_MNT}" "${BOOT_MNT}"
+echo "   web GUI update token (copy it to ~/.de25web_token on the host):"
+echo "   $(cat "${ROOT_MNT}/opt/de25web/token")"
 
 sync
 umount "${BOOT_MNT}" "${ROOT_MNT}"
@@ -125,9 +94,7 @@ echo
 echo "==================================================================="
 echo "  done - ${DEV}1 = boot files (FAT32), ${DEV}2 = Alpine rootfs (ext4)"
 echo
-echo "  Put the card back in the board and power-cycle. On U-Boot's first"
-echo "  boot after this, set the persistent boot config once (see"
-echo "  linux/README.md's 'Real rootfs (Alpine Linux)' section for the"
-echo "  exact commands) - after that it boots straight to a login-free"
-echo "  Alpine shell with networking and correct time, no manual steps."
+echo "  Put the card back in the board and power-cycle: U-Boot finds"
+echo "  extlinux/extlinux.conf on the boot partition and boots straight to a"
+echo "  login-free Alpine shell with networking and correct time."
 echo "==================================================================="

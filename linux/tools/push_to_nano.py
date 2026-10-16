@@ -11,7 +11,7 @@ Requires:
 
 Usage:
   python3 push_to_nano.py <local_file> <remote_path> [--run] [--port PORT]
-                           [--serial /dev/ttyUSB0] [--nano-ip 192.168.1.222]
+                           [--serial PORT] [--nano-ip 192.168.1.222]
 
   --run     chmod +x the remote file and execute it, streaming its output
   --port    TCP port to use for the transfer (default 8080)
@@ -25,10 +25,20 @@ serial console (since there's no other way to start the listener remotely)
 and then does the network push itself.
 """
 import argparse
+import glob
 import serial
 import socket
 import sys
 import time
+
+
+def default_console():
+    """The HPS console: since commit 247409b HPS UART1 is routed through the
+    fabric onto FPGA_UART_TX/RX, the board's main USB serial port - interface
+    3 of the DE25-Nano's USB device. By id, since ttyUSB numbers move with
+    whatever else is plugged in."""
+    found = sorted(glob.glob("/dev/serial/by-id/usb-TERASIC_DE25-Nano_*-if03-port0"))
+    return found[0] if found else "/dev/ttyUSB0"
 
 
 def drain(ser, settle=0.3):
@@ -47,7 +57,7 @@ def main():
     ap.add_argument("remote_path")
     ap.add_argument("--run", action="store_true", help="chmod +x and execute after transfer")
     ap.add_argument("--port", type=int, default=8080)
-    ap.add_argument("--serial", default="/dev/ttyUSB0")
+    ap.add_argument("--serial", default=default_console())
     ap.add_argument("--nano-ip", default="192.168.1.222")
     ap.add_argument("--baud", type=int, default=115200)
     args = ap.parse_args()
