@@ -231,6 +231,6 @@ skips, `fpga-reload` is not available.
 | what | state |
 |---|---|
 | `reboot` after a JTAG `.sof` load hangs (silent after `reboot: Restarting system`) | the SPL came over JTAG, so the SDM can't restart the HPS; after a power-on boot `reboot` works. Restart a JTAG-started board with another JTAG load or a power cycle (docs/linux_boot.md) |
-| ethernet receive stalled once after boot (link up, no RX) | `ip link set eth0 down; ip link set eth0 up` recovered it; cause unknown. The MAC is random on every boot (U-Boot `NET_RANDOM_ETHADDR`) |
+| ethernet after a warm reboot | about 1 in 5 warm reboots (none seen after power-on) eth0 has link but passes no traffic - either the RX DMA stops (SMMU `F_TRANSLATION` faults on the EMAC rings at the first open, fatal bus error, frames overflow the MAC FIFO) or transmitted frames are lost after the MAC. Not a running DMA across the reboot (stopping eth0 first did not help), not the PHY delays (`rgmii-id` kills the link: the board carries the delays). `eth0` down/up clears both; `/usr/sbin/eth-watchdog` (linux/board/eth-watchdog.sh) does that when the gateway stops answering. Root cause open. The MAC is random on every boot (U-Boot `NET_RANDOM_ETHADDR`) |
 | the console during early boot | silent until the core is loaded - use an FPGA-first build to debug SPL/U-Boot |
 | web GUI during a core load | register traffic paused for ~2 s; `fpga_access.py` writes the LED, fan and blinker registers back after |

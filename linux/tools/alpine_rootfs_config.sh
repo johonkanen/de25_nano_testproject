@@ -29,9 +29,19 @@ cat > "${ROOT}/etc/inittab" << EOF
 ::sysinit:/etc/rc.local
 ttyS0::respawn:/bin/sh
 ::respawn:/opt/de25web/supervisor.sh
+::respawn:/usr/sbin/eth-watchdog
 ::ctrlaltdel:/sbin/reboot
+::shutdown:/usr/sbin/killall5 -15
+::shutdown:/bin/sleep 2
+::shutdown:/usr/sbin/killall5 -9
 ::shutdown:/bin/umount -a -r
 EOF
+# Shutdown: busybox init runs these before it kills anything itself, so
+# stop every process first - the web GUI keeps its logs open for writing,
+# and with them open `umount -a -r` cannot make / read-only: every reboot
+# then reset a read-write root, and a run of reboots (2026-10-17) left the
+# ext4 journal broken ("error loading journal", the card had to be written
+# again). TERM, 2 s for the GUI to save its state, KILL, then read-only.
 
 cat > "${ROOT}/etc/rc.local" << EOF
 #!/bin/sh
@@ -53,6 +63,10 @@ EOF
 chmod +x "${ROOT}/etc/rc.local"
 
 echo de25-nano > "${ROOT}/etc/hostname"
+
+# eth0 sometimes passes no traffic after a warm reboot; the watchdog bounces
+# it (linux/board/eth-watchdog.sh has the details)
+install -D -m 755 "${TOOLS}/../board/eth-watchdog.sh" "${ROOT}/usr/sbin/eth-watchdog"
 
 cat > "${ROOT}/etc/fstab" << 'EOF'
 /dev/mmcblk0p2  /       ext4    rw,relatime     0 1
@@ -81,7 +95,11 @@ os.symlink(os.path.join("releases", rel), link)
 print("   release", rel)
 PYEOF
 find "${ROOT}/opt/de25web" -name __pycache__ -prune -exec rm -rf {} +
-if [[ ! -f "${ROOT}/opt/de25web/token" ]]; then
+# the update token: DE25WEB_TOKEN_FILE keeps an existing one (a re-imaged
+# card then still takes deploy_web.py / deploy_fpga.py), else a new one
+if [[ -n "${DE25WEB_TOKEN_FILE:-}" && -s "${DE25WEB_TOKEN_FILE}" ]]; then
+    ( umask 077; tr -d ' \n' < "${DE25WEB_TOKEN_FILE}" > "${ROOT}/opt/de25web/token" )
+elif [[ ! -f "${ROOT}/opt/de25web/token" ]]; then
     ( umask 077; head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n' > "${ROOT}/opt/de25web/token" )
 fi
 

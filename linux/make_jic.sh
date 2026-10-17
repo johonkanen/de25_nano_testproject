@@ -16,11 +16,10 @@
 # from which linux/tools/sd_recover.py rewrites the card over TFTP.
 # Kernel, dtb and rootfs always come from the SD card.
 #
-# The .sof must keep build_de25_nano_uart.tcl's QSPI_OWNERSHIP SDM +
-# HPS_INITIALIZATION "AFTER INIT_DONE" (the Quartus defaults). The earlier
-# QSPI_OWNERSHIP HPS + "HPS FIRST" combination hung every LWH2F access -
-# see docs/de25_nano_lwh2f_bringup.md. The SPL asks the SDM for the QSPI
-# (mbox_qspi_open) before reading U-Boot from it.
+# The .sof comes from build_de25_nano_uart.tcl: QSPI_OWNERSHIP HPS (the SPL
+# and U-Boot read QSPI) and HPS_INITIALIZATION "HPS FIRST" by default
+# (FPGA_FIRST=1: "AFTER INIT_DONE") - docs/hps_first.md. LWH2F needs U-Boot's
+# `bridge enable` before Linux in either mode.
 #
 # Env overrides: SOF=, SPL=, JIC=, UBOOT_ITB= (empty: bitstream + SPL only,
 # the old layout), QSPI_UBOOT_OFFS= (must match the U-Boot build).
