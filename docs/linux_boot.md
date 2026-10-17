@@ -156,7 +156,7 @@ docs/partial_reconfiguration_plan.md (planned).
 
 | what | state |
 |---|---|
-| `reboot` from Linux | hangs silently after `reboot: Restarting system` since ATF v2.14.1 (worked with 2.12) - restart with the JTAG `.sof` load or a power cycle |
+| `reboot` after a JTAG start | a session started by a JTAG `.sof` load can't `reboot`: the SDM accepts `REBOOT_HPS` but the SPL came over JTAG, so there is nothing to restart the HPS from - silent after `reboot: Restarting system`. After a power-on boot (from QSPI) `reboot` works (verified 2026-10-17). Not an ATF bug: ATF 2.12/2.14.1, HPS-/FPGA-first, Linux 6.12/6.18 and `maxcpus=2` all behaved the same after JTAG starts |
 | ethernet after boot | receive stalled once (link up, no RX); `ip link set eth0 down/up` recovered it - cause unknown. The MAC is random on every boot |
 | QSPI flash in Linux | upstream's DT enables it, but the ID read is garbled (`unrecognized JEDEC id bytes: 90 5d 8c 08 22 00`, expected `20 bb 18`); U-Boot reads it fine with `cdns,read-delay` deleted - tune the Linux DT (read delay, clock) before RSU (docs/remote_system_update_plan.md, R0) |
 | fan controller | reports its sticky `i2c_error` bit while working normally - not investigated |

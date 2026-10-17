@@ -29,7 +29,10 @@ power-on
 
 The preboot loads the core only when the fabric isn't configured, so the
 same U-Boot works with FPGA-first images and after a JTAG `.sof` load
-(both leave FPGA_CONFIG at 3).
+(both leave FPGA_CONFIG at 3). After a `reboot` from Linux the fabric is
+still configured too (`REBOOT_HPS` restarts only the HPS): the preboot
+skips, the running core stays, and the console works through the whole
+reboot - only a power-on boot is silent until the core is loaded.
 
 ## Settings
 
@@ -165,7 +168,7 @@ skips, `fpga-reload` is not available.
 
 | what | state |
 |---|---|
-| `reboot` from Linux hangs (silent after `reboot: Restarting system`) | since ATF v2.14.1 (worked with 2.12); restart with the JTAG `.sof` load or a power cycle |
+| `reboot` after a JTAG `.sof` load hangs (silent after `reboot: Restarting system`) | the SPL came over JTAG, so the SDM can't restart the HPS; after a power-on boot `reboot` works. Restart a JTAG-started board with another JTAG load or a power cycle (docs/linux_boot.md) |
 | ethernet receive stalled once after boot (link up, no RX) | `ip link set eth0 down; ip link set eth0 up` recovered it; cause unknown. The MAC is random on every boot (U-Boot `NET_RANDOM_ETHADDR`) |
 | the console during early boot | silent until the core is loaded - use an FPGA-first build to debug SPL/U-Boot |
 | web GUI during `fpga-reload` | paused for ~2 s; the fabric comes back with reset register values |
