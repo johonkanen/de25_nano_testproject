@@ -170,6 +170,20 @@ if [[ ! -d "${LINUX_DIR}" ]]; then
 fi
 pushd "${LINUX_DIR}" >/dev/null
     git checkout -- . 2>/dev/null || true
+    # The QSPI controller's reference clock is 500 MHz on this board - what
+    # the SDM tells U-Boot (sysmgr boot scratch 0 reads 500000 kHz), not the
+    # dtsi's fixed 200 MHz. With 200 MHz Linux divides for 100 MHz and runs
+    # the flash at ~250 MHz: the JEDEC id comes back shifted by a bit
+    # ("90 5d 8c", is "20 bb 18") and bulk reads differ every time. At 500
+    # MHz (SCLK 83 MHz, as U-Boot) reads are clean with cdns,read-delay 0..3;
+    # the DTS's 2 stays (tested 2026-10-17, 1 MB read back three times each).
+    cat >> "arch/arm64/boot/dts/intel/${LINUX_DTB%.dtb}.dts" << 'DTSEOF'
+
+/* de25_nano_testproject: the SDM's QSPI reference clock (build script) */
+&qspi_clk {
+	clock-frequency = <500000000>;
+};
+DTSEOF
     make defconfig
     # The SoC's temperature/voltage sensors (SDM mailbox, the dtsi's
     # intel,soc64-hwmon node) for the web GUI: defconfig has the driver as a
@@ -181,11 +195,14 @@ pushd "${LINUX_DIR}" >/dev/null
     # (SDM mailbox), bridges and the fpga-region driver, built in for the
     # same reason; an overlay on /fpga-region with firmware-name then loads
     # a .core.rbf from /lib/firmware (docs/hps_first_boot_research.md)
-    for c in FPGA_MGR_STRATIX10_SOC FPGA_BRIDGE FPGA_REGION OF_FPGA_REGION; do
+    # Remote system update (docs/remote_system_update_plan.md): the SDM's
+    # RSU service, for librsu / rsu_client
+    for c in FPGA_MGR_STRATIX10_SOC FPGA_BRIDGE FPGA_REGION OF_FPGA_REGION INTEL_STRATIX10_RSU; do
         scripts/config --enable "CONFIG_${c}"
     done
     make olddefconfig
-    for c in FPGA_MGR_STRATIX10_SOC FPGA_BRIDGE FPGA_REGION OF_FPGA_REGION OF_OVERLAY OF_CONFIGFS; do
+    for c in FPGA_MGR_STRATIX10_SOC FPGA_BRIDGE FPGA_REGION OF_FPGA_REGION OF_OVERLAY OF_CONFIGFS \
+             INTEL_STRATIX10_RSU; do
         grep -q "^CONFIG_${c}=y$" .config || { echo "ERROR: CONFIG_${c} not built in"; exit 1; }
     done
     make -j"${JOBS}" Image "intel/${LINUX_DTB}"

@@ -33,8 +33,8 @@ Linux running.
 | `QSPI_OWNERSHIP HPS` | set - the HPS (SPL, U-Boot, Linux) may access the QSPI |
 | U-Boot 2026.04 | `CONFIG_CMD_SOCFPGA_RSU=y`, RSU in the SPL (`rsu_spl.c`) |
 | kernel QSPI/MTD drivers | built in (`SPI_CADENCE_QUADSPI`, `MTD_SPI_NOR`) |
-| kernel `stratix10-rsu` | built as a **module** - must be `=y` (no modules in the rootfs) |
-| kernel DT | **no QSPI flash node** for the DE25-Nano - `/proc/mtd` is empty |
+| kernel `stratix10-rsu` | built in (2026-10-17); probe fails until the flash has an RSU layout (SDM error 0xc) |
+| kernel DT | upstream's QSPI flash node, with the reference clock corrected to 500 MHz: `/dev/mtd0` (16 MB, "u-boot") reads clean |
 | web GUI | release upload, test-start, confirm/revert - the model for image uploads |
 
 ## Flash layout (16 MB MT25QU128)
