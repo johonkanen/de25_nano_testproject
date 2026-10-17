@@ -45,6 +45,8 @@
 --   addr 15: LED 7..4 brightness                         (read only)
 --   addr 16: features - bit 0: the blinkers are in hardware (read only)
 --   addr 17: blinker module id, four ASCII chars, 0 in modes 0/1 (read only)
+--   addr 19: build id - the Unix time write_build_id.sh stamped (read only);
+--            the core's manifest carries the same number
 --
 -- In blinker mode 0 (the reset default) LED[6:0] follow addr-5 bits 6..0
 -- and LED[7] is a ~1 Hz heartbeat so the board shows life without a
@@ -467,6 +469,7 @@ begin
             connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 15, blinker_levels(63 downto 32));
             connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 16, c_features);
             connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 17, blinker_id);
+            connect_read_only_data_to_address(bus_from_axi, bus_from_top_axi, 19, work.build_id_pkg.build_id);
 
             uptime_counter <= uptime_counter + 1;
 

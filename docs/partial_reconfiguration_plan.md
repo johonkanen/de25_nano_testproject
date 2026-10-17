@@ -51,8 +51,9 @@ and `~/dev/axc3000_test` (Quartus Pro PR on Agilex 3, and the Agilex 5
 2. **Registers** (both buses, next free addresses):
    - 18 `RP_CTRL` R/W: bit 0 freeze, bit 1 reset (synchronised into the
      region's clock domain - here the same core_clock).
-   - 19 `BUILD_ID` RO: identifies the static build (e.g. the build's Unix
-     time, stamped like `git_hash_pkg.vhd`).
+   - 19 `BUILD_ID` RO: identifies the static build - **in place since
+     2026-10-17**: the build's Unix time, stamped by `write_build_id.sh`,
+     also in the core's manifest (docs/hps_first.md).
    - 16 `FEATURES`: bit 1 = PR region present.
 3. **PR Controller IP** (`altera_s10_pr`, "Partial Reconfiguration
    Controller Intel FPGA IP", internal host): instantiate in the top,

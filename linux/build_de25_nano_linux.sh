@@ -144,9 +144,11 @@ pushd "${UBOOT_DIR}" >/dev/null
     # From the SD card's FAT partition, else from the QSPI copy make_jic.sh
     # writes at QSPI_CORE_OFFS: a 4 KB text header "core_size=0x..." for
     # `env import`, the core right after it. The console is silent until
-    # the core is in (HPS UART1 runs through the fabric).
+    # the core is in (HPS UART1 runs through the fabric). A card core that
+    # reads but does not load (damaged, e.g. by a power cut while
+    # linux/tools/deploy_fpga.py wrote it) falls back to the QSPI copy too.
     scripts/config --enable CONFIG_USE_PREBOOT
-    scripts/config --set-str CONFIG_PREBOOT "if itest.l *0x10d120dc != 3; then if load mmc 0:1 \${loadaddr} de25_nano.core.rbf; then fpga load 0 \${loadaddr} \${filesize}; else sf probe && sf read \${loadaddr} $(printf '%#x' "${QSPI_CORE_OFFS}") 0x1000 && env import -t \${loadaddr} && sf read \${loadaddr} $(printf '%#x' $(( QSPI_CORE_OFFS + 0x1000 ))) \${core_size} && fpga load 0 \${loadaddr} \${core_size}; fi; fi"
+    scripts/config --set-str CONFIG_PREBOOT "if itest.l *0x10d120dc != 3; then if load mmc 0:1 \${loadaddr} de25_nano.core.rbf && fpga load 0 \${loadaddr} \${filesize}; then echo core from SD; else sf probe && sf read \${loadaddr} $(printf '%#x' "${QSPI_CORE_OFFS}") 0x1000 && env import -t \${loadaddr} && sf read \${loadaddr} $(printf '%#x' $(( QSPI_CORE_OFFS + 0x1000 ))) \${core_size} && fpga load 0 \${loadaddr} \${core_size} && echo core from QSPI; fi; fi"
     make olddefconfig
     grep -q '^CONFIG_PREBOOT="if itest.l \*0x10d120dc != 3; then' .config || {
         echo "ERROR: CONFIG_PREBOOT not set"; exit 1; }

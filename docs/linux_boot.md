@@ -137,9 +137,10 @@ and boots it. The first boot installs `python3` (needs internet); copy
 
 ## Applying a new FPGA image without a power cycle
 
-- **New fabric, Linux keeps running:** `fpga-reload [new.core.rbf]` on the
-  board - ~2 s, docs/hps_first.md. The core must come from a build with the
-  same phase 1 (HPS/DDR configuration).
+- **New fabric, Linux keeps running:** `linux/tools/deploy_fpga.py` (or
+  `fpga-reload [new.core.rbf]` on the board) - ~2 s, docs/hps_first.md.
+  The core must come from a build with the same periphery (pins, HPS/DDR
+  configuration); the manifest's periphery hash is checked before a load.
 - **New phase 1 / everything:** program the `.jic`, then load the matching
   `.sof` with the SPL embedded over JTAG - the device reconfigures and boots
   again, as from power-on:

@@ -95,6 +95,23 @@
       <p class="sub" id="fan-note"></p>
     </section>
 
+    <section class="card" id="core-card">
+      <h2>FPGA core</h2>
+      <p class="sub">Running build <code id="core-build">-</code> <span id="core-mismatch" class="pill pill-warn" hidden>not the installed one</span></p>
+      <p class="sub">Installed: <code id="core-installed">-</code></p>
+      <p class="sub">Previous: <code id="core-prev">-</code></p>
+      <form id="core-form" class="update">
+        <input id="core-file" type="file" accept=".tar.gz,.tgz" aria-label="Core bundle">
+        <input id="core-token" type="password" placeholder="token" autocomplete="current-password" aria-label="Core update token">
+        <label class="sub"><input id="core-force" type="checkbox"> force (the board's core has no manifest)</label>
+        <div class="row">
+          <button type="submit">Load core</button>
+          <button type="button" id="core-reload" class="secondary">Reload</button>
+        </div>
+      </form>
+      <p id="core-msg" class="sub" role="status"></p>
+    </section>
+
     <section class="card">
       <h2>GUI release</h2>
       <p class="sub">Running <code id="ver">-</code> <span id="pending" class="pill pill-warn" hidden>on test</span></p>

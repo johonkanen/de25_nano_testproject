@@ -1,7 +1,7 @@
 // DE25-Nano web GUI: the board drawing, live from /api/events (20 updates a
 // second, polling /api/board if the stream drops), the blinker picker, the
 // LED register, the fan, the die temperature control loop (plot and
-// controls), and GUI release updates.
+// controls), FPGA core loads and GUI release updates.
 "use strict";
 
 const $ = (id) => document.getElementById(id);
@@ -129,6 +129,8 @@ function buildPanels() {
     .catch(showError));
   $("update-form").addEventListener("submit", (e) => { e.preventDefault(); upload(); });
   $("rollback").addEventListener("click", rollback);
+  $("core-form").addEventListener("submit", (e) => { e.preventDefault(); loadCore(); });
+  $("core-reload").addEventListener("click", reloadCore);
 }
 
 function renderPanels(s) {
@@ -154,6 +156,7 @@ function renderPanels(s) {
   $("fan-rpm").textContent = s.fan.rpm;
   $("fan-ok").textContent = s.fan.i2c_error ? "I2C error" : s.fan.init_done ? "ok" : "starting";
   $("git").textContent = s.git_hash;
+  if (s.build_id !== undefined) $("core-build").textContent = buildName(s.build_id);
   $("uptime").textContent = formatUptime(s.linux_uptime_s);
 }
 
@@ -244,6 +247,69 @@ function connect() {
 async function poll() {
   try { onState(await api("/api/board")); } catch (e) { setConn("bad", "offline"); }
   setTimeout(poll, 250);
+}
+
+// ---------------------------------------------------------------- FPGA core
+// build id = the Unix time the build was stamped (write_build_id.sh)
+function buildName(id) {
+  // 0 / all ones: a core from before register 19 (unmapped reads)
+  if (!id || id === 0xFFFFFFFF) return "unknown (no register 19)";
+  return id + " (" + new Date(id * 1000).toISOString().slice(0, 16).replace("T", " ") + " UTC)";
+}
+
+function manifestName(m) {
+  if (!m) return "no manifest";
+  if (m.error) return m.error;
+  return buildName(m.build_id) + (m.git ? ", git " + m.git : "");
+}
+
+async function loadCoreInfo() {
+  const c = await api("/api/fpga");
+  $("core-installed").textContent = manifestName(c.installed);
+  $("core-prev").textContent = c.previous ? manifestName(c.previous) : "-";
+  $("core-mismatch").hidden = !(c.installed && c.installed.build_id && c.running_build_id !== null
+                                && c.running_build_id !== c.installed.build_id);
+  $("core-force").checked = !c.installed;
+  return c;
+}
+
+function coreBusy(busy) {
+  $("core-form").querySelectorAll("input, button").forEach((el) => { el.disabled = busy; });
+}
+
+async function loadCore() {
+  const file = $("core-file").files[0];
+  if (!file) { $("core-msg").textContent = "Pick a core bundle .tar.gz first (deploy_fpga.py --pack-only)."; return; }
+  const buf = await file.arrayBuffer();
+  const sha = await sha256hex(buf);
+  const headers = { "X-Sha256": sha, "X-Token": $("core-token").value };
+  if ($("core-force").checked) headers["X-Force"] = "1";
+  $("core-msg").textContent = `Loading ${file.name} - the board pauses for about 2 s...`;
+  coreBusy(true);
+  try {
+    const r = await api("/api/fpga", new Blob([buf]), headers);
+    $("core-msg").textContent = `Build ${r.build_id} running (${r.seconds} s); SD card copy ` +
+      (r.boot && r.boot.written ? "written." : "NOT written: " + ((r.boot && r.boot.error) || "?"));
+  } catch (e) {
+    $("core-msg").textContent = "Core not loaded: " + e.message;
+  } finally {
+    coreBusy(false);
+    loadCoreInfo().catch(() => {});
+  }
+}
+
+async function reloadCore() {
+  $("core-msg").textContent = "Reloading the installed core...";
+  coreBusy(true);
+  try {
+    const r = await api("/api/fpga/reload", {}, { "X-Token": $("core-token").value });
+    $("core-msg").textContent = `Reloaded build ${r.build_id} in ${r.seconds} s.`;
+  } catch (e) {
+    $("core-msg").textContent = "Reload failed: " + e.message;
+  } finally {
+    coreBusy(false);
+    loadCoreInfo().catch(() => {});
+  }
 }
 
 // ---------------------------------------------------------------- releases
@@ -584,3 +650,4 @@ buildPanels();
 buildLedBar();
 loadBoard().then(connect);
 loadVersion().catch((e) => { $("update-msg").textContent = "Version unknown: " + e.message; });
+loadCoreInfo().catch((e) => { $("core-msg").textContent = "Core unknown: " + e.message; });

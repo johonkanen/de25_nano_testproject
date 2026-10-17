@@ -39,6 +39,7 @@ git submodule update --init
 ./write_githash.sh                       # stamp git_hash_pkg.vhd (optional)
 quartus_sh  -t build_de25_nano_uart.tcl
 quartus_ipgenerate de25_nano_uart -c de25_nano_uart --run_default_mode_op
+./write_build_id.sh                      # new build id, register 19
 quartus_syn de25_nano_uart
 quartus_fit de25_nano_uart
 quartus_sta de25_nano_uart
@@ -120,6 +121,7 @@ Over LWH2F at `0x2000_0000`, register *n* at byte offset *n* × `0x10` (see
 | 15 | LED 7..4 brightness (RO) |
 | 16 | features — bit 0: the blinkers are in hardware (RO) |
 | 17 | blinker module id, four ASCII characters, 0 in modes 0/1 (RO) |
+| 19 | build id — the Unix time `write_build_id.sh` stamped; the core's manifest carries it (RO) |
 
 In blinker mode 0 (the reset default) `LED[7]` is a ~1 Hz heartbeat so the
 board shows life with nothing attached. From Linux: the web GUI, or

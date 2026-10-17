@@ -19,6 +19,7 @@ c5_pin_model_dump.txt
 serv_req_info.txt
 de25_nano_uart.qsf
 de25_nano_uart.qpf
+build_id_pkg.vhd
 *.qpf.bak
 
 # simulation (VUnit / nvc)

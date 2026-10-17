@@ -79,6 +79,11 @@ fakeroot -- bash -euo pipefail -c '
             "$3/tools/fpga_reload/core_reload.dts"
         install -D -m 755 "$3/tools/fpga_reload/fpga-reload" "$1/root/usr/sbin/fpga-reload"
         echo "   + /lib/firmware/de25_nano.core.rbf, de25_nano_core_reload.dtbo, /usr/sbin/fpga-reload"
+        # its manifest (make_jic.sh): what a core sent over the network must match
+        if [ -f "$7/de25_nano.core.json" ]; then
+            install -D -m 644 "$7/de25_nano.core.json" "$1/root/lib/firmware/de25_nano.core.json"
+            echo "   + /lib/firmware/de25_nano.core.json"
+        fi
     fi
     mkfs.ext4 -q -F -L nano-root -E offset=$(( $4 * 512 )) -d "$1/root" "$5" "$(( $6 / 2 ))k"
 ' _ "${STAGE}" "${TARBALL}" "${HERE}" "${P2_START}" "${IMG}" "${P2_SECTORS}" "${OUT}"

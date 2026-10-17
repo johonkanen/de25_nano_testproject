@@ -34,6 +34,7 @@ UBOOT_ITB="${UBOOT_ITB-${HERE}/build_output/u-boot.itb}"
 QSPI_UBOOT_OFFS="${QSPI_UBOOT_OFFS:-0x00A00000}"
 QSPI_CORE_OFFS="${QSPI_CORE_OFFS:-0x00C00000}"
 CORE_RBF="${CORE_RBF:-${HERE}/build_output/de25_nano.core.rbf}"
+MANIFEST="${CORE_RBF%.rbf}.json"
 
 # DE25-Nano: Micron MT25QU128 QSPI flash (128Mb/16MB - same part as the
 # DE25-Standard, confirmed via Terasic's own sof_to_jic.bat), device
@@ -52,10 +53,51 @@ FLASH_LOADER="${FLASH_LOADER:-A5EB013BB23BCS}"
 # from the SD card or from its QSPI copy at QSPI_CORE_OFFS. quartus_pfg
 # refuses hps_core_only on an AFTER INIT_DONE .sof - that is the test.
 HPS_FIRST=0
-rm -f "${CORE_RBF}"
+rm -f "${CORE_RBF}" "${MANIFEST}"
 if quartus_pfg -c "${SOF}" "${CORE_RBF}" -o hps_core_only=ON > "${JIC%.jic}_core.log" 2>&1 && [[ -s "${CORE_RBF}" ]]; then
     HPS_FIRST=1
     echo ">> HPS-first .sof: core in ${CORE_RBF} ($(stat -c %s "${CORE_RBF}") bytes) - copy it to the SD card's FAT partition"
+    # the core's manifest (fpga_access.py checks it before a load over the
+    # network, linux/tools/deploy_fpga.py sends it along):
+    #   build_id          register 19 of this build (build_id_pkg.vhd)
+    #   periphery_sha256  what the first stage fixes and a core must match: the
+    #                     fitter's pin table (every pin's location, direction and
+    #                     I/O standard, the HPS's too; it names the Quartus
+    #                     version and the device) and the HPS and EMIF IP. The
+    #                     phase-1 bitstream itself is no key - two builds of one
+    #                     periphery differ in it (per-build hashes), and the SDM
+    #                     loads either's core (tested 2026-10-17).
+    python3 - "${CORE_RBF}" "${MANIFEST}" "${HERE}/.." "${SOF}" << 'PYMAN'
+import hashlib, json, os, re, subprocess, sys, time
+core_path, out, top, sof = sys.argv[1:]
+core = open(core_path, "rb").read()
+pkg = os.path.join(top, "build_id_pkg.vhd")
+m = re.search(r'build_id\s*:.*x"([0-9a-fA-F]{8})"', open(pkg).read())
+if not m:
+    sys.exit(f"no build id in {pkg}")
+if os.path.getmtime(pkg) > os.path.getmtime(sof):
+    sys.exit(f"{pkg} is newer than {sof} - rebuild (quartus_syn..quartus_asm) first")
+h = hashlib.sha256()
+pins = os.path.join(os.path.dirname(sof), os.path.basename(sof).replace(".sof", ".pin"))
+for line in open(pins):
+    if line.strip() and not line.lstrip().startswith("--"):
+        h.update(line.rstrip().encode() + b"\n")
+for ip in ("hps/ip/hps_subsys/agilex_hps.ip", "hps/ip/qsys_top/emif_io96b_hps.ip"):
+    h.update(hashlib.sha256(open(os.path.join(top, ip), "rb").read()).digest())
+try:
+    git = subprocess.check_output(["git", "describe", "--always", "--dirty"], cwd=top,
+                                  text=True, stderr=subprocess.DEVNULL).strip()
+except (OSError, subprocess.CalledProcessError):
+    git = ""
+build_id = int(m.group(1), 16)
+manifest = {"format": 1, "core_size": len(core), "core_sha256": hashlib.sha256(core).hexdigest(),
+            "build_id": build_id, "built": time.strftime("%FT%TZ", time.gmtime(build_id)),
+            "periphery_sha256": h.hexdigest(), "git": git}
+with open(out, "w") as f:
+    json.dump(manifest, f, indent=1)
+    f.write("\n")
+print(f">> manifest {out}: build {build_id}, periphery {h.hexdigest()[:12]}, git {git}")
+PYMAN
 else
     rm -f "${CORE_RBF}"
     echo ">> FPGA-first .sof (AFTER INIT_DONE): the core is in the .jic"

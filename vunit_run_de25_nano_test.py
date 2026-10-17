@@ -14,6 +14,7 @@ Keep the source list in step with build_de25_nano_uart.tcl.
 """
 
 from pathlib import Path
+import subprocess
 from vunit import VUnit
 
 ROOT = Path(__file__).resolve().parent
@@ -46,6 +47,10 @@ lib.add_source_files(ROOT / "sim/amc6821_model.vhd")
 
 # top level
 lib.add_source_files(ROOT / "git_hash_pkg.vhd")
+# register 19's build id: generated (git-ignored) - a fresh clone has none yet
+if not (ROOT / "build_id_pkg.vhd").exists():
+    subprocess.run([str(ROOT / "write_build_id.sh")], check=True)
+lib.add_source_files(ROOT / "build_id_pkg.vhd")
 lib.add_source_files(ROOT / "axi_lwh2f_bridge.vhd")
 lib.add_source_files(ROOT / "de25_nano_uart_top.vhd")
 

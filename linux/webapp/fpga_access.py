@@ -21,9 +21,28 @@ Protocol: <run>/fpga.sock, one JSON object per line each way.
     {"op": "release", "reg": 9}                 drop a lease (below)
     {"op": "pause", "seconds": 30, "reason": "..."}, {"op": "resume"}
     {"op": "status"}, {"op": "ping"}
+    {"op": "core"}                              the FPGA core: running build, installed, previous
+    {"op": "reload"}                            load the installed core again (below)
+    {"op": "install_core", "bundle": PATH, "force": false}
+                                                check, install and load a new core (below)
     {"op": "sim", "ambient": 15.0, "load": 1.0} the simulated plant (--sim only)
 Errors: {"ok": false, "error": "..."}; while paused every read/write answers
 {"ok": false, "error": "paused: <reason>", "paused": true}.
+
+FPGA core (HPS-first images, docs/hps_first.md): the fabric is reloaded here,
+because this is the process that must keep LWH2F quiet while it happens - an
+access while the fabric reconfigures can hang the CPU. A load pauses register
+traffic, applies the device-tree overlay that makes the kernel's FPGA manager
+load <firmware>/de25_nano.core.rbf (~2 s), checks the board id (register 1)
+and the build id (register 19, against de25_nano.core.json beside the core),
+writes back the writable registers the load reset (LEDs, fan duty, blinker
+mode, loopback) and resumes. install_core takes a bundle (.tar.gz:
+de25_nano.core.rbf + de25_nano.core.json, linux/tools/deploy_fpga.py makes
+it) and refuses it unless the manifest's size and SHA-256 match and its
+periphery hash equals the installed core's - a core only fits the first
+stage (QSPI) of a build with the same pins, HPS and DDR (make_jic.sh). The installed core is kept as .prev and
+loaded back if the new one fails; a core that loads is also copied to the
+SD card's FAT partition (<boot>), from where U-Boot loads it at power-on.
 
 Fan lease (the temperature controller's dead-man switch): a write with
 "lease": N promises another write to that register within N seconds. If none
@@ -39,15 +58,19 @@ temp_control.py and fpga_web.py read exactly like /sys/class/hwmon.
 Stdlib only.
 """
 import argparse
+import hashlib
 import json
 import math
 import mmap
 import os
 import random
+import shutil
 import socket
 import socketserver
 import struct
+import subprocess
 import sys
+import tarfile
 import threading
 import time
 
@@ -61,6 +84,7 @@ REG_ID, REG_GIT, REG_LOOPBACK, REG_READ_COUNT, REG_LEDS = 1, 2, 3, 4, 5
 REG_SW, REG_KEY, REG_UPTIME = 6, 7, 8
 REG_FAN_DUTY, REG_FAN_RPM, REG_FAN_TACH, REG_FAN_STATUS = 9, 10, 11, 12
 REG_BLINKER, REG_LEVELS0, REG_LEVELS1, REG_FEATURES, REG_BLINKER_ID = 13, 14, 15, 16, 17
+REG_BUILD_ID = 19
 
 BOARD_ID = 0x0000DE25
 FEATURE_HW_BLINKERS = 1 << 0
@@ -68,6 +92,19 @@ WRITABLE = {REG_LOOPBACK, REG_LEDS, REG_FAN_DUTY, REG_BLINKER}
 
 FAN_MIN_DUTY = 30          # below ~18-22 the fan gets erratic (docs/de25_nano_fan.md)
 SAFE_FAN_DUTY = 128        # what an expired fan lease raises the fan to
+RESET_VALUES = {REG_LOOPBACK: 0, REG_LEDS: 0, REG_FAN_DUTY: FAN_MIN_DUTY, REG_BLINKER: 0}
+
+# the FPGA core (above): the files, and the overlay that loads them
+FIRMWARE = "/lib/firmware"
+BOOT = "/boot"                     # the card's FAT partition (U-Boot's preboot)
+CORE_NAME = "de25_nano.core.rbf"
+MANIFEST_NAME = "de25_nano.core.json"
+PENDING_NAME = "de25_nano.core.pending"
+OVERLAY_DTBO = "de25_nano_core_reload.dtbo"
+CONFIGFS = "/sys/kernel/config"
+OVERLAY_DIR = CONFIGFS + "/device-tree/overlays/de25_core"
+FPGA_MANAGER = "/sys/class/fpga_manager/fpga0"
+CORE_MAX = 32 << 20
 
 DEFAULT_RUN = os.environ.get("DE25WEB_RUN", "/run/de25web")
 SIM_RUN = os.environ.get("DE25WEB_RUN", "/tmp/de25web-sim")
@@ -123,7 +160,8 @@ class SimBridge:
 
     def __init__(self, state_file=None):
         self._regs = {REG_ID: BOARD_ID, REG_GIT: 0x5151D00D, REG_FAN_DUTY: FAN_MIN_DUTY,
-                      REG_FEATURES: FEATURE_HW_BLINKERS, REG_FAN_STATUS: 0x011E0021}
+                      REG_FEATURES: FEATURE_HW_BLINKERS, REG_FAN_STATUS: 0x011E0021,
+                      REG_BUILD_ID: 0}
         self._state_file = state_file
         if state_file:
             try:
@@ -213,6 +251,14 @@ class SimBridge:
             if reg_num == REG_READ_COUNT:
                 self._regs[REG_READ_COUNT] = self._regs.get(REG_READ_COUNT, 0) + 1
             return self._regs.get(reg_num, 0) & 0xFFFFFFFF
+
+    def configure(self, build_id):
+        """what a core load does to the registers: back to reset, the new build id"""
+        with self._lock:
+            self._regs.update(RESET_VALUES)
+            self._regs[REG_BUILD_ID] = build_id
+            self._levels = [0] * 8
+        self.write(REG_LOOPBACK, 0)                  # persist the reset values
 
     def write(self, reg_num: int, value: int) -> None:
         with self._lock:
@@ -328,14 +374,141 @@ class SimHwmon(threading.Thread):
 
 
 # --------------------------------------------------------------------------
+# loading the FPGA core: the kernel's FPGA manager, or the simulated board's
+# --------------------------------------------------------------------------
+class CoreError(Exception):
+    pass
+
+
+class KernelLoader:
+    """A fresh configfs overlay each time (fpga_reload/core_reload.dts): applying
+    it is what makes the FPGA manager load firmware-name from /lib/firmware."""
+
+    def __init__(self, firmware):
+        self.dtbo = os.path.join(firmware, OVERLAY_DTBO)
+
+    def check(self):
+        if not os.path.isfile(self.dtbo):
+            raise CoreError("no " + self.dtbo)
+        if not os.path.isdir(FPGA_MANAGER):
+            raise CoreError("no FPGA manager (kernel needs CONFIG_FPGA_MGR_STRATIX10_SOC=y)")
+
+    def load(self):
+        self.check()
+        if not os.path.isdir(os.path.dirname(OVERLAY_DIR)):
+            subprocess.run(["mount", "-t", "configfs", "none", CONFIGFS], check=False)
+        if os.path.isdir(OVERLAY_DIR):
+            os.rmdir(OVERLAY_DIR)
+        os.mkdir(OVERLAY_DIR)
+        with open(self.dtbo, "rb") as f:
+            dtbo = f.read()
+        try:
+            with open(os.path.join(OVERLAY_DIR, "dtbo"), "wb") as f:
+                f.write(dtbo)
+        except OSError as e:                # the load failed: the write says so
+            raise CoreError("overlay: %s" % e) from None
+        status = open(os.path.join(OVERLAY_DIR, "status")).read().strip()
+        state = open(os.path.join(FPGA_MANAGER, "state")).read().strip()
+        if status != "applied" or state != "operating":
+            raise CoreError(f"overlay {status}, FPGA manager {state}")
+
+
+class SimLoader:
+    """The simulated board's load: ~2 s, then the registers reset and register
+    19 shows the manifest's build id. A core starting with b"BAD" fails."""
+
+    def __init__(self, firmware, bridge):
+        self.firmware = firmware
+        self.bridge = bridge
+
+    def check(self):
+        pass
+
+    def load(self):
+        time.sleep(2.0)
+        with open(os.path.join(self.firmware, CORE_NAME), "rb") as f:
+            head = f.read(3)
+        if head == b"BAD":
+            self.bridge.configure(0)
+            raise CoreError("overlay error, FPGA manager write error (simulated)")
+        try:
+            manifest = read_manifest(os.path.join(self.firmware, MANIFEST_NAME))
+            build_id = int(manifest["build_id"]) if manifest else 0
+        except (KeyError, ValueError, TypeError):
+            build_id = 0
+        self.bridge.configure(build_id)
+
+
+def read_manifest(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
+    except ValueError as e:
+        raise CoreError(f"{path}: {e}") from None
+
+
+def write_file(path, data):
+    """data to path through path.new: never a half-written path, even on FAT"""
+    tmp = path + ".new"
+    with open(tmp, "wb") as f:
+        f.write(data)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, path)
+
+
+def sha256(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def check_bundle(path):
+    """the core and manifest out of a deploy_fpga.py bundle, checked"""
+    try:
+        with tarfile.open(path, "r:*") as tar:
+            files = {}
+            for m in tar.getmembers():
+                name = os.path.normpath(m.name)
+                if name in (CORE_NAME, MANIFEST_NAME) and m.isfile() and m.size <= CORE_MAX:
+                    files[name] = tar.extractfile(m).read()
+    except (OSError, tarfile.TarError) as e:
+        raise CoreError(f"not a core bundle: {e}") from None
+    missing = [n for n in (CORE_NAME, MANIFEST_NAME) if n not in files]
+    if missing:
+        raise CoreError("not a core bundle, missing " + ", ".join(missing))
+    core = files[CORE_NAME]
+    try:
+        manifest = json.loads(files[MANIFEST_NAME])
+        size, digest = int(manifest["core_size"]), str(manifest["core_sha256"]).lower()
+        int(manifest["build_id"])
+        str(manifest["periphery_sha256"])
+    except (ValueError, KeyError, TypeError) as e:
+        raise CoreError(f"bad manifest: {e}") from None
+    if len(core) != size:
+        raise CoreError(f"core is {len(core)} bytes, the manifest says {size} (truncated?)")
+    if sha256(core) != digest:
+        raise CoreError("core SHA-256 does not match the manifest (corrupt)")
+    return core, files[MANIFEST_NAME], manifest
+
+
+# --------------------------------------------------------------------------
 # the server
 # --------------------------------------------------------------------------
 class Access:
-    """Every register access, under one lock; pause/resume; the fan lease."""
+    """Every register access, under one lock; pause/resume; the fan lease;
+    loading the FPGA core."""
 
-    def __init__(self, bridge, sim_hwmon=None):
+    def __init__(self, bridge, sim_hwmon=None, loader=None, firmware=FIRMWARE, boot=BOOT):
         self.bridge = bridge
         self.sim = sim_hwmon
+        self.loader = loader
+        self.firmware = firmware
+        self.boot = boot
+        self.core_lock = threading.Lock()    # one load at a time
+        self.loading = False
+        self.last_load = None
+        self._recover_install()
         self.lock = threading.Lock()
         self.paused_until = 0.0
         self.pause_reason = ""
@@ -358,6 +531,8 @@ class Access:
                     "counts": self.counts,
                     "plant": ({"ambient": self.sim.plant.ambient, "load": self.sim.plant.load,
                                "temp": round(self.sim.plant.temp, 3)} if self.sim else None)}
+        if op in ("pause", "resume") and self.loading:
+            return {"ok": False, "error": "an FPGA core load is running"}
         if op == "pause":
             secs = min(float(req.get("seconds", 60)), 600.0)
             with self.lock:                  # waits for the access in flight
@@ -384,6 +559,19 @@ class Access:
         if op == "release":
             self.leases.pop(int(req["reg"]), None)
             return {"ok": True}
+        if op == "core":
+            return self.core_info()
+        if op in ("reload", "install_core"):
+            if not self.loader:
+                return {"ok": False, "error": "no FPGA core loader"}
+            if not self.core_lock.acquire(blocking=False):
+                return {"ok": False, "error": "a core load is already running"}
+            try:
+                if op == "reload":
+                    return self.reload()
+                return self.install_core(str(req["bundle"]), bool(req.get("force")))
+            finally:
+                self.core_lock.release()
         if op not in ("read", "read_many", "write"):
             return {"ok": False, "error": f"unknown op {op!r}"}
         with self.lock:
@@ -403,6 +591,188 @@ class Access:
             if "lease" in req:
                 self.leases[reg] = time.monotonic() + max(1.0, float(req["lease"]))
             return {"ok": True, "value": self.bridge.read(reg)}
+
+    # ---- the FPGA core ----------------------------------------------------
+    def _core_path(self, name, suffix=""):
+        return os.path.join(self.firmware, name + suffix)
+
+    def core_info(self):
+        out = {"ok": True, "running_build_id": None, "last_load": self.last_load,
+               "loading": self.core_lock.locked()}
+        with self.lock:
+            if not self.paused():
+                out["running_build_id"] = self.bridge.read(REG_BUILD_ID)
+        for key, suffix in (("installed", ""), ("previous", ".prev")):
+            try:
+                out[key] = read_manifest(self._core_path(MANIFEST_NAME, suffix))
+            except CoreError as e:
+                out[key] = {"error": str(e)}
+        return out
+
+    def _load(self, expect_build_id, saved=None):
+        """load the installed core; registers paused around it, restored after.
+        saved: the registers to restore - a rollback passes the ones read before
+        the failed load, since the fabric may not be there to read them from."""
+        with self.lock:
+            if saved is None:
+                saved = {r: self.bridge.read(r) for r in RESET_VALUES}
+            self._saved = saved
+            # no time limit while the load runs: an LWH2F access to a fabric
+            # half-way through configuration hangs the CPU. A load that never
+            # returns (the SDM stuck on a damaged core, seen 2026-10-17) keeps
+            # the registers paused; the fan keeps its last duty, the AMC6821's
+            # THERM fail-safe stays the last line.
+            self.paused_until = math.inf
+            self.loading = True
+            self.pause_reason = "FPGA core load"
+        log("FPGA core load: register traffic paused")
+        t0 = time.monotonic()
+        try:
+            self.loader.load()
+            secs = time.monotonic() - t0
+            board_id = self.bridge.read(REG_ID)
+            build_id = self.bridge.read(REG_BUILD_ID)
+            if board_id != BOARD_ID:
+                raise CoreError(f"board id {board_id:#x} after the load, expected {BOARD_ID:#x}")
+            if expect_build_id is not None and build_id != expect_build_id:
+                raise CoreError(f"build id {build_id} after the load, the manifest says "
+                                f"{expect_build_id}")
+            for r, v in saved.items():       # the load reset them
+                self.bridge.write(r, v)
+            return {"seconds": round(secs, 2), "build_id": build_id}
+        finally:
+            with self.lock:
+                held = time.monotonic() - t0
+                for r in self.leases:        # a pause must not expire a lease
+                    self.leases[r] += held
+                self.paused_until = 0.0
+                self.loading = False
+            log(f"FPGA core load: done after {time.monotonic() - t0:.2f} s, traffic resumed")
+
+    def _installed_build_id(self):
+        m = read_manifest(self._core_path(MANIFEST_NAME))
+        return int(m["build_id"]) if m and "build_id" in m else None
+
+    def reload(self):
+        if not os.path.isfile(self._core_path(CORE_NAME)):
+            return {"ok": False, "error": "no " + self._core_path(CORE_NAME)}
+        try:
+            self.loader.check()
+            res = self._load(self._installed_build_id())
+        except (CoreError, OSError) as e:
+            self.last_load = {"op": "reload", "ok": False, "error": str(e), "at": time.time()}
+            log("FPGA core reload failed:", e)
+            return {"ok": False, "error": str(e)}
+        self.last_load = {"op": "reload", "ok": True, "at": time.time(), **res}
+        log(f"FPGA core reloaded: build {res['build_id']}, {res['seconds']} s")
+        return {"ok": True, **res}
+
+    def install_core(self, bundle, force=False):
+        core_path, man_path = self._core_path(CORE_NAME), self._core_path(MANIFEST_NAME)
+        try:
+            core, man_raw, manifest = check_bundle(bundle)
+            installed = read_manifest(man_path)
+            if installed is None and not force:
+                raise CoreError("the installed core has no manifest - the periphery it fits "
+                                "is unknown (force to install anyway)")
+            if installed is not None and not force and \
+                    manifest["periphery_sha256"] != installed.get("periphery_sha256"):
+                raise CoreError("the core does not fit the first stage in QSPI: periphery "
+                                "(pins, HPS, DDR) %s, the board's %s - program the .jic first"
+                                % (manifest["periphery_sha256"][:12],
+                                   str(installed.get("periphery_sha256"))[:12]))
+            self.loader.check()
+        except (CoreError, OSError) as e:
+            self.last_load = {"op": "install", "ok": False, "error": str(e), "at": time.time()}
+            log("FPGA core refused:", e)
+            return {"ok": False, "error": str(e), "refused": True}
+        # keep the running core as .prev, then the new one in its place
+        if os.path.exists(core_path):
+            shutil.copyfile(core_path, core_path + ".prev")
+            if os.path.exists(man_path):
+                shutil.copyfile(man_path, man_path + ".prev")
+            elif os.path.exists(man_path + ".prev"):
+                os.remove(man_path + ".prev")
+        # pending: the install is under way. Found at startup, it never
+        # finished (the board hung or lost power) - _recover_install
+        write_file(self._core_path(PENDING_NAME), b"%d\n" % int(manifest["build_id"]))
+        write_file(man_path, man_raw)
+        write_file(core_path, core)
+        try:
+            res = self._load(int(manifest["build_id"]))
+        except (CoreError, OSError) as e:
+            log("FPGA core install failed:", e, "- loading the previous core")
+            out = {"ok": False, "error": str(e), "rolled_back": False}
+            if os.path.exists(core_path + ".prev"):
+                os.replace(core_path + ".prev", core_path)
+                if os.path.exists(man_path + ".prev"):
+                    os.replace(man_path + ".prev", man_path)
+                else:
+                    os.remove(man_path)
+                try:
+                    out["previous"] = self._load(self._installed_build_id(), self._saved)
+                    out["rolled_back"] = True
+                except (CoreError, OSError) as e2:
+                    out["rollback_error"] = str(e2)
+                    log("FPGA core rollback failed too:", e2)
+            self._clear_pending()
+            self.last_load = {"op": "install", "at": time.time(), **out}
+            return out
+        self._clear_pending()
+        # it runs: the card's copy too, so the next power-on loads it
+        boot = self._write_boot_copy(core)
+        self.last_load = {"op": "install", "ok": True, "at": time.time(), "boot": boot, **res}
+        log(f"FPGA core installed: build {res['build_id']}, {res['seconds']} s, "
+            f"card copy {'written' if boot['written'] else 'NOT written'}")
+        return {"ok": True, "boot": boot, **res}
+
+    def _clear_pending(self):
+        try:
+            os.remove(self._core_path(PENDING_NAME))
+        except FileNotFoundError:
+            pass
+
+    def _recover_install(self):
+        """An install that never finished (the load hung the board, or the
+        power went): the core in /lib/firmware is the untested one. The card
+        still has the last good core (written only after a good load), so the
+        board runs that - put the .prev files back to match it."""
+        if not os.path.exists(self._core_path(PENDING_NAME)):
+            return
+        core_path, man_path = self._core_path(CORE_NAME), self._core_path(MANIFEST_NAME)
+        if os.path.exists(core_path + ".prev"):
+            os.replace(core_path + ".prev", core_path)
+            if os.path.exists(man_path + ".prev"):
+                os.replace(man_path + ".prev", man_path)
+            elif os.path.exists(man_path):
+                os.remove(man_path)
+            log("FPGA core: an install did not finish - the previous core is the installed one again")
+            self.last_load = {"op": "recover", "ok": True, "at": time.time(),
+                              "note": "an install did not finish; the previous core is back"}
+        self._clear_pending()
+
+    def _write_boot_copy(self, core):
+        """The core onto the card's FAT partition. The board keeps it unmounted
+        (a power cut cannot catch FAT mid-write then): mounted only for this."""
+        boot = {"written": False}
+        if not self.boot or not os.path.isdir(self.boot):
+            boot["error"] = "no " + (self.boot or "boot directory")
+            return boot
+        mounted = False
+        try:
+            if not os.path.ismount(self.boot) and not self.sim:
+                subprocess.run(["mount", self.boot], check=True, capture_output=True, timeout=20)
+                mounted = True
+            write_file(os.path.join(self.boot, CORE_NAME), core)
+            os.sync()
+            boot["written"] = True
+        except (OSError, subprocess.SubprocessError) as e:
+            boot["error"] = str(e)
+            log("FPGA core: the card's copy was not written:", e)
+        finally:
+            if mounted:
+                subprocess.run(["umount", self.boot], check=False, timeout=20)
+        return boot
 
     @staticmethod
     def _reg(r):
@@ -489,6 +859,15 @@ class FpgaClient:
         self._sock = self._rfile = None
 
     def call(self, **req):
+        resp = self.call_raw(**req)
+        if not resp.get("ok"):
+            if resp.get("paused"):
+                raise FpgaUnavailable("FPGA access " + resp.get("error", "paused"))
+            raise ValueError(resp.get("error", "request failed"))
+        return resp
+
+    def call_raw(self, **req):
+        """the reply as it is, ok or not (a failed core install carries details)"""
         with self._lock:
             for attempt in (0, 1):          # one reconnect: the server may have restarted
                 try:
@@ -505,12 +884,10 @@ class FpgaClient:
                     break
                 except (OSError, ValueError) as e:
                     self._close()
-                    if attempt:
+                    # a reply that timed out is not resent: the request may be
+                    # running (a core load) - only a dropped connection is
+                    if attempt or isinstance(e, socket.timeout):
                         raise FpgaUnavailable("FPGA access unavailable (%s)" % e) from None
-        if not resp.get("ok"):
-            if resp.get("paused"):
-                raise FpgaUnavailable("FPGA access " + resp.get("error", "paused"))
-            raise ValueError(resp.get("error", "request failed"))
         return resp
 
     def read(self, reg):
@@ -533,14 +910,18 @@ def main():
     ap.add_argument("--sim", action="store_true", help="simulated registers and thermal plant")
     ap.add_argument("--sim-ambient", type=float, default=None, help="plant ambient, C (default 25)")
     ap.add_argument("--sim-load", type=float, default=None, help="plant heat scale (default 1.0)")
+    ap.add_argument("--firmware", default=None, help="the core's directory (default "
+                    "/lib/firmware, or <run>/sim-firmware with --sim)")
+    ap.add_argument("--boot", default=None, help="the card's FAT partition, where the core's "
+                    "boot copy goes (default /boot, or <run>/sim-boot with --sim; '' for none)")
     ap.add_argument("--client", nargs=argparse.REMAINDER,
                     help="send one request: read N | write N V | status | pause S | resume | "
-                         "sim ambient=V load=V | ping")
+                         "sim ambient=V load=V | ping | core | reload | install_core BUNDLE [force]")
     args = ap.parse_args()
     run = run_dir(args.run, args.sim)
 
     if args.client is not None:
-        c, a = FpgaClient(run), args.client
+        c, a = FpgaClient(run, timeout=120.0), args.client
         try:
             if a[0] == "read":
                 print(c.read(int(a[1], 0)))
@@ -548,6 +929,9 @@ def main():
                 print(c.write(int(a[1], 0), int(a[2], 0)))
             elif a[0] == "pause":
                 print(json.dumps(c.call(op="pause", seconds=float(a[1]) if len(a) > 1 else 60)))
+            elif a[0] == "install_core":
+                print(json.dumps(c.call(op="install_core", bundle=os.path.abspath(a[1]),
+                                        force=a[2:3] == ["force"])))
             elif a[0] == "sim":
                 print(json.dumps(c.call(op="sim", **{k: float(v) for k, v in
                                                      (x.split("=") for x in a[1:])})))
@@ -562,9 +946,22 @@ def main():
         bridge = SimBridge(os.path.join(run, "sim-regs.json"))
         sim = SimHwmon(hwmon_root(run, True), bridge, args.sim_ambient, args.sim_load)
         sim.start()
+        firmware = args.firmware or os.path.join(run, "sim-firmware")
+        boot = args.boot if args.boot is not None else os.path.join(run, "sim-boot")
+        for d in (firmware, boot):
+            os.makedirs(d, exist_ok=True)
+        if not os.path.exists(os.path.join(firmware, CORE_NAME)):
+            with open(os.path.join(firmware, CORE_NAME), "wb") as f:
+                f.write(b"simulated core\n")
+        loader = SimLoader(firmware, bridge)
+        man = read_manifest(os.path.join(firmware, MANIFEST_NAME))
+        bridge.configure(int(man.get("build_id", 0)) if man else 0)
     else:
         bridge, sim = Bridge(), None
-    access = Access(bridge, sim)
+        firmware = args.firmware or FIRMWARE
+        boot = args.boot if args.boot is not None else BOOT
+        loader = KernelLoader(firmware)
+    access = Access(bridge, sim, loader, firmware, boot)
     srv = serve(access, os.path.join(run, SOCKET_NAME))
     log(f"serving {os.path.join(run, SOCKET_NAME)}" + (" [simulated board]" if sim else ""))
     srv.serve_forever()

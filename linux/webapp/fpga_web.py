@@ -45,6 +45,12 @@ API:
     POST /api/update                body: a release .tar.gz; headers X-Sha256, X-Token
     POST /api/update/confirm        keep the release on test (only when all three answer)
     POST /api/update/rollback       back to the previous release (X-Token)
+    GET  /api/fpga                  the FPGA core: running build id, installed, previous
+    POST /api/fpga                  body: a core bundle .tar.gz (linux/tools/deploy_fpga.py);
+                                    headers X-Sha256, X-Token, X-Force: 1 (no installed
+                                    manifest). fpga_access.py checks it, loads it (~2 s,
+                                    the registers pause), rolls back if it fails
+    POST /api/fpga/reload           load the installed core again (X-Token)
 """
 import argparse
 import collections
@@ -65,8 +71,8 @@ from fpga_access import (BOARD_ID, FEATURE_HW_BLINKERS, FAN_MIN_DUTY,  # noqa: E
                          REG_BLINKER, REG_BLINKER_ID, REG_FAN_DUTY, REG_FAN_RPM,
                          REG_FAN_STATUS, REG_FAN_TACH, REG_FEATURES, REG_GIT, REG_ID,
                          REG_KEY, REG_LEDS, REG_LEVELS0, REG_LEVELS1, REG_LOOPBACK,
-                         REG_READ_COUNT, REG_SW, REG_UPTIME, FpgaClient, FpgaUnavailable,
-                         hwmon_root, run_dir)
+                         REG_BUILD_ID, REG_READ_COUNT, REG_SW, REG_UPTIME, FpgaClient,
+                         FpgaUnavailable, hwmon_root, run_dir)
 from temp_control import (HISTORY_S, ControlClient, ControlUnavailable,  # noqa: E402
                           find_hwmon, read_hwmon)
 
@@ -79,7 +85,7 @@ REGISTER_NAMES = {
     REG_KEY: "keys", REG_UPTIME: "uptime counter", REG_FAN_DUTY: "fan duty",
     REG_FAN_RPM: "fan rpm", REG_FAN_TACH: "fan tach", REG_FAN_STATUS: "fan status",
     REG_BLINKER: "blinker mode", REG_LEVELS0: "levels 3..0", REG_LEVELS1: "levels 7..4",
-    REG_FEATURES: "features", REG_BLINKER_ID: "blinker id",
+    REG_FEATURES: "features", REG_BLINKER_ID: "blinker id", REG_BUILD_ID: "build id",
 }
 SAMPLED = [n for n in REGISTER_NAMES if n != REG_READ_COUNT]
 
@@ -235,6 +241,7 @@ class Board:
             "id": r[REG_ID],
             "id_ok": r[REG_ID] == BOARD_ID,
             "git_hash": "%08x" % r[REG_GIT],
+            "build_id": r[REG_BUILD_ID],
             "features": r[REG_FEATURES],
             "hw_blinkers": bool(r[REG_FEATURES] & FEATURE_HW_BLINKERS),
             "blinker": {
@@ -402,6 +409,8 @@ class Releases:
 # --------------------------------------------------------------------------
 # HTTP
 # --------------------------------------------------------------------------
+CORE_BUNDLE_MAX = 32 << 20
+
 CONTENT_TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript",
                  ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json",
                  ".png": "image/png", ".ico": "image/x-icon"}
@@ -415,7 +424,7 @@ def parse_value(v) -> int:
 
 
 def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Releases,
-             version: str, release_name: str):
+             version: str, release_name: str, run: str):
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
     from urllib.parse import urlparse, parse_qs
 
@@ -478,6 +487,11 @@ def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Rel
                 info = releases.info(version)
                 info["release"] = release_name
                 self._json(info)
+            elif p == "/api/fpga":
+                try:
+                    self._json(fpga.call(op="core"))
+                except FpgaUnavailable as e:
+                    self._json({"error": str(e)}, 503)
             elif p == "/api/read":
                 try:
                     reg = int(parse_qs(url.query)["reg"][0])
@@ -540,6 +554,8 @@ def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Rel
                     self._json({"reg": reg, "value": board.read(reg)})
                 elif p.startswith("/api/update"):
                     self._update(p)
+                elif p in ("/api/fpga", "/api/fpga/reload"):
+                    self._fpga_core(p)
                 else:
                     self.send_error(404)
             except (KeyError, ValueError, json.JSONDecodeError) as e:
@@ -603,6 +619,32 @@ def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Rel
             else:
                 self.send_error(404)
 
+        def _fpga_core(self, p):
+            if not releases.token_ok(self.headers.get("X-Token")):
+                self.close_connection = True        # an upload's body is left unread
+                self._json({"error": "bad or missing X-Token"}, 403)
+                return
+            # a load takes ~2 s plus the checks: its own client, a longer wait
+            slow = FpgaClient(run, timeout=120.0)
+            if p == "/api/fpga/reload":
+                self._body()
+                resp = slow.call_raw(op="reload")
+                self._json(resp, 200 if resp.get("ok") else 500)
+                return
+            blob = self._body(limit=CORE_BUNDLE_MAX)
+            if hashlib.sha256(blob).hexdigest() != self.headers.get("X-Sha256", "").lower():
+                raise ValueError("sha256 does not match the upload")
+            bundle = os.path.join(run, "core-upload.tar.gz")
+            with open(bundle, "wb") as f:
+                f.write(blob)
+            try:
+                resp = slow.call_raw(op="install_core", bundle=bundle,
+                                      force=self.headers.get("X-Force") == "1")
+            finally:
+                os.remove(bundle)
+            status = 200 if resp.get("ok") else 409 if resp.get("refused") else 500
+            self._json(resp, status)
+
         def log_message(self, fmt, *args):
             if not self.path.startswith(("/api/events", "/api/board", "/api/version", "/api/control")):
                 print("%s - %s" % (self.address_string(), fmt % args), flush=True)
@@ -635,7 +677,8 @@ def main():
     fpga = FpgaClient(run)
     control = ControlLink(ControlClient(run))
     board = Board(fpga, SocSensors(hwmon_root(run, args.sim), control), control)
-    server_cls, handler_cls = make_app(board, control, fpga, Releases(base), version, release_name)
+    server_cls, handler_cls = make_app(board, control, fpga, Releases(base), version, release_name,
+                                       run)
     httpd = server_cls((args.bind, args.port), handler_cls)
     print(f"de25-nano web {version} ({release_name}) on http://{args.bind}:{args.port}/, "
           f"sockets in {run}" + (" [simulated board]" if args.sim else ""), flush=True)

@@ -4,8 +4,10 @@
 blinker mode and check the page (and the register file behind it) follow,
 toggle an LED in software mode, check the temperature control plot renders
 and its mode buttons, setpoint and the fan slider reach the controller (the
-loop's settings are put back afterwards), then screenshot the page at
-desktop and phone widths. Exit status 1 when the page does not show what
+loop's settings are put back afterwards), check the FPGA core card shows
+the running build, then screenshot the page at desktop and phone widths.
+--reload-core also clicks the card's Reload (the board pauses ~2 s; the
+token from ~/.de25web_token) and checks the blinker mode survives it. Exit status 1 when the page does not show what
 was expected.
 
 Works against the board or a local `fpga_web.py --sim`:
@@ -32,6 +34,9 @@ if "--shots" in ARGV:
     i = ARGV.index("--shots")
     SHOTS = ARGV[i + 1]
     del ARGV[i:i + 2]
+RELOAD_CORE = "--reload-core" in ARGV
+if RELOAD_CORE:
+    ARGV.remove("--reload-core")
 URL = ARGV[0] if ARGV else "http://192.168.1.222/"
 PORT = 9224
 MODES = ["off", "counter", "scanner", "breathing", "sparkle", "software"]
@@ -187,6 +192,31 @@ def control_tests(page):
         print(f"      (put back: mode {c0['mode']}, setpoint {c0['setpoint']}, manual duty {c0['manual_duty']})")
 
 
+def core_tests(page):
+    """the FPGA core card: running build (register 19), installed manifest; Reload"""
+    core = api("/api/fpga")
+    want = str(core.get("running_build_id"))
+    shown = wait_for(lambda: (lambda t: t if t.startswith(want) else None)(
+        page.js('document.getElementById("core-build").textContent')))
+    check(bool(shown), f"core card: running build {shown!r} (register 19: {want})")
+    inst = page.js('document.getElementById("core-installed").textContent')
+    m = core.get("installed")
+    check(inst.startswith(str(m["build_id"])) if m else inst == "no manifest",
+          f"core card: installed {inst!r}")
+    if not RELOAD_CORE:
+        return
+    token_file = os.path.expanduser("~/.de25web_token")
+    token = open(token_file).read().strip() if os.path.exists(token_file) else ""
+    mode = api("/api/board")["blinker"]["name"]
+    page.js(f'document.getElementById("core-token").value = {json.dumps(token)}')
+    page.js('document.getElementById("core-reload").click()')
+    msg = wait_for(lambda: (lambda t: t if t.startswith(("Reloaded", "Reload failed")) else None)(
+        page.js('document.getElementById("core-msg").textContent')), timeout=30)
+    after = wait_for(lambda: (lambda b: b if b.get("blinker") else None)(api("/api/board")), timeout=5)
+    check(bool(msg) and msg.startswith("Reloaded") and after and after["blinker"]["name"] == mode,
+          f"core card Reload: {msg!r}, blinker {mode} -> {after and after['blinker']['name']}")
+
+
 def shot(page, name, width, height):
     page.call("Emulation.setDeviceMetricsOverride", width=width, height=height,
               deviceScaleFactor=1, mobile=width < 600)
@@ -255,6 +285,7 @@ try:
     print(f"{'PASS' if ok else 'FAIL'}  click LED2 in software mode: register 5 {before:#04x} -> {after:#04x}")
 
     control_tests(page)
+    core_tests(page)
 
     if SHOTS:
         time.sleep(2)

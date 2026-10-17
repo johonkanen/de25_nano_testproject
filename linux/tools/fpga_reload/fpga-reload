@@ -12,6 +12,13 @@
 # access while the fabric reconfigures can hang the CPU. The fabric comes
 # back in its reset state (blinker mode 0, fan duty 30, ...); the console
 # (HPS UART1 through the fabric) drops out for the ~2 s of the load.
+#
+# With the web GUI running, the load goes through its fpga_access.py (op
+# "reload"): it pauses only the register traffic, checks the build id
+# (register 19) against de25_nano.core.json and writes back the registers
+# the load reset. Without it, every /opt/de25web process is stopped
+# (SIGSTOP) around the load, as before. To install a new core with its
+# manifest and rollback, use linux/tools/deploy_fpga.py instead.
 set -eu
 FW=/lib/firmware
 CORE=de25_nano.core.rbf
@@ -20,10 +27,18 @@ OVL=/sys/kernel/config/device-tree/overlays/de25_core
 
 if [ $# -ge 1 ]; then
     cp "$1" "$FW/$CORE.new" && mv "$FW/$CORE.new" "$FW/$CORE"
+    rm -f "$FW/de25_nano.core.json"     # it described the core just replaced
 fi
 [ -f "$FW/$CORE" ] || { echo "fpga-reload: no $FW/$CORE"; exit 1; }
 [ -f "$DTBO" ] || { echo "fpga-reload: no $DTBO"; exit 1; }
 [ -d /sys/class/fpga_manager/fpga0 ] || { echo "fpga-reload: no FPGA manager (kernel needs CONFIG_FPGA_MGR_STRATIX10_SOC=y)"; exit 1; }
+
+ACCESS=/opt/de25web/current/fpga_access.py
+if [ -S /run/de25web/fpga.sock ] && python3 "$ACCESS" --client ping >/dev/null 2>&1; then
+    echo "fpga-reload: through fpga_access.py"
+    exec python3 "$ACCESS" --client reload
+fi
+
 mountpoint -q /sys/kernel/config || mount -t configfs none /sys/kernel/config
 
 USERS=$(pgrep -f /opt/de25web/ || true)

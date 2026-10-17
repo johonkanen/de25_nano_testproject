@@ -4,8 +4,9 @@ A page served by the board itself (`http://192.168.1.222/`): a drawing of
 the DE25-Nano with its LEDs, slide switches, push-buttons and fan live (20
 updates a second), the LED blinker picker, the LED register, the fan duty,
 closed-loop control of the die temperature (42 °C by default, with a live
-10-minute plot), and updates of the GUI itself over the network with
-automatic rollback.
+10-minute plot), new FPGA cores loaded over the network while Linux keeps
+running, and updates of the GUI itself over the network with automatic
+rollback.
 
 The LED blinkers are FPGA modules — `source/led_blinkers.vhd` and
 `source/blinkers/` (ported from `~/dev/pr_testing`). The GUI only picks the
@@ -22,7 +23,8 @@ order) and restarted by the supervisor:
                     /dev/mem (LWH2F 0x2000_0000)
                               |
   fpga_access.py  ------------+   the only process mapping it; one lock;
-     |  /run/de25web/fpga.sock    pause/resume; the fan lease; --sim board
+     |  /run/de25web/fpga.sock    pause/resume; the fan lease; FPGA core
+     |                            loads (/lib/firmware); --sim board
      |
      +-- temp_control.py   reads soc64hwmon (/sys/class/hwmon), PI on the
      |      |  /run/de25web/control.sock   hottest die sensor, writes fan duty
@@ -39,6 +41,8 @@ the docstrings of `fpga_access.py` and `temp_control.py`); both have a
 python3 /opt/de25web/current/fpga_access.py --client read 9          # fan duty
 python3 /opt/de25web/current/fpga_access.py --client status
 python3 /opt/de25web/current/fpga_access.py --client pause 30        # hold register traffic (reconfiguration)
+python3 /opt/de25web/current/fpga_access.py --client core            # running build id, installed core
+python3 /opt/de25web/current/fpga_access.py --client reload          # load the installed core again (~2 s)
 python3 /opt/de25web/current/temp_control.py --client state
 python3 /opt/de25web/current/temp_control.py --client set setpoint=45 mode=auto
 ```
@@ -47,8 +51,27 @@ python3 /opt/de25web/current/temp_control.py --client set setpoint=45 mode=auto
 the page shows "FPGA access unavailable" or "temperature control not
 running" - and retries; nothing crashes over a missing peer. All register
 traffic is serialised in `fpga_access.py`, the one place a partial or full
-bitstream load will pause it (`{"op": "pause"}` / `"resume"`, with a
-timeout so a forgotten pause cannot hold the fan loop forever).
+bitstream load pauses it (`{"op": "pause"}` / `"resume"`, with a timeout
+so a forgotten pause cannot hold the fan loop forever).
+
+## FPGA core
+
+`fpga_access.py` also loads the FPGA core (HPS-first images): op `reload`
+loads `/lib/firmware/de25_nano.core.rbf` again, op `install_core` checks a
+bundle (core + `de25_nano.core.json` from `linux/make_jic.sh`) and installs
+it - refusing a core that doesn't match its manifest or the periphery of
+the first stage in QSPI, keeping the old core and loading it back if the
+new one fails, writing a good one to the SD card too. During a load (~2 s)
+register reads and writes answer "paused"; after it the LED register, fan
+duty, blinker mode and loopback are written back, and fan leases are
+extended by the pause. Details: [docs/hps_first.md](../../docs/hps_first.md),
+"A new core over the network".
+
+```bash
+python3 linux/tools/deploy_fpga.py                  # linux/build_output's core, to 192.168.1.222
+python3 linux/tools/deploy_fpga.py --pack-only core.tar.gz   # a bundle for the GUI's "FPGA core" card
+python3 linux/tools/deploy_fpga.py --reload
+```
 
 ## Control loop
 
@@ -175,7 +198,7 @@ with the real supervisor under busybox `sh` and `fpga_web.py --sim`.
 
 | | |
 |---|---|
-| `GET /api/board` | every register, decoded (LED levels, switches, keys, fan, blinker mode and module id), plus `soc`: the SoC's temperatures (°C) and supply voltages (V) from the kernel's `soc64-hwmon` (SDM sensors), and `control`: the loop's latest sample. With `fpga_access.py` down: `{"error": "FPGA access unavailable ...", "fpga_unavailable": true, soc, control}` |
+| `GET /api/board` | every register, decoded (LED levels, switches, keys, fan, blinker mode and module id, `build_id`), plus `soc`: the SoC's temperatures (°C) and supply voltages (V) from the kernel's `soc64-hwmon` (SDM sensors), and `control`: the loop's latest sample. With `fpga_access.py` down: `{"error": "FPGA access unavailable ...", "fpga_unavailable": true, soc, control}` |
 | `GET /api/control` | the loop: `state` (mode, setpoint, measured, hottest, duty, rpm, p, i, error, saturated `"low"`/`"high"`/null, settled, status text, gains) and `history`: `[t, T_max, setpoint (null unless auto), duty, rpm]` once a second for 10 min (`t`: CLOCK_MONOTONIC s) |
 | `POST /api/control` | any of `{"mode": "auto"\|"manual"\|"off", "setpoint": 42.0, "manual_duty": 80, "kp": 16, "ki": 0.55}` |
 | `GET /api/events` | the same as server-sent events, 20 a second |
@@ -186,6 +209,9 @@ with the real supervisor under busybox `sh` and `fpga_web.py --sim`.
 | `GET /api/version` | release running, previous, on test |
 | `POST /api/update` | body: release `.tar.gz`; headers `X-Sha256`, `X-Token` |
 | `POST /api/update/confirm`, `/api/update/rollback` | |
+| `GET /api/fpga` | the FPGA core: `running_build_id` (register 19), `installed` and `previous` manifests, `last_load` |
+| `POST /api/fpga` | body: core bundle `.tar.gz` (`deploy_fpga.py`); headers `X-Sha256`, `X-Token`, `X-Force: 1` (the board's core has no manifest, or another periphery). 200 loaded, 409 refused before anything was touched, 500 failed to load (`rolled_back` says whether the previous core is back) |
+| `POST /api/fpga/reload` | load the installed core again (`X-Token`) |
 
 ```bash
 curl -X POST -d '{"mode":"breathing"}' http://192.168.1.222/api/blinker

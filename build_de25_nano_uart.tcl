@@ -161,6 +161,13 @@ set_global_assignment -name VHDL_FILE $this_file_path/source/led_blinkers.vhd
 # git hash constant (refresh with ./write_githash.sh)
 set_global_assignment -name VHDL_FILE $this_file_path/git_hash_pkg.vhd
 
+# build id constant, register 19 (git-ignored: ./write_build_id.sh writes a
+# new one, run it before every quartus_syn)
+if {![file exists $this_file_path/build_id_pkg.vhd]} {
+    exec $this_file_path/write_build_id.sh
+}
+set_global_assignment -name VHDL_FILE $this_file_path/build_id_pkg.vhd
+
 # lwhps2fpga (LWH2F) AXI4 <-> fpga_interconnect converter - see
 # de25_std_testproject's own axi_lwh2f_bridge.vhd (ported verbatim)
 set_global_assignment -name VHDL_FILE $this_file_path/axi_lwh2f_bridge.vhd

@@ -112,22 +112,80 @@ writing the card from a JTAG-loaded or FPGA-first boot.
 | Linux | `fpga_manager fpga0: Stratix10 SOC FPGA Manager registered`, `of-fpga-region fpga-region: FPGA Region probed` |
 | web GUI | board id OK, blinkers, sensors (`linux/tools/gui_test.py`) |
 
+## A new core over the network
+
+```bash
+./write_build_id.sh && quartus_syn ... quartus_asm   # (Build above)
+./linux/make_jic.sh                                  # core + manifest in linux/build_output
+python3 linux/tools/deploy_fpga.py                   # to 192.168.1.222; Linux keeps running
+```
+
+`make_jic.sh` writes `de25_nano.core.json` beside the core:
+
+| field | what |
+|---|---|
+| `build_id` | the Unix time `write_build_id.sh` stamped; the design shows it on register 19 |
+| `core_size`, `core_sha256` | the core |
+| `periphery_sha256` | what the first stage in QSPI fixes: the fitter's pin table (`.pin`: every pin's location, direction, I/O standard, the HPS's too; it names the Quartus version and the device) and the HPS and EMIF `.ip` files |
+| `git`, `built` | for people |
+
+`deploy_fpga.py` uploads core + manifest (`POST /api/fpga`, X-Token); the
+web GUI's "FPGA core" card does the same with a bundle from
+`deploy_fpga.py --pack-only`. On the board `fpga_access.py` (the one
+process that touches LWH2F):
+
+1. refuses a bundle whose core doesn't match its manifest (size, SHA-256:
+   truncated, corrupt) or whose periphery hash differs from the installed
+   core's (`/lib/firmware/de25_nano.core.json`) - such a core needs a new
+   `.jic`. A board whose core has no manifest yet needs `--force` once;
+2. keeps the running core as `de25_nano.core.rbf.prev` (and its manifest);
+3. loads the new one (below), checks the board id and that register 19
+   shows the manifest's build id;
+4. on any failure puts the previous core back and loads it;
+5. on success writes the core to the card's FAT partition too (mounted
+   just for that: the board runs with `/boot` unmounted), so the next
+   power-on loads it.
+
+An install that never finishes - the load hangs the board, or the power
+goes - leaves `de25_nano.core.pending` behind; `fpga_access.py` finds it at
+its next start and puts the `.prev` core back as the installed one. The
+card's copy is only written after a good load, so the board boots the last
+good core meanwhile (tested on the board 2026-10-17).
+
+**A damaged core can hang the SDM.** A core with 64 bytes flipped in the
+middle (and a manifest made to match it) did not fail the load: the load
+never returned, and the SDM stopped answering JTAG too - only a power cycle
+brought the board back. Rollback cannot help there, so the manifest's
+SHA-256 (checked before anything is touched) is the guard against a core
+damaged in transit or on disk. Loads are not time-limited:
+`fpga_access.py` keeps register traffic paused until the load returns,
+since an LWH2F access to a fabric half-way through configuration hangs
+the CPU.
+
+Why not a hash of the phase-1 bitstream: two builds of the same periphery
+differ in it (182 bytes: per-build hashes, two copies), and the SDM loads
+either build's core on the other's phase 1 - tested 2026-10-17, build
+`0x6ad30b34` loaded on the phase 1 of the build before.
+
 ## Reloading the core from Linux
 
 ```sh
 fpga-reload                      # reload /lib/firmware/de25_nano.core.rbf
-fpga-reload /tmp/new.core.rbf    # install that core, then load it
+fpga-reload /tmp/new.core.rbf    # install that core (no manifest, no rollback), then load it
 ```
 
 On the board (2026-10-17): `fpga-reload: overlay applied, FPGA manager
 operating, 2.14 s` / `fpga-reload: board id 0xde25`, twice in a row, Linux
 and the web GUI kept running.
 
-What it does (`linux/tools/fpga_reload/fpga-reload`, installed as
-`/usr/sbin/fpga-reload` by `make_sdcard_image.sh`):
+What a load does (`fpga_access.py` op `reload`; `fpga-reload` asks it when
+the web GUI runs, and does the same itself otherwise -
+`linux/tools/fpga_reload/fpga-reload`, installed as `/usr/sbin/fpga-reload`
+by `make_sdcard_image.sh`):
 
-1. pauses every process under `/opt/de25web` (SIGSTOP) - an LWH2F access
-   while the fabric reconfigures can hang the CPU;
+1. pauses the register traffic (`fpga_access.py`; without it, `fpga-reload`
+   SIGSTOPs every process under `/opt/de25web`) - an LWH2F access while
+   the fabric reconfigures can hang the CPU;
 2. applies the overlay `/lib/firmware/de25_nano_core_reload.dtbo`
    (`linux/tools/fpga_reload/core_reload.dts`: `/fpga-region`,
    `firmware-name = "de25_nano.core.rbf"`) through configfs - a fresh
@@ -135,15 +193,19 @@ What it does (`linux/tools/fpga_reload/fpga-reload`, installed as
    FPGA manager loads the core through the SDM; ATF keeps the bridges
    closed during the load;
 3. checks the overlay (`applied`), the FPGA manager (`operating`) and the
-   board id over LWH2F (register 1 = `0xDE25`), and resumes the processes.
+   board id over LWH2F (register 1 = `0xDE25`), and the build id (register
+   19) against the manifest;
+4. `fpga_access.py` writes back the registers the load reset (LED
+   register, fan duty, blinker mode, loopback) and resumes. A plain
+   `fpga-reload` without the GUI leaves the fabric in its reset state
+   (blinker mode 0, fan duty 30, LED register 0).
 
-After a reload the fabric is in its reset state (blinker mode 0, fan duty
-30, LED register 0) - software that set registers must set them again. The
-console drops out for the ~2 s of the load.
+The console drops out for the ~2 s of the load.
 
-A new core from a different build only works if its phase 1 is identical
-(same HPS/DDR configuration, same Quartus) - FPGA-side logic and register
-changes are fine; anything in the HPS IP is not (that needs a new `.jic`).
+A new core from a different build only works with the same periphery
+(pins, HPS/DDR configuration, Quartus version) - FPGA-side logic and
+register changes are fine; anything in the HPS IP or the pinout is not
+(that needs a new `.jic`).
 
 ## Fallback: FPGA-first
 
@@ -171,4 +233,4 @@ skips, `fpga-reload` is not available.
 | `reboot` after a JTAG `.sof` load hangs (silent after `reboot: Restarting system`) | the SPL came over JTAG, so the SDM can't restart the HPS; after a power-on boot `reboot` works. Restart a JTAG-started board with another JTAG load or a power cycle (docs/linux_boot.md) |
 | ethernet receive stalled once after boot (link up, no RX) | `ip link set eth0 down; ip link set eth0 up` recovered it; cause unknown. The MAC is random on every boot (U-Boot `NET_RANDOM_ETHADDR`) |
 | the console during early boot | silent until the core is loaded - use an FPGA-first build to debug SPL/U-Boot |
-| web GUI during `fpga-reload` | paused for ~2 s; the fabric comes back with reset register values |
+| web GUI during a core load | register traffic paused for ~2 s; `fpga_access.py` writes the LED, fan and blinker registers back after |
