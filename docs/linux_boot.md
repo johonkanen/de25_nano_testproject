@@ -12,10 +12,13 @@ details, and how to reload the FPGA from a running Linux.
 
 ```
 power-on
-  SDM          phase 1 from QSPI: HPS I/O, DDR I/O; loads the U-Boot SPL into
-               HPS on-chip RAM (the FPGA fabric stays unconfigured)
-  SPL          initialises the 1 GB LPDDR4; loads u-boot.itb from the SD card's
-               FAT partition, or - if that fails - from QSPI at 0xA00000
+  SDM          RSU: boots the highest-priority image that loads (P1, else the
+               factory image) - its phase 1: HPS I/O, DDR I/O; loads its U-Boot
+               SPL into HPS on-chip RAM (the FPGA fabric stays unconfigured)
+  SPL          initialises the 1 GB LPDDR4; loads the U-Boot of that image:
+               u-boot_<slot>.itb from the SD card's FAT partition (u-boot_P1.itb,
+               u-boot_FACTORY_IMAGE.itb), or - if that fails - QSPI partition
+               SSBL.<slot> (RSU multiboot; 0xA00000 without an RSU layout)
   ATF BL31     secure monitor (EL3), part of u-boot.itb
   U-Boot       preboot loads the FPGA core (de25_nano.core.rbf: SD, else QSPI
                0xC00000) - the console appears only now; then `bridge enable`,
@@ -81,14 +84,18 @@ port (`/dev/serial/by-id/usb-TERASIC_DE25-Nano_*-if03-port0`, 115200). No
 
 | QSPI (16 MB) | |
 |---|---|
-| `0x000000` | boot info |
-| `0x200000` | phase 1: HPS I/O, DDR I/O + SPL (~0.4 MB) |
-| `0xA00000` | `u-boot.itb` - the fallback when the card has none |
+| `0x000000` | boot info + RSU decision firmware (to `0x20FFFF`) |
+| `0x220000` | factory image: phase 1 (HPS I/O, DDR I/O) + SPL, 1 MB slot (~0.8 MB used) |
+| `0x320000` | SPT0, SPT1, CPB0, CPB1 (32 KB each): the RSU slot and priority tables |
+| `0x400000` | P1: application image, 1 MB slot - the SDM boots it first; same build as the factory image until an update writes it |
+| `0x500000` | `SSBL.FACTORY_IM`: the factory image's `u-boot.itb` |
+| `0x600000` | `SSBL.P1`: P1's `u-boot.itb` - the SPL takes these when the card has no `u-boot_<slot>.itb` |
+| `0xA00000` | `u-boot.itb` - the fallback of an SPL without RSU multiboot, or a flash without the RSU layout |
 | `0xC00000` | the FPGA core - the fallback when the card has none (4 KB size header + core) |
 
 | SD card (768 MB image, rest of the card unused) | |
 |---|---|
-| p1, FAT32, bootable, 128 MB | `u-boot.itb`, `Image`, the `.dtb`, `extlinux/extlinux.conf`, `de25_nano.core.rbf` |
+| p1, FAT32, bootable, 128 MB | `u-boot_P1.itb`, `u-boot_FACTORY_IMAGE.itb` (the SPL loads the one of the image running), `u-boot.itb` (SPLs without multiboot), `Image`, the `.dtb`, `extlinux/extlinux.conf`, `de25_nano.core.rbf` |
 | p2, ext4 | Alpine; `/opt/de25web` (web GUI), static IP `192.168.1.222`; `/lib/firmware/de25_nano.core.rbf` + the reload overlay, `/usr/sbin/fpga-reload` |
 
 ## Build and install

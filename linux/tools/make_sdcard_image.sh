@@ -56,6 +56,11 @@ rm -rf "${STAGE}"
 mkdir -p "${STAGE}/boot"
 mformat -i "${IMG}@@$(( P1_START * 512 ))" -F -c 1 -T "${P1_SECTORS}" -h 64 -s 32 -v NANOBOOT ::
 mcopy -i "${IMG}@@$(( P1_START * 512 ))" "${OUT}/u-boot.itb" "${OUT}/Image" "${OUT}/${DTB}" ::
+# the SPL's RSU multiboot (build_de25_nano_linux.sh) loads the U-Boot of the
+# image the SDM booted: u-boot_<slot>.itb; u-boot.itb stays for SPLs without
+for slot in P1 FACTORY_IMAGE; do
+    mcopy -i "${IMG}@@$(( P1_START * 512 ))" "${OUT}/u-boot.itb" "::u-boot_${slot}.itb"
+done
 # an HPS-first build's FPGA core (make_jic.sh): U-Boot's preboot loads it
 # from here before anything touches the fabric
 if [[ -f "${OUT}/de25_nano.core.rbf" ]]; then

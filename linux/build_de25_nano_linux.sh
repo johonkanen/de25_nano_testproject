@@ -158,6 +158,14 @@ pushd "${UBOOT_DIR}" >/dev/null
     got="$(sed -n 's/^CONFIG_SYS_SPI_U_BOOT_OFFS=//p' .config)"
     [[ -n "${got}" ]] && (( got == QSPI_UBOOT_OFFS )) || {
         echo "ERROR: CONFIG_SYS_SPI_U_BOOT_OFFS is '${got}', make_jic.sh expects ${QSPI_UBOOT_OFFS}"; exit 1; }
+    # Remote system update (docs/remote_system_update_plan.md, R2): the SPL
+    # loads the U-Boot of the image the SDM booted - from the card
+    # u-boot_<slot>.itb (u-boot_P1.itb, u-boot_FACTORY_IMAGE.itb), else from
+    # QSPI partition SSBL.<slot> (SSBL.P1, SSBL.FACTORY_IM). A flash without
+    # an RSU layout falls back to CONFIG_SYS_SPI_U_BOOT_OFFS.
+    scripts/config --enable CONFIG_SOCFPGA_RSU_MULTIBOOT
+    make olddefconfig
+    grep -q '^CONFIG_SOCFPGA_RSU_MULTIBOOT=y$' .config || { echo "ERROR: CONFIG_SOCFPGA_RSU_MULTIBOOT not set"; exit 1; }
     make -j"${JOBS}"
     mkdir -p "${OUT}/spl"
     cp u-boot.itb              "${OUT}/u-boot.itb"

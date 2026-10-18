@@ -37,28 +37,50 @@ Linux running.
 | kernel DT | upstream's QSPI flash node, with the reference clock corrected to 500 MHz: `/dev/mtd0` (16 MB, "u-boot") reads clean |
 | web GUI | release upload, test-start, confirm/revert - the model for image uploads |
 
-## Flash layout (16 MB MT25QU128)
+## Flash layout (16 MB MT25QU128) - as programmed 2026-10-17 (R1)
 
-| region | size | content |
+| region | address | content |
 |---|---|---|
-| boot info | 2 MB | SDM firmware, decision firmware, pointers (quartus_pfg) |
-| SPT0/SPT1, CPB0/CPB1 | 4 × 32 KB | slot and priority tables |
-| FACTORY_IMAGE | 1 MB | known-good bitstream + SPL (today's ~0.75 MB) - never touched by updates |
-| SSBL.FACTORY_IMAGE | 1 MB | its U-Boot - also the SD card recovery path (`sd_recover.py`) |
-| P1, P2 | 2 × 1 MB | application images |
-| SSBL.P1, SSBL.P2 | 2 × 1 MB | their U-Boots |
-| free | ~7.8 MB | room for P3, or keep for persona storage |
+| BOOT_INFO | 0x000000-0x20FFFF | SDM firmware, decision firmware (RSU mode makes it 0x210000 long) |
+| FACTORY_IMAGE | 0x220000-0x31FFFF | phase 1 + SPL, 1 MB (0xCD000 used) - never touched by updates |
+| SPT0, SPT1 | 0x320000, 0x328000 | sub-partition tables, 32 KB each |
+| CPB0, CPB1 | 0x330000, 0x338000 | CMF pointer blocks (slot priorities), 32 KB each |
+| P1 | 0x400000-0x4FFFFF | application image, 1 MB (priority 1) |
+| SSBL.FACTORY_IM | 0x500000-0x5FFFFF | the factory image's u-boot.itb (R2; SPT names are 16 characters at most) |
+| SSBL.P1 | 0x600000-0x6FFFFF | P1's u-boot.itb (R2) |
+| free | 0x700000-0x9FFFFF | P2 + SSBL.P2 later |
+| UBOOT | 0xA00000-0xAFFFFF | u-boot.itb, the SPL's fallback when the card has none (as before RSU) |
+| CORE | 0xC00000-0xD0FFFF | the FPGA core copy for U-Boot's preboot (as before RSU) |
+
+`make_jic.sh` writes it (RSU=1, the default; RSU=0 the plain layout). It
+needs fixed partition addresses: with "auto", quartus_pfg 26.1.1 stops
+with an internal error. U-Boot's `rsu list` shows UBOOT and CORE in the
+SPT too, under their names.
 
 Every slot is sized from today's image plus margin; a design that grows
 past 1 MB means re-laying the flash once (from JTAG).
+
+## Booting a slot by hand
+
+```sh
+echo 0x220000 > /sys/devices/platform/stratix10-rsu.0/reboot_image; reboot   # factory image
+echo 0x400000 > /sys/devices/platform/stratix10-rsu.0/reboot_image; reboot   # P1
+cat /sys/devices/platform/stratix10-rsu.0/current_image                      # which one runs
+```
+
+Such a reboot reconfigures the whole device: in HPS-first mode the console
+is silent until U-Boot's preboot has loaded the core again (` FPGA
+reconfiguration OK!`). A plain `reboot` after it keeps the image and the
+fabric, so the SPL's lines show (`rsu_spl_mmc_filename, filename:
+u-boot_P1.itb`, or `RSU: found SSBL partition P1 at address 0x00600000`).
 
 ## Steps
 
 | # | step | done when |
 |---|---|---|
-| R0 | **Kernel**: `CONFIG_INTEL_STRATIX10_RSU=y`; DE25-Nano DT: enable `&qspi`, add `flash@0` (MT25QU128) with partitions matching the layout; build script applies both (like `CONFIG_SENSORS_SOC64`) | `/proc/mtd` lists the partitions, `/sys/devices/platform/stratix10-rsu.0/` exists, `current_image` reads the running image |
-| R1 | **Initial RSU flash image**: `make_jic.sh` gets an RSU mode - a `.pfg` with the factory image, P1, the SSBL partitions and the RSU options (decision firmware, SPT/CPB); program once over JTAG | power-on boots the factory image; U-Boot `rsu list` shows the slots; Linux `rsu_client --log` agrees |
-| R2 | **U-Boot from SSBL**: SPL loads U-Boot from the running image's SSBL partition instead of the fixed 0xA00000 (U-Boot's RSU SPL support); SD card first, as now | each image boots its own U-Boot; a blank SD card still reaches U-Boot (factory SSBL) |
+| R0 (done) | **Kernel**: `CONFIG_INTEL_STRATIX10_RSU=y`; DE25-Nano DT: enable `&qspi`, add `flash@0` (MT25QU128) with partitions matching the layout; build script applies both (like `CONFIG_SENSORS_SOC64`) | `/proc/mtd` lists the partitions, `/sys/devices/platform/stratix10-rsu.0/` exists, `current_image` reads the running image |
+| R1 (done 2026-10-17) | **Initial RSU flash image**: `make_jic.sh` gets an RSU mode - a `.pfg` with the factory image, P1, the SSBL partitions and the RSU options (decision firmware, SPT/CPB); program once over JTAG | power-on boots the factory image; U-Boot `rsu list` shows the slots; Linux `rsu_client --log` agrees |
+| R2 (done 2026-10-18) | **U-Boot from SSBL**: SPL loads U-Boot from the running image's SSBL partition instead of the fixed 0xA00000 (U-Boot's RSU SPL support); SD card first, as now | each image boots its own U-Boot; a blank SD card still reaches U-Boot (factory SSBL) |
 | R3 | **Application images**: `quartus_pfg` writes an RSU application `.rpd` from a `.sof`; `tools/make_rsu_bundle.py` wraps it with version, git hash, SHA-256 (like the persona bundles) | a bundle for today's design builds reproducibly |
 | R4 | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
 | R5 | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |

@@ -17,7 +17,8 @@ HPS-first attempt hung: the core was never loaded at all
 power-on
   SDM       phase 1 from QSPI: SDM firmware, HPS I/O, DDR I/O, the SPL
             (the FPGA fabric stays unconfigured)
-  SPL       DDR; u-boot.itb from the SD card, or QSPI 0xA00000
+  SPL       DDR; the running image's U-Boot: u-boot_<slot>.itb from the SD
+            card, or QSPI SSBL.<slot> (RSU multiboot, docs/linux_boot.md)
   ATF       BL31
   U-Boot    preboot: FPGA_CONFIG (0x10d120dc) != 3 -> load the core
             (de25_nano.core.rbf from SD FAT p1, else the QSPI copy at
@@ -69,9 +70,12 @@ core alone (`-o hps_core_only=ON`, refused for AFTER INIT_DONE images).
 
 | QSPI (16 MB) | |
 |---|---|
-| `0x000000` | boot info |
-| `0x200000` | phase 1: HPS I/O, DDR I/O, SPL (~0.4 MB) |
-| `0xA00000` | `u-boot.itb` |
+| `0x000000` | boot info + RSU decision firmware (to `0x20FFFF`) |
+| `0x220000` | factory image: phase 1 (HPS I/O, DDR I/O) + SPL, 1 MB slot (~0.8 MB used) |
+| `0x320000` | SPT0, SPT1, CPB0, CPB1 (32 KB each): the RSU slot and priority tables |
+| `0x400000` | P1: application image, 1 MB slot - the SDM boots it first; same build as the factory image until an update writes it |
+| `0x500000`, `0x600000` | `SSBL.FACTORY_IM`, `SSBL.P1`: each image's `u-boot.itb` |
+| `0xA00000` | `u-boot.itb` (SPLs without RSU multiboot) |
 | `0xC00000` | the core: a 4 KB text header `core_size=0x...` (U-Boot `env import`s it), the core from `0xC01000` |
 
 **The core belongs to its phase 1.** A `.core.rbf` only loads on top of the

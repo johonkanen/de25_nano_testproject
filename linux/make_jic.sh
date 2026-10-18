@@ -6,9 +6,15 @@
 #
 #   ./linux/make_jic.sh
 #
-# QSPI layout (16 MB MT25QU128):
-#   0x000000  boot info + phase 1 (HPS-first: HPS I/O, DDR I/O; FPGA-first:
-#             the whole bitstream) + SPL
+# QSPI layout (16 MB MT25QU128), RSU=1 (default):
+#   0x000000  boot info + decision firmware (to 0x20FFFF)
+#   0x220000  FACTORY_IMAGE: phase 1 (HPS-first: HPS I/O, DDR I/O;
+#             FPGA-first: the whole bitstream) + SPL, 1 MB
+#   0x320000  SPT0, SPT1, CPB0, CPB1 (32 KB each): slot and priority tables
+#   0x400000  P1: application image, 1 MB (same build at first)
+#   0x500000  SSBL.FACTORY_IM, 0x600000 SSBL.P1: each image's u-boot.itb
+#             (the SPL's RSU multiboot loads the one of the image running)
+# RSU=0: boot info + the one image from 0x000000/0x200000. Both:
 #   0xA00000  u-boot.itb (QSPI_UBOOT_OFFS, the SPL's CONFIG_SYS_SPI_U_BOOT_OFFS)
 #   0xC00000  HPS-first only: the FPGA core (QSPI_CORE_OFFS) - docs/hps_first.md
 # The SPL loads u-boot.itb from the SD card's FAT partition if it can, else
@@ -32,6 +38,11 @@ JIC="${JIC:-${HERE}/build_output/de25_nano.jic}"
 UBOOT_ITB="${UBOOT_ITB-${HERE}/build_output/u-boot.itb}"
 QSPI_UBOOT_OFFS="${QSPI_UBOOT_OFFS:-0x00A00000}"
 QSPI_CORE_OFFS="${QSPI_CORE_OFFS:-0x00C00000}"
+# RSU=1 (default with u-boot.itb): the remote system update layout - factory
+# image + application slot P1 + SPT/CPB tables (below); RSU=0: the plain
+# layout (one image at 0x200000). FACTORY_SOF= puts another build in the
+# factory slot (default: the same .sof as P1).
+RSU="${RSU:-1}"
 CORE_RBF="${CORE_RBF:-${HERE}/build_output/de25_nano.core.rbf}"
 MANIFEST="${CORE_RBF%.rbf}.json"
 
@@ -144,6 +155,59 @@ PYCORE
         </assignment>"
         echo ">> QSPI core copy at ${QSPI_CORE_OFFS} (header + ${core_size} bytes)"
     fi
+    if (( RSU )); then
+        # remote system update layout (docs/remote_system_update_plan.md, R1):
+        # the SDM boots the highest-priority application slot that loads (P1),
+        # else the factory image; the SPT/CPB tables say where they are. The
+        # decision firmware makes BOOT_INFO 0x210000 long. Fixed addresses
+        # throughout - with "auto" quartus_pfg 26.1.1 fails (internal error).
+        # P1 holds the same build as the factory image until an update
+        # writes it from Linux.
+        BITSTREAMS="        <bitstream id=\"Factory\">
+            <path hps_path=\"${SPL}\">${FACTORY_SOF:-${SOF}}</path>
+        </bitstream>
+        <bitstream id=\"App1\">
+            <path hps_path=\"${SPL}\">${SOF}</path>
+        </bitstream>"
+        part() { printf '            <partition reserved="%s" fixed_s_addr="1" s_addr="%#010x" e_addr="%#010x" fixed_e_addr="1" id="%s" size="0"/>\n' "$4" "$2" "$3" "$1"; }
+        PARTS="$(part BOOT_INFO 0x000000 0x20FFFF 1
+                 part FACTORY_IMAGE 0x220000 0x31FFFF 0
+                 part SPT0 0x320000 0x327FFF 1
+                 part SPT1 0x328000 0x32FFFF 1
+                 part CPB0 0x330000 0x337FFF 1
+                 part CPB1 0x338000 0x33FFFF 1
+                 part P1 0x400000 0x4FFFFF 0
+                 part SSBL.FACTORY_IM 0x500000 0x5FFFFF 0
+                 part SSBL.P1 0x600000 0x6FFFFF 0
+                 part UBOOT $(( QSPI_UBOOT_OFFS )) $(( QSPI_UBOOT_OFFS + 0xFFFFF )) 0)"
+        (( HPS_FIRST )) && PARTS="${PARTS}
+$(part CORE $(( QSPI_CORE_OFFS )) $(( QSPI_CORE_OFFS + 0x10FFFF )) 0)"
+        CORE_PART=""
+        IMAGE_ASSIGN="        <assignment page=\"0\" partition_id=\"FACTORY_IMAGE\">
+            <bitstream_id>Factory</bitstream_id>
+        </assignment>
+        <assignment page=\"1\" partition_id=\"P1\">
+            <bitstream_id>App1</bitstream_id>
+        </assignment>
+        <assignment page=\"0\" partition_id=\"SSBL.FACTORY_IM\">
+            <raw_file_id>Raw_File_1</raw_file_id>
+        </assignment>
+        <assignment page=\"0\" partition_id=\"SSBL.P1\">
+            <raw_file_id>Raw_File_1</raw_file_id>
+        </assignment>"
+        echo ">> RSU layout: factory image 0x220000, P1 0x400000, SPT/CPB 0x320000,"
+        echo "   their U-Boots SSBL.FACTORY_IM 0x500000, SSBL.P1 0x600000"
+    else
+        BITSTREAMS="        <bitstream id=\"Bitstream_1\">
+            <path hps_path=\"${SPL}\">${SOF}</path>
+        </bitstream>"
+        PARTS="            <partition reserved=\"1\" fixed_s_addr=\"1\" s_addr=\"0x00000000\" e_addr=\"0x001FFFFF\" fixed_e_addr=\"1\" id=\"BOOT_INFO\" size=\"0\"/>
+            <partition reserved=\"0\" fixed_s_addr=\"0\" s_addr=\"auto\" e_addr=\"auto\" fixed_e_addr=\"0\" id=\"P1\" size=\"0\"/>
+            <partition reserved=\"0\" fixed_s_addr=\"0\" s_addr=\"${QSPI_UBOOT_OFFS}\" e_addr=\"auto\" fixed_e_addr=\"0\" id=\"UBOOT\" size=\"0\"/>"
+        IMAGE_ASSIGN="        <assignment page=\"0\" partition_id=\"P1\">
+            <bitstream_id>Bitstream_1</bitstream_id>
+        </assignment>"
+    fi
     # after Intel's Agilex 5 GSRD (software/yocto_linux/scripts/uboot_only.pfg)
     cat > "${PFG}" << PFGEOF
 <pfg version="1">
@@ -158,9 +222,7 @@ PYCORE
         </output_file>
     </output_files>
     <bitstreams>
-        <bitstream id="Bitstream_1">
-            <path hps_path="${SPL}">${SOF}</path>
-        </bitstream>
+${BITSTREAMS}
     </bitstreams>
     <raw_files>
         <raw_file bitswap="1" type="RBF" id="Raw_File_1">${UBOOT_BIN}</raw_file>
@@ -169,16 +231,12 @@ ${CORE_RAW}
     <flash_devices>
         <flash_loader>${FLASH_LOADER}</flash_loader>
         <flash_device type="${DEVICE}" id="Flash_Device_1">
-            <partition reserved="1" fixed_s_addr="1" s_addr="0x00000000" e_addr="0x001FFFFF" fixed_e_addr="1" id="BOOT_INFO" size="0"/>
-            <partition reserved="0" fixed_s_addr="0" s_addr="auto" e_addr="auto" fixed_e_addr="0" id="P1" size="0"/>
-            <partition reserved="0" fixed_s_addr="0" s_addr="${QSPI_UBOOT_OFFS}" e_addr="auto" fixed_e_addr="0" id="UBOOT" size="0"/>
+${PARTS}
 ${CORE_PART}
         </flash_device>
     </flash_devices>
     <assignments>
-        <assignment page="0" partition_id="P1">
-            <bitstream_id>Bitstream_1</bitstream_id>
-        </assignment>
+${IMAGE_ASSIGN}
         <assignment page="0" partition_id="UBOOT">
             <raw_file_id>Raw_File_1</raw_file_id>
         </assignment>
