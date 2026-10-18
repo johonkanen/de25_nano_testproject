@@ -221,6 +221,8 @@ with the real supervisor under busybox `sh` and `fpga_web.py --sim`.
 | `GET /api/fpga` | the FPGA core: `running_build_id` (register 19), `installed` and `previous` manifests, `last_load` |
 | `POST /api/fpga` | body: core bundle `.tar.gz` (`deploy_fpga.py`); headers `X-Sha256`, `X-Token`, `X-Force: 1` (the board's core has no manifest, or another periphery). 200 loaded, 409 refused before anything was touched, 500 failed to load (`rolled_back` says whether the previous core is back) |
 | `POST /api/fpga/reload` | load the installed core again (`X-Token`) |
+| `GET /api/rsu` | remote system update: `slot` (running image), `status` (rsu_client --log: current/failed image, state), `confirm` (rsu-confirm: confirmed / waiting / failed / factory), `installed` (the bundle in P1), `last_update` |
+| `POST /api/rsu` | body: RSU bundle `.tar.gz` (`make_rsu_bundle.py`); headers `X-Sha256`, `X-Token`, `X-No-Reboot: 1`. Writes slot P1 (image, U-Boot, core; P1 erased first), then reboots into it. 200 written, 409 refused before anything was touched, 500 failed while writing (P1 left unbootable: the factory image boots) |
 
 ```bash
 curl -X POST -d '{"mode":"breathing"}' http://192.168.1.222/api/blinker

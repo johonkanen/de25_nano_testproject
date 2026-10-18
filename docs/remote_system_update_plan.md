@@ -162,6 +162,39 @@ Tested on the board (2026-10-18), build 1792345846:
 | GUI disabled on P1 (never healthy) | "not healthy after 302 s", factory loaded; factory reports, keeps running |
 | back to P1 | `rsu_client --clear-error-status; rsu_client --request 0; reboot` - confirmed after 16 s |
 
+## Updating over the network (R6)
+
+```bash
+./linux/make_jic.sh && python3 linux/tools/make_rsu_bundle.py
+python3 linux/tools/deploy_rsu.py           # newest bundle -> P1, reboot, wait for the confirmation
+python3 linux/tools/deploy_rsu.py --status  # running image, confirmation, build in P1
+```
+
+The GUI's "FPGA image" card does the same with a bundle file. On the board
+`fpga_access.py` (op `install_rsu`, behind `POST /api/rsu`):
+
+1. checks the bundle (kind, size + SHA-256 of every file) and that each
+   part fits its partition;
+2. erases P1 first - a power cut from here boots the factory image, which
+   keeps its own U-Boot and core;
+3. writes `SSBL.P1` and `CORE.P1` (`rsu_client --add-raw`), the card's
+   `u-boot_P1.itb` / `de25_nano_P1.core.rbf`, and `/lib/firmware/rsu/P1/`
+   (core, its manifest, `rsu.json`);
+4. writes the image last (`rsu_client --add`, which relocates it and makes
+   P1 the highest priority) and verifies it;
+5. sets `reboot_image` to P1 and reboots - writing the running image's own
+   address reloads it from flash (tested; `rsu_client --request` of the
+   running slot does not).
+
+rsu-confirm then confirms the new image or the watchdog falls back (R5);
+`deploy_rsu.py` follows the reboot and reports either. With one
+application slot a failed update leaves the factory image running - deploy
+a good bundle from there.
+
+Tested 2026-10-18: build 1792345846 written in 15.9 s, rebooted, confirmed
+in P1 56 s after the upload; the GUI card shows the image, the confirmation
+and the build P1 holds (`gui_test.py`).
+
 ## Booting a slot by hand
 
 ```sh
@@ -187,7 +220,7 @@ u-boot_P1.itb`, or `RSU: found SSBL partition P1 at address 0x00600000`).
 | R3b (done 2026-10-18) | **A core per slot** (HPS-first): today U-Boot's preboot loads `de25_nano.core.rbf` (card) or the one QSPI copy at 0xC00000 whatever image runs, but a slot's core belongs to its phase 1. U-Boot's `rsu` command has no "running slot" subcommand; the SPL knows it (`u-boot_<slot>.itb`). Add one (`rsu running_slot <var>`, a small patch in the build script, from `rsu_spl_mmc_filename()`), then the preboot loads `de25_nano_${rsu_slot}.core.rbf` from the card, else QSPI `CORE.<slot>`; `fpga_access.py` installs the core under the running slot's name | factory and P1 boot with different cores; `fpga-reload` and `/api/fpga` keep working |
 | R4 (done 2026-10-18) | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
 | R5 (done 2026-10-18) | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |
-| R6 | **API and GUI**: `POST /api/fpga` (bundle upload, token, checks build/SHA), `GET /api/fpga` (slots, running image, last failure); a "FPGA image" card next to "GUI release"; `tools/deploy_fpga.py` like `deploy_web.py` | `deploy_fpga.py` puts a new design on the board, it reboots into it and confirms it; `--no-confirm` shows the automatic fallback |
+| R6 (done 2026-10-18; `/api/rsu`, as `/api/fpga` is the core load) | **API and GUI**: `POST /api/fpga` (bundle upload, token, checks build/SHA), `GET /api/fpga` (slots, running image, last failure); a "FPGA image" card next to "GUI release"; `tools/deploy_fpga.py` like `deploy_web.py` | `deploy_fpga.py` puts a new design on the board, it reboots into it and confirms it; `--no-confirm` shows the automatic fallback |
 | R7 | **Docs and tests**: `docs/linux_boot.md` (RSU boot path), fault tests (truncated image, wrong SHA, power cut mid-write, image that never confirms) | all faults leave a booting board |
 
 ## Risks and open questions

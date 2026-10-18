@@ -131,6 +131,7 @@ function buildPanels() {
   $("rollback").addEventListener("click", rollback);
   $("core-form").addEventListener("submit", (e) => { e.preventDefault(); loadCore(); });
   $("core-reload").addEventListener("click", reloadCore);
+  $("rsu-form").addEventListener("submit", (e) => { e.preventDefault(); uploadRsu(); });
 }
 
 function renderPanels(s) {
@@ -310,6 +311,63 @@ async function reloadCore() {
     coreBusy(false);
     loadCoreInfo().catch(() => {});
   }
+}
+
+// ---------------------------------------------------------------- FPGA image (RSU)
+const IMAGES = { 0x220000: "factory image", 0x400000: "P1" };
+
+async function loadRsuInfo() {
+  const r = await api("/api/rsu");
+  if (!r.rsu) {
+    $("rsu-card").hidden = true;            // no RSU flash layout on this board
+    return r;
+  }
+  const st = r.status || {};
+  const cur = parseInt(st.current_image || "0", 16);
+  const fail = parseInt(st.fail_image || "0", 16);
+  $("rsu-image").textContent = IMAGES[cur] || ("0x" + cur.toString(16));
+  const c = r.confirm || "";
+  const pill = $("rsu-confirm");
+  pill.textContent = c.startsWith("confirmed") ? "confirmed" : c.startsWith("factory") ? "fallback image"
+    : c.startsWith("waiting") ? "on test" : c.startsWith("failed") ? "not healthy" : (c || "-");
+  pill.className = "pill" + (c.startsWith("confirmed") ? "" : " pill-warn");
+  $("rsu-p1").textContent = r.installed ? buildName(r.installed.build_id) + (r.installed.git ? ", git " + r.installed.git : "")
+    : "(written by the .jic)";
+  $("rsu-fail").hidden = !fail;
+  $("rsu-fail").textContent = fail ? `${IMAGES[fail] || "0x" + fail.toString(16)} failed (state ${st.state}) - the SDM fell back` : "";
+  return r;
+}
+
+async function uploadRsu() {
+  const file = $("rsu-file").files[0];
+  if (!file) { $("rsu-msg").textContent = "Pick an RSU bundle .tar.gz first (make_rsu_bundle.py)."; return; }
+  const buf = await file.arrayBuffer();
+  const sha = await sha256hex(buf);
+  $("rsu-msg").textContent = `Writing ${file.name} to P1 - this takes a few minutes, then the board reboots...`;
+  $("rsu-form").querySelectorAll("input, button").forEach((el) => { el.disabled = true; });
+  try {
+    const r = await api("/api/rsu", new Blob([buf]), { "X-Sha256": sha, "X-Token": $("rsu-token").value });
+    $("rsu-msg").textContent = `Build ${r.build_id} written in ${r.seconds} s; rebooting into it. ` +
+      "The page comes back once the board is up; the image counts when it shows \"confirmed\".";
+    waitForBoard();
+  } catch (e) {
+    $("rsu-msg").textContent = "Update not written: " + e.message;
+    $("rsu-form").querySelectorAll("input, button").forEach((el) => { el.disabled = false; });
+  }
+}
+
+function waitForBoard() {
+  // the board reboots: wait for it to go away, then reload when it answers
+  let down = false;
+  const t0 = Date.now();
+  const tick = async () => {
+    try {
+      await api("/api/version");
+      if (down) { location.reload(); return; }
+    } catch (e) { down = true; }
+    if (Date.now() - t0 < 600000) setTimeout(tick, 3000);
+  };
+  setTimeout(tick, 3000);
 }
 
 // ---------------------------------------------------------------- releases
@@ -651,3 +709,5 @@ buildLedBar();
 loadBoard().then(connect);
 loadVersion().catch((e) => { $("update-msg").textContent = "Version unknown: " + e.message; });
 loadCoreInfo().catch((e) => { $("core-msg").textContent = "Core unknown: " + e.message; });
+loadRsuInfo().catch((e) => { $("rsu-msg").textContent = "RSU state unknown: " + e.message; });
+setInterval(() => { if (!$("rsu-card").hidden) loadRsuInfo().catch(() => {}); }, 15000);

@@ -25,6 +25,9 @@ Protocol: <run>/fpga.sock, one JSON object per line each way.
     {"op": "reload"}                            load the installed core again (below)
     {"op": "install_core", "bundle": PATH, "force": false}
                                                 check, install and load a new core (below)
+    {"op": "rsu"}                               remote system update: images, status, confirmation
+    {"op": "install_rsu", "bundle": PATH, "reboot": true}
+                                                write an RSU bundle to P1, then reboot into it
     {"op": "sim", "ambient": 15.0, "load": 1.0} the simulated plant (--sim only)
 Errors: {"ok": false, "error": "..."}; while paused every read/write answers
 {"ok": false, "error": "paused: <reason>", "paused": true}.
@@ -50,6 +53,14 @@ core (docs/remote_system_update_plan.md, R3b): this keeps them in
 reload overlay loads) at the running slot's; the card copy is
 de25_nano_<slot>.core.rbf, the one U-Boot's preboot loads for that image.
 
+install_rsu writes a whole new image (linux/tools/make_rsu_bundle.py: the
+application image, its U-Boot and its core) to slot P1 with rsu_client, and
+reboots into it; rsu-confirm (linux/board/rsu-confirm.sh) confirms it or the
+watchdog falls back to the factory image (docs/remote_system_update_plan.md,
+R5/R6). The order keeps a power cut harmless: P1 erased first (the factory
+image boots meanwhile), then its U-Boot and core (QSPI SSBL.P1 / CORE.P1,
+the card, /lib/firmware/rsu/P1), the image itself last.
+
 Fan lease (the temperature controller's dead-man switch): a write with
 "lease": N promises another write to that register within N seconds. If none
 comes - the controller crashed, hung or was killed - this process raises the
@@ -70,6 +81,7 @@ import math
 import mmap
 import os
 import random
+import re
 import shutil
 import socket
 import socketserver
@@ -121,6 +133,10 @@ MTD_SYSFS = "/sys/class/mtd"
 SPT_MAGIC = 0x57713427
 SPT_ENTRY = struct.Struct("<16sIIII")      # name, offset lo/hi, length, flags
 CORE_HEADER = 0x1000                        # "core_size=0x...\n", the core after it
+RSU_SLOT = "P1"                             # the one application slot an update writes
+RSU_KIND = "de25_nano_rsu"
+RSU_FILES = ("app.rpd", "u-boot.itb", CORE_NAME, MANIFEST_NAME)
+RSU_MANIFEST = "rsu.json"
 
 DEFAULT_RUN = os.environ.get("DE25WEB_RUN", "/run/de25web")
 SIM_RUN = os.environ.get("DE25WEB_RUN", "/tmp/de25web-sim")
@@ -595,6 +611,67 @@ def setup_slot_firmware(firmware, boot):
     return slot, slot_dir
 
 
+def rsu_client(*args, timeout=300):
+    """run rsu_client; (ok, output) - it reports errors as lines "ERROR: ..."
+    (its status log has the fields "ERROR LOC" / "ERROR DETAILS" too)"""
+    try:
+        r = subprocess.run(["rsu_client", *map(str, args)], capture_output=True, text=True,
+                           timeout=timeout)
+    except (OSError, subprocess.SubprocessError) as e:
+        return False, str(e)
+    out = (r.stdout + r.stderr).strip()
+    return r.returncode == 0 and not re.search(r"^ERROR:", out, re.M), out
+
+
+def rsu_slots():
+    """librsu's slots: {name: (number, offset, size)} - every non-reserved
+    partition counts (P1, SSBL.*, CORE.*, UBOOT)"""
+    ok, out = rsu_client("--count")
+    m = ok and re.search(r"number of slots is (\d+)", out)
+    if not m:
+        raise CoreError("rsu_client --count: " + out[-200:])
+    slots = {}
+    for i in range(int(m.group(1))):
+        ok, out = rsu_client("--list", i)
+        fields = dict(l.strip().split(": ", 1) for l in out.splitlines() if ": " in l)
+        if ok and "NAME" in fields:
+            slots[fields["NAME"].strip()] = (i, int(fields.get("OFFSET", "0"), 16),
+                                             int(fields.get("SIZE", "0"), 16))
+    return slots
+
+
+def rsu_status():
+    """rsu_client --log as a dict (CURRENT IMAGE, FAIL IMAGE, STATE, ...), or {}"""
+    ok, out = rsu_client("--log", timeout=30)
+    if not ok:
+        return {}
+    return {k.strip().lower().replace(" ", "_"): v.strip()
+            for k, v in (l.split(":", 1) for l in out.splitlines() if ":" in l)}
+
+
+def check_rsu_bundle(path):
+    """the files of a make_rsu_bundle.py bundle and its manifest, checked"""
+    try:
+        with tarfile.open(path, "r:*") as tar:
+            files = {os.path.normpath(m.name): tar.extractfile(m).read()
+                     for m in tar.getmembers() if m.isfile() and m.size <= CORE_MAX}
+    except (OSError, tarfile.TarError, EOFError) as e:
+        raise CoreError(f"not an RSU bundle: {e}") from None
+    try:
+        manifest = json.loads(files[RSU_MANIFEST])
+        if manifest.get("kind") != RSU_KIND:
+            raise CoreError(f"not an RSU bundle: kind {manifest.get('kind')!r}")
+        for name in RSU_FILES:
+            want = manifest["files"][name]
+            got = files.get(name)
+            if got is None or len(got) != want["size"] or sha256(got) != want["sha256"]:
+                raise CoreError(f"{name} does not match the manifest (missing, truncated or corrupt)")
+        int(manifest["build_id"])
+    except (KeyError, ValueError, TypeError) as e:
+        raise CoreError(f"bad RSU manifest: {e}") from None
+    return files, manifest
+
+
 def read_manifest(path):
     try:
         with open(path) as f:
@@ -665,6 +742,7 @@ class Access:
         self.core_lock = threading.Lock()    # one load at a time
         self.loading = False
         self.last_load = None
+        self.last_rsu = None
         self._recover_install()
         self.lock = threading.Lock()
         self.paused_until = 0.0
@@ -718,6 +796,17 @@ class Access:
             return {"ok": True}
         if op == "core":
             return self.core_info()
+        if op == "rsu":
+            return self.rsu_info()
+        if op == "install_rsu":
+            if not self.slot:
+                return {"ok": False, "error": "no RSU flash layout (or no rsu_client) here"}
+            if not self.core_lock.acquire(blocking=False):
+                return {"ok": False, "error": "a core load or RSU update is already running"}
+            try:
+                return self.install_rsu(str(req["bundle"]), bool(req.get("reboot", True)))
+            finally:
+                self.core_lock.release()
         if op in ("reload", "install_core"):
             if not self.loader:
                 return {"ok": False, "error": "no FPGA core loader"}
@@ -883,6 +972,100 @@ class Access:
             f"card copy {'written' if boot['written'] else 'NOT written'}")
         return {"ok": True, "boot": boot, **res}
 
+    # ---- remote system update ---------------------------------------------
+    def rsu_info(self):
+        out = {"ok": True, "slot": self.slot, "rsu": bool(self.slot), "last_update": self.last_rsu}
+        if not self.slot:
+            return out
+        out["status"] = rsu_status()
+        try:
+            with open("/run/rsu-confirm") as f:
+                out["confirm"] = f.read().strip()
+        except OSError:
+            out["confirm"] = None
+        try:
+            with open(os.path.join(os.path.dirname(self.firmware), RSU_SLOT, RSU_MANIFEST)) as f:
+                out["installed"] = json.load(f)
+        except (OSError, ValueError):
+            out["installed"] = None
+        return out
+
+    def install_rsu(self, bundle, reboot=True):
+        """the bundle into slot P1 - see the module docstring for the order"""
+        t0 = time.time()
+        try:
+            files, manifest = check_rsu_bundle(bundle)
+            slots = rsu_slots()
+            parts = {n: slots.get(n) for n in (RSU_SLOT, "SSBL." + RSU_SLOT, "CORE." + RSU_SLOT)}
+            missing = [n for n, v in parts.items() if v is None]
+            if missing:
+                raise CoreError("the flash has no " + ", ".join(missing) + " (make_jic.sh RSU layout)")
+            core = files[CORE_NAME]
+            core_raw = ("core_size=%#x\n" % len(core)).encode().ljust(CORE_HEADER, b"\0") + core
+            for name, data in ((RSU_SLOT, files["app.rpd"]), ("SSBL." + RSU_SLOT, files["u-boot.itb"]),
+                               ("CORE." + RSU_SLOT, core_raw)):
+                if len(data) > parts[name][2]:
+                    raise CoreError(f"{name} is {parts[name][2]:#x} bytes, the update needs {len(data):#x}")
+        except CoreError as e:
+            self.last_rsu = {"ok": False, "refused": True, "error": str(e), "at": time.time()}
+            log("RSU update refused:", e)
+            return {"ok": False, "refused": True, "error": str(e)}
+
+        staging = os.path.join(os.path.dirname(self.firmware), ".rsu-staging")
+        os.makedirs(staging, exist_ok=True)
+        steps = []
+        try:
+            def run(what, *args):
+                ok, out = rsu_client(*args)
+                steps.append(what)
+                if not ok:
+                    raise CoreError(f"{what}: {out[-300:]}")
+            for name, data in (("app.rpd", files["app.rpd"]), ("u-boot.itb", files["u-boot.itb"]),
+                               ("core.bin", core_raw)):
+                write_file(os.path.join(staging, name), data)
+            p1, ssbl, corep = (parts[n][0] for n in (RSU_SLOT, "SSBL." + RSU_SLOT, "CORE." + RSU_SLOT))
+            log(f"RSU update to build {manifest['build_id']}: {RSU_SLOT} erased first - "
+                "a power cut from here on boots the factory image")
+            run("erase P1", "--erase", p1)
+            run("erase SSBL.P1", "--erase", ssbl)
+            run("write SSBL.P1", "--add-raw", os.path.join(staging, "u-boot.itb"), "--slot", ssbl)
+            run("erase CORE.P1", "--erase", corep)
+            run("write CORE.P1", "--add-raw", os.path.join(staging, "core.bin"), "--slot", corep)
+            boot = self._write_boot_files({f"u-boot_{RSU_SLOT}.itb": files["u-boot.itb"],
+                                           f"de25_nano_{RSU_SLOT}.core.rbf": core})
+            steps.append("card")
+            if not boot["written"]:
+                raise CoreError("card: " + boot.get("error", "not written"))
+            slot_dir = os.path.join(os.path.dirname(self.firmware), RSU_SLOT)
+            os.makedirs(slot_dir, exist_ok=True)
+            write_file(os.path.join(slot_dir, MANIFEST_NAME), files[MANIFEST_NAME])
+            write_file(os.path.join(slot_dir, CORE_NAME), core)
+            write_file(os.path.join(slot_dir, RSU_MANIFEST), files[RSU_MANIFEST])
+            steps.append("/lib/firmware")
+            run("write P1", "--add", os.path.join(staging, "app.rpd"), "--slot", p1)
+            run("verify P1", "--verify", os.path.join(staging, "app.rpd"), "--slot", p1)
+        except (CoreError, OSError) as e:
+            self.last_rsu = {"ok": False, "error": str(e), "steps": steps, "at": time.time(),
+                             "build_id": manifest["build_id"]}
+            log("RSU update failed:", e, "- P1 is not bootable, the factory image boots next")
+            return {"ok": False, "error": str(e), "steps": steps,
+                    "note": "P1 is erased or incomplete: the next boot runs the factory image"}
+        finally:
+            shutil.rmtree(staging, ignore_errors=True)
+        secs = round(time.time() - t0, 1)
+        self.last_rsu = {"ok": True, "build_id": manifest["build_id"], "steps": steps,
+                         "seconds": secs, "at": time.time(), "rebooting": reboot}
+        log(f"RSU update written: build {manifest['build_id']} in P1, {secs} s"
+            + (" - rebooting into it" if reboot else ""))
+        if reboot:
+            # load P1 from flash at the reboot (the running image's own address
+            # works too - tested), after the reply is out
+            with open(os.path.join(RSU_SYSFS, "reboot_image"), "w") as f:
+                f.write(hex(parts[RSU_SLOT][1]))
+            threading.Timer(2.0, lambda: subprocess.run(["reboot"], check=False)).start()
+        return {"ok": True, "build_id": manifest["build_id"], "seconds": secs, "steps": steps,
+                "rebooting": reboot}
+
     def _clear_pending(self):
         try:
             os.remove(self._core_path(PENDING_NAME))
@@ -909,8 +1092,16 @@ class Access:
         self._clear_pending()
 
     def _write_boot_copy(self, core):
-        """The core onto the card's FAT partition. The board keeps it unmounted
-        (a power cut cannot catch FAT mid-write then): mounted only for this."""
+        """The core onto the card's FAT partition, under the running image's name"""
+        name = f"de25_nano_{self.slot}.core.rbf" if self.slot else CORE_NAME
+        boot = self._write_boot_files({name: core})
+        boot["file"] = name
+        return boot
+
+    def _write_boot_files(self, files):
+        """{name: bytes} onto the card's FAT partition. The board keeps it
+        unmounted (a power cut cannot catch FAT mid-write then): mounted only
+        for this."""
         boot = {"written": False}
         if not self.boot or not os.path.isdir(self.boot):
             boot["error"] = "no " + (self.boot or "boot directory")
@@ -920,14 +1111,13 @@ class Access:
             if not os.path.ismount(self.boot) and not self.sim:
                 subprocess.run(["mount", self.boot], check=True, capture_output=True, timeout=20)
                 mounted = True
-            name = f"de25_nano_{self.slot}.core.rbf" if self.slot else CORE_NAME
-            write_file(os.path.join(self.boot, name), core)
+            for name, data in files.items():
+                write_file(os.path.join(self.boot, name), data)
             os.sync()
-            boot["file"] = name
             boot["written"] = True
         except (OSError, subprocess.SubprocessError) as e:
             boot["error"] = str(e)
-            log("FPGA core: the card's copy was not written:", e)
+            log("the card's copy was not written:", e)
         finally:
             if mounted:
                 subprocess.run(["umount", self.boot], check=False, timeout=20)

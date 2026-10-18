@@ -51,6 +51,11 @@ API:
                                     manifest). fpga_access.py checks it, loads it (~2 s,
                                     the registers pause), rolls back if it fails
     POST /api/fpga/reload           load the installed core again (X-Token)
+    GET  /api/rsu                   remote system update: running/failed image, boot
+                                    confirmation, the image installed in P1
+    POST /api/rsu                   body: an RSU bundle .tar.gz (linux/tools/make_rsu_bundle.py);
+                                    headers X-Sha256, X-Token, X-No-Reboot: 1. Written to slot
+                                    P1 (image, U-Boot, core), then the board reboots into it
 """
 import argparse
 import collections
@@ -410,6 +415,7 @@ class Releases:
 # HTTP
 # --------------------------------------------------------------------------
 CORE_BUNDLE_MAX = 32 << 20
+RSU_BUNDLE_MAX = 32 << 20
 
 CONTENT_TYPES = {".html": "text/html; charset=utf-8", ".js": "text/javascript",
                  ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json",
@@ -487,9 +493,9 @@ def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Rel
                 info = releases.info(version)
                 info["release"] = release_name
                 self._json(info)
-            elif p == "/api/fpga":
+            elif p in ("/api/fpga", "/api/rsu"):
                 try:
-                    self._json(fpga.call(op="core"))
+                    self._json(FpgaClient(run, timeout=30.0).call(op="core" if p == "/api/fpga" else "rsu"))
                 except FpgaUnavailable as e:
                     self._json({"error": str(e)}, 503)
             elif p == "/api/read":
@@ -556,6 +562,8 @@ def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Rel
                     self._update(p)
                 elif p in ("/api/fpga", "/api/fpga/reload"):
                     self._fpga_core(p)
+                elif p == "/api/rsu":
+                    self._rsu()
                 else:
                     self.send_error(404)
             except (KeyError, ValueError, json.JSONDecodeError) as e:
@@ -645,8 +653,29 @@ def make_app(board: Board, control: ControlLink, fpga: FpgaClient, releases: Rel
             status = 200 if resp.get("ok") else 409 if resp.get("refused") else 500
             self._json(resp, status)
 
+        def _rsu(self):
+            if not releases.token_ok(self.headers.get("X-Token")):
+                self.close_connection = True        # the upload's body is left unread
+                self._json({"error": "bad or missing X-Token"}, 403)
+                return
+            blob = self._body(limit=RSU_BUNDLE_MAX)
+            if hashlib.sha256(blob).hexdigest() != self.headers.get("X-Sha256", "").lower():
+                raise ValueError("sha256 does not match the upload")
+            bundle = os.path.join(run, "rsu-upload.tar.gz")
+            with open(bundle, "wb") as f:
+                f.write(blob)
+            try:
+                # erase + write of three QSPI partitions: minutes, not seconds
+                resp = FpgaClient(run, timeout=900.0).call_raw(
+                    op="install_rsu", bundle=bundle, reboot=self.headers.get("X-No-Reboot") != "1")
+            finally:
+                os.remove(bundle)
+            status = 200 if resp.get("ok") else 409 if resp.get("refused") else 500
+            self._json(resp, status)
+
         def log_message(self, fmt, *args):
-            if not self.path.startswith(("/api/events", "/api/board", "/api/version", "/api/control")):
+            polled = ("/api/events", "/api/board", "/api/version", "/api/control", "/api/fpga", "/api/rsu")
+            if not (self.command == "GET" and self.path.startswith(polled)):
                 print("%s - %s" % (self.address_string(), fmt % args), flush=True)
 
     class Server(ThreadingHTTPServer):
