@@ -44,6 +44,12 @@ stage (QSPI) of a build with the same pins, HPS and DDR (make_jic.sh). The insta
 loaded back if the new one fails; a core that loads is also copied to the
 SD card's FAT partition (<boot>), from where U-Boot loads it at power-on.
 
+With an RSU flash layout every image (slot: P1, FACTORY_IMAGE) has its own
+core (docs/remote_system_update_plan.md, R3b): this keeps them in
+<firmware>/rsu/<slot>/ and points <firmware>/de25_nano.core.rbf (what the
+reload overlay loads) at the running slot's; the card copy is
+de25_nano_<slot>.core.rbf, the one U-Boot's preboot loads for that image.
+
 Fan lease (the temperature controller's dead-man switch): a write with
 "lease": N promises another write to that register within N seconds. If none
 comes - the controller crashed, hung or was killed - this process raises the
@@ -105,6 +111,15 @@ CONFIGFS = "/sys/kernel/config"
 OVERLAY_DIR = CONFIGFS + "/device-tree/overlays/de25_core"
 FPGA_MANAGER = "/sys/class/fpga_manager/fpga0"
 CORE_MAX = 32 << 20
+PENDING_SUFFIXES = ("", ".prev")
+
+# RSU (docs/remote_system_update_plan.md): the running image and the flash's
+# sub-partition table (SPT) - which slot runs, and where its CORE.<slot> is
+RSU_SYSFS = "/sys/devices/platform/stratix10-rsu.0"
+MTD = "/dev/mtd0"
+SPT_MAGIC = 0x57713427
+SPT_ENTRY = struct.Struct("<16sIIII")      # name, offset lo/hi, length, flags
+CORE_HEADER = 0x1000                        # "core_size=0x...\n", the core after it
 
 DEFAULT_RUN = os.environ.get("DE25WEB_RUN", "/run/de25web")
 SIM_RUN = os.environ.get("DE25WEB_RUN", "/tmp/de25web-sim")
@@ -439,6 +454,122 @@ class SimLoader:
         self.bridge.configure(build_id)
 
 
+def read_spt(mtd=MTD, sysfs=RSU_SYSFS):
+    """the RSU sub-partition table as {name: (offset, length)}, or None (no
+    RSU driver, no flash, no valid table - SPT1 is the backup of SPT0)"""
+    for which in ("spt0_address", "spt1_address"):
+        try:
+            with open(os.path.join(sysfs, which)) as f:
+                off = int(f.read().strip(), 0)
+            with open(mtd, "rb") as f:
+                f.seek(off)
+                raw = f.read(32 + 127 * SPT_ENTRY.size)
+        except (OSError, ValueError):
+            return None
+        magic, _version, entries = struct.unpack_from("<III", raw, 0)
+        if magic != SPT_MAGIC:
+            continue
+        parts = {}
+        for i in range(min(entries, 127)):
+            name, lo, hi, length, _flags = SPT_ENTRY.unpack_from(raw, 32 + i * SPT_ENTRY.size)
+            parts[name.split(b"\0")[0].decode("ascii", "replace")] = (lo | hi << 32, length)
+        return parts
+    return None
+
+
+def running_slot(spt, sysfs=RSU_SYSFS):
+    """the SPT name of the image the SDM booted (P1, FACTORY_IMAGE), or None"""
+    try:
+        with open(os.path.join(sysfs, "current_image")) as f:
+            current = int(f.read().strip(), 0)
+    except (OSError, ValueError):
+        return None
+    for name, (off, _) in spt.items():
+        if off == current and not name.startswith(("SSBL.", "CORE.")):
+            return name
+    return None
+
+
+def core_partition(slot):
+    """CORE.<slot>; the factory image's is CORE.FACTORY_IM (16-character names)"""
+    return "CORE." + ("FACTORY_IM" if slot.startswith("FACTORY_IM") else slot)
+
+
+def read_qspi_core(spt, slot, mtd=MTD):
+    """the core in the slot's CORE.<slot> partition (make_jic.sh's 4 KB header
+    "core_size=0x..." then the core), or None"""
+    part = spt.get(core_partition(slot))
+    if not part:
+        return None
+    try:
+        with open(mtd, "rb") as f:
+            f.seek(part[0])
+            head = f.read(CORE_HEADER).split(b"\0")[0].decode("ascii", "replace")
+            size = int(head.strip().split("=")[1], 16)
+            if not 0 < size <= part[1] - CORE_HEADER:
+                return None
+            return f.read(size)
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def setup_slot_firmware(firmware, boot):
+    """RSU: the running slot, and its core directory <firmware>/rsu/<slot>,
+    with <firmware>/de25_nano.core.rbf pointing into it. The first time on
+    this board the flat files there move in (they are the running core);
+    the first boot of a slot without a core takes the one U-Boot loaded:
+    the card's de25_nano_<slot>.core.rbf, else QSPI CORE.<slot>. Without
+    RSU: (None, firmware) - the flat layout."""
+    spt = read_spt()
+    slot = running_slot(spt) if spt else None
+    if not slot:
+        return None, firmware
+    slot_dir = os.path.join(firmware, "rsu", slot)
+    os.makedirs(slot_dir, exist_ok=True)
+    link = os.path.join(firmware, CORE_NAME)
+    if os.path.isfile(link) and not os.path.islink(link):
+        for name in (CORE_NAME, MANIFEST_NAME, PENDING_NAME):
+            for suffix in PENDING_SUFFIXES:
+                src = os.path.join(firmware, name + suffix)
+                if os.path.exists(src) and not os.path.exists(os.path.join(slot_dir, name + suffix)):
+                    os.replace(src, os.path.join(slot_dir, name + suffix))
+                elif os.path.exists(src):
+                    os.remove(src)
+        log(f"FPGA core: the flat /lib/firmware files moved to rsu/{slot}/")
+    target = os.path.join(slot_dir, CORE_NAME)
+    if not os.path.exists(target):
+        core, source = None, None
+        card = os.path.join(boot, f"de25_nano_{slot}.core.rbf") if boot else None
+        mounted = False
+        try:
+            if card and not os.path.ismount(boot):
+                mounted = subprocess.run(["mount", "-o", "ro", boot], capture_output=True,
+                                         timeout=20).returncode == 0
+            if card and os.path.isfile(card):
+                with open(card, "rb") as f:
+                    core, source = f.read(), card
+        except (OSError, subprocess.SubprocessError):
+            pass
+        finally:
+            if mounted:
+                subprocess.run(["umount", boot], check=False, timeout=20)
+        if core is None:
+            core, source = read_qspi_core(spt, slot), "QSPI " + core_partition(slot)
+        if core:
+            write_file(target, core)
+            log(f"FPGA core: {slot} had none here - took the one U-Boot loads ({source}), "
+                "no manifest")
+    rel = os.path.join("rsu", slot, CORE_NAME)
+    if not (os.path.islink(link) and os.readlink(link) == rel):
+        tmp = link + ".new"
+        if os.path.lexists(tmp):
+            os.remove(tmp)
+        os.symlink(rel, tmp)
+        os.replace(tmp, link)
+    log(f"FPGA core: running image {slot}, its core in {slot_dir}")
+    return slot, slot_dir
+
+
 def read_manifest(path):
     try:
         with open(path) as f:
@@ -499,7 +630,8 @@ class Access:
     """Every register access, under one lock; pause/resume; the fan lease;
     loading the FPGA core."""
 
-    def __init__(self, bridge, sim_hwmon=None, loader=None, firmware=FIRMWARE, boot=BOOT):
+    def __init__(self, bridge, sim_hwmon=None, loader=None, firmware=FIRMWARE, boot=BOOT, slot=None):
+        self.slot = slot                     # RSU: the running image's name, else None
         self.bridge = bridge
         self.sim = sim_hwmon
         self.loader = loader
@@ -598,7 +730,7 @@ class Access:
 
     def core_info(self):
         out = {"ok": True, "running_build_id": None, "last_load": self.last_load,
-               "loading": self.core_lock.locked()}
+               "loading": self.core_lock.locked(), "slot": self.slot}
         with self.lock:
             if not self.paused():
                 out["running_build_id"] = self.bridge.read(REG_BUILD_ID)
@@ -763,8 +895,10 @@ class Access:
             if not os.path.ismount(self.boot) and not self.sim:
                 subprocess.run(["mount", self.boot], check=True, capture_output=True, timeout=20)
                 mounted = True
-            write_file(os.path.join(self.boot, CORE_NAME), core)
+            name = f"de25_nano_{self.slot}.core.rbf" if self.slot else CORE_NAME
+            write_file(os.path.join(self.boot, name), core)
             os.sync()
+            boot["file"] = name
             boot["written"] = True
         except (OSError, subprocess.SubprocessError) as e:
             boot["error"] = str(e)
@@ -958,10 +1092,17 @@ def main():
         bridge.configure(int(man.get("build_id", 0)) if man else 0)
     else:
         bridge, sim = Bridge(), None
-        firmware = args.firmware or FIRMWARE
+        root = args.firmware or FIRMWARE
         boot = args.boot if args.boot is not None else BOOT
-        loader = KernelLoader(firmware)
-    access = Access(bridge, sim, loader, firmware, boot)
+        loader = KernelLoader(root)              # the overlay loads <root>/de25_nano.core.rbf
+        try:
+            slot, firmware = setup_slot_firmware(root, boot)
+        except OSError as e:
+            log("FPGA core: per-image layout not set up:", e)
+            slot, firmware = None, root
+    if args.sim:
+        slot = None
+    access = Access(bridge, sim, loader, firmware, boot, slot)
     srv = serve(access, os.path.join(run, SOCKET_NAME))
     log(f"serving {os.path.join(run, SOCKET_NAME)}" + (" [simulated board]" if sim else ""))
     srv.serve_forever()

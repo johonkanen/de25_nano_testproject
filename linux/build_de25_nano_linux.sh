@@ -125,6 +125,11 @@ pushd "${UBOOT_DIR}" >/dev/null
         drivers/ddr/altera/sdram_agilex5.c
     grep -q 'plat->dualport = 0;  /\* DE25-Nano' drivers/ddr/altera/sdram_agilex5.c || {
         echo "ERROR: the dual-port DDR patch didn't apply - sdram_agilex5.c changed, check by hand"; exit 1; }
+    # `rsu running_slot`: the name of the image the SDM booted and the
+    # offset of its CORE.<name> partition, for the preboot below (R3b,
+    # docs/remote_system_update_plan.md)
+    git apply "${HERE}/patches/u-boot-rsu-running-slot.patch" || {
+        echo "ERROR: patches/u-boot-rsu-running-slot.patch didn't apply - check by hand"; exit 1; }
     ln -sf "${OUT}/bl31.bin" bl31.bin
     make mrproper
     make "${UBOOT_DEFCONFIG}"
@@ -141,14 +146,18 @@ pushd "${UBOOT_DIR}" >/dev/null
     # preboot runs before the autoboot prompt. Only when the fabric isn't
     # configured already (FPGA-first images, a JTAG .sof load): sysmgr
     # FPGA_CONFIG (0x10d120dc) reads 3 once configured and in user mode.
-    # From the SD card's FAT partition, else from the QSPI copy make_jic.sh
-    # writes at QSPI_CORE_OFFS: a 4 KB text header "core_size=0x..." for
-    # `env import`, the core right after it. The console is silent until
-    # the core is in (HPS UART1 runs through the fabric). A card core that
-    # reads but does not load (damaged, e.g. by a power cut while
-    # linux/tools/deploy_fpga.py wrote it) falls back to the QSPI copy too.
+    # Each RSU image has its own core (R3b): `rsu running_slot` names the
+    # image (P1, FACTORY_IMAGE) and gives its CORE.<name> partition, so the
+    # core is de25_nano_<name>.core.rbf from the SD card's FAT partition,
+    # else that QSPI partition: a 4 KB text header "core_size=0x..." for
+    # `env import`, the core right after it (make_jic.sh). Without an RSU
+    # layout: de25_nano.core.rbf, else the QSPI copy at QSPI_CORE_OFFS. The
+    # console is silent until the core is in (HPS UART1 runs through the
+    # fabric). A card core that reads but does not load (damaged, e.g. by a
+    # power cut while linux/tools/deploy_fpga.py wrote it) falls back to
+    # the QSPI copy too.
     scripts/config --enable CONFIG_USE_PREBOOT
-    scripts/config --set-str CONFIG_PREBOOT "if itest.l *0x10d120dc != 3; then if load mmc 0:1 \${loadaddr} de25_nano.core.rbf && fpga load 0 \${loadaddr} \${filesize}; then echo core from SD; else sf probe && sf read \${loadaddr} $(printf '%#x' "${QSPI_CORE_OFFS}") 0x1000 && env import -t \${loadaddr} && sf read \${loadaddr} $(printf '%#x' $(( QSPI_CORE_OFFS + 0x1000 ))) \${core_size} && fpga load 0 \${loadaddr} \${core_size} && echo core from QSPI; fi; fi"
+    scripts/config --set-str CONFIG_PREBOOT "if itest.l *0x10d120dc != 3; then if rsu running_slot rsu_slot && env exists rsu_slot_core; then setenv core_file de25_nano_\${rsu_slot}.core.rbf; setenv core_offs \${rsu_slot_core}; else setenv core_file de25_nano.core.rbf; setenv core_offs $(printf '%#x' "${QSPI_CORE_OFFS}"); fi; if load mmc 0:1 \${loadaddr} \${core_file} && fpga load 0 \${loadaddr} \${filesize}; then echo core \${core_file} from SD; else sf probe && sf read \${loadaddr} \${core_offs} 0x1000 && env import -t \${loadaddr} && setexpr core_data \${core_offs} + 0x1000 && sf read \${loadaddr} \${core_data} \${core_size} && fpga load 0 \${loadaddr} \${core_size} && echo core from QSPI \${core_offs}; fi; fi"
     make olddefconfig
     grep -q '^CONFIG_PREBOOT="if itest.l \*0x10d120dc != 3; then' .config || {
         echo "ERROR: CONFIG_PREBOOT not set"; exit 1; }

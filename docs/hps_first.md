@@ -21,8 +21,9 @@ power-on
             card, or QSPI SSBL.<slot> (RSU multiboot, docs/linux_boot.md)
   ATF       BL31
   U-Boot    preboot: FPGA_CONFIG (0x10d120dc) != 3 -> load the core
-            (de25_nano.core.rbf from SD FAT p1, else the QSPI copy at
-            0xC00000) with `fpga load` -> "FPGA reconfiguration OK!"
+            of the running RSU image (`rsu running_slot`, a patch in the
+            build: de25_nano_<image>.core.rbf from SD FAT p1, else QSPI
+            CORE.<image>) with `fpga load` -> "FPGA reconfiguration OK!"
             -- the console appears only now: HPS UART1 runs through the fabric
             bootcmd: bridge enable; run distro_bootcmd
   Linux     extlinux.conf; /lib/firmware/de25_nano.core.rbf for reloads
@@ -76,7 +77,7 @@ core alone (`-o hps_core_only=ON`, refused for AFTER INIT_DONE images).
 | `0x400000` | P1: application image, 1 MB slot - the SDM boots it first; same build as the factory image until an update writes it |
 | `0x500000`, `0x600000` | `SSBL.FACTORY_IM`, `SSBL.P1`: each image's `u-boot.itb` |
 | `0xA00000` | `u-boot.itb` (SPLs without RSU multiboot) |
-| `0xC00000` | the core: a 4 KB text header `core_size=0x...` (U-Boot `env import`s it), the core from `0xC01000` |
+| `0xC00000`, `0xD10000` | `CORE.FACTORY_IM`, `CORE.P1`: each image's core - a 4 KB text header `core_size=0x...` (U-Boot `env import`s it), the core after it |
 
 **The core belongs to its phase 1.** A `.core.rbf` only loads on top of the
 phase 1 image (HPS I/O, DDR, Quartus version) from the same build - so the

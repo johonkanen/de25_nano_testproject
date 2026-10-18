@@ -65,7 +65,11 @@ done
 # from here before anything touches the fabric
 if [[ -f "${OUT}/de25_nano.core.rbf" ]]; then
     mcopy -i "${IMG}@@$(( P1_START * 512 ))" "${OUT}/de25_nano.core.rbf" ::
-    echo "   + de25_nano.core.rbf (HPS-first FPGA core)"
+    # a core per RSU image (R3b): U-Boot's preboot loads de25_nano_<image>.core.rbf
+    for slot in P1 FACTORY_IMAGE; do
+        mcopy -i "${IMG}@@$(( P1_START * 512 ))" "${OUT}/de25_nano.core.rbf" "::de25_nano_${slot}.core.rbf"
+    done
+    echo "   + de25_nano.core.rbf, de25_nano_P1/FACTORY_IMAGE.core.rbf (HPS-first FPGA core)"
 fi
 
 echo ">> root partition (Alpine ${ALPINE_VERSION})"

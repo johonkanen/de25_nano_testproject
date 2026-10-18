@@ -67,6 +67,15 @@ duty, blinker mode and loopback are written back, and fan leases are
 extended by the pause. Details: [docs/hps_first.md](../../docs/hps_first.md),
 "A new core over the network".
 
+With an RSU flash each image has its own core (P1, FACTORY_IMAGE):
+`fpga_access.py` finds the running one (the RSU driver's `current_image`,
+the SPT in `/dev/mtd0`), keeps its core in `/lib/firmware/rsu/<image>/`
+with `/lib/firmware/de25_nano.core.rbf` linking there, and writes the card
+copy as `de25_nano_<image>.core.rbf`. `GET /api/fpga` has `slot`. The first
+boot of an image with no core there takes the one U-Boot loaded (card,
+else QSPI `CORE.<image>`), without a manifest - its first install needs
+`--force`.
+
 ```bash
 python3 linux/tools/deploy_fpga.py                  # linux/build_output's core, to 192.168.1.222
 python3 linux/tools/deploy_fpga.py --pack-only core.tar.gz   # a bundle for the GUI's "FPGA core" card

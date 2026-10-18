@@ -50,7 +50,8 @@ Linux running.
 | SSBL.P1 | 0x600000-0x6FFFFF | P1's u-boot.itb (R2) |
 | free | 0x700000-0x9FFFFF | P2 + SSBL.P2 later |
 | UBOOT | 0xA00000-0xAFFFFF | u-boot.itb, the SPL's fallback when the card has none (as before RSU) |
-| CORE | 0xC00000-0xD0FFFF | the FPGA core copy for U-Boot's preboot (as before RSU) |
+| CORE.FACTORY_IM | 0xC00000-0xD0FFFF | the factory image's FPGA core (R3b; where U-Boots without `rsu running_slot` look) |
+| CORE.P1 | 0xD10000-0xE1FFFF | P1's FPGA core (R3b) |
 
 `make_jic.sh` writes it (RSU=1, the default; RSU=0 the plain layout). It
 needs fixed partition addresses: with "auto", quartus_pfg 26.1.1 stops
@@ -79,6 +80,20 @@ into a slot by `rsu slot_program_buf` / librsu, which fix two pointers and
 the CRC of the first 8 KB block - compared on the board: the generated
 `.rpd` and P1 in flash differ in exactly those 8 bytes.
 
+## A core per image (R3b)
+
+HPS-first: an image's core only fits its own phase 1, so every slot has
+one. U-Boot gets `rsu running_slot <var>` (linux/patches/
+u-boot-rsu-running-slot.patch, applied by the build): `<var>` = the SPT
+name of the image the SDM booted, `<var>_core` = the offset of its
+`CORE.<name>` partition. The preboot loads `de25_nano_<name>.core.rbf`
+from the card, else that partition; without an RSU layout the old names.
+Tested 2026-10-18: power-on P1 (card), factory (card), factory and P1 with
+the card file moved aside (QSPI 0xc00000 / 0xd10000). On Linux,
+`fpga_access.py` keeps each image's core in `/lib/firmware/rsu/<name>/`
+(webapp README). An install over the network writes the card copy; the
+QSPI `CORE.<name>` copy is written by an RSU update (R6) or the `.jic`.
+
 ## Booting a slot by hand
 
 ```sh
@@ -101,7 +116,7 @@ u-boot_P1.itb`, or `RSU: found SSBL partition P1 at address 0x00600000`).
 | R1 (done 2026-10-17) | **Initial RSU flash image**: `make_jic.sh` gets an RSU mode - a `.pfg` with the factory image, P1, the SSBL partitions and the RSU options (decision firmware, SPT/CPB); program once over JTAG | power-on boots the factory image; U-Boot `rsu list` shows the slots; Linux `rsu_client --log` agrees |
 | R2 (done 2026-10-18) | **U-Boot from SSBL**: SPL loads U-Boot from the running image's SSBL partition instead of the fixed 0xA00000 (U-Boot's RSU SPL support); SD card first, as now | each image boots its own U-Boot; a blank SD card still reaches U-Boot (factory SSBL) |
 | R3 (done 2026-10-18) | **Application images**: `quartus_pfg` writes an RSU application `.rpd` from a `.sof`; `tools/make_rsu_bundle.py` wraps it with version, git hash, SHA-256 (like the persona bundles) | a bundle for today's design builds reproducibly |
-| R3b | **A core per slot** (HPS-first): today U-Boot's preboot loads `de25_nano.core.rbf` (card) or the one QSPI copy at 0xC00000 whatever image runs, but a slot's core belongs to its phase 1. U-Boot's `rsu` command has no "running slot" subcommand; the SPL knows it (`u-boot_<slot>.itb`). Add one (`rsu running_slot <var>`, a small patch in the build script, from `rsu_spl_mmc_filename()`), then the preboot loads `de25_nano_${rsu_slot}.core.rbf` from the card, else QSPI `CORE.<slot>`; `fpga_access.py` installs the core under the running slot's name | factory and P1 boot with different cores; `fpga-reload` and `/api/fpga` keep working |
+| R3b (done 2026-10-18) | **A core per slot** (HPS-first): today U-Boot's preboot loads `de25_nano.core.rbf` (card) or the one QSPI copy at 0xC00000 whatever image runs, but a slot's core belongs to its phase 1. U-Boot's `rsu` command has no "running slot" subcommand; the SPL knows it (`u-boot_<slot>.itb`). Add one (`rsu running_slot <var>`, a small patch in the build script, from `rsu_spl_mmc_filename()`), then the preboot loads `de25_nano_${rsu_slot}.core.rbf` from the card, else QSPI `CORE.<slot>`; `fpga_access.py` installs the core under the running slot's name | factory and P1 boot with different cores; `fpga-reload` and `/api/fpga` keep working |
 | R4 | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
 | R5 | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |
 | R6 | **API and GUI**: `POST /api/fpga` (bundle upload, token, checks build/SHA), `GET /api/fpga` (slots, running image, last failure); a "FPGA image" card next to "GUI release"; `tools/deploy_fpga.py` like `deploy_web.py` | `deploy_fpga.py` puts a new design on the board, it reboots into it and confirms it; `--no-confirm` shows the automatic fallback |

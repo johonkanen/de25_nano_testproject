@@ -20,8 +20,9 @@ power-on
                u-boot_FACTORY_IMAGE.itb), or - if that fails - QSPI partition
                SSBL.<slot> (RSU multiboot; 0xA00000 without an RSU layout)
   ATF BL31     secure monitor (EL3), part of u-boot.itb
-  U-Boot       preboot loads the FPGA core (de25_nano.core.rbf: SD, else QSPI
-               0xC00000) - the console appears only now; then `bridge enable`,
+  U-Boot       preboot loads the running image's FPGA core (`rsu running_slot`:
+               de25_nano_<image>.core.rbf from SD, else QSPI CORE.<image>) -
+               the console appears only now; then `bridge enable`,
                and distro boot finds /extlinux/extlinux.conf
   Linux        Image + dtb from the FAT partition, root = SD partition 2 (ext4)
   Alpine init  rc.local: static IP, NTP, python3 (first boot) ; inittab starts
@@ -91,11 +92,12 @@ port (`/dev/serial/by-id/usb-TERASIC_DE25-Nano_*-if03-port0`, 115200). No
 | `0x500000` | `SSBL.FACTORY_IM`: the factory image's `u-boot.itb` |
 | `0x600000` | `SSBL.P1`: P1's `u-boot.itb` - the SPL takes these when the card has no `u-boot_<slot>.itb` |
 | `0xA00000` | `u-boot.itb` - the fallback of an SPL without RSU multiboot, or a flash without the RSU layout |
-| `0xC00000` | the FPGA core - the fallback when the card has none (4 KB size header + core) |
+| `0xC00000` | `CORE.FACTORY_IM`: the factory image's FPGA core - the fallback when the card has none (4 KB size header + core); also where U-Boots without `rsu running_slot` look |
+| `0xD10000` | `CORE.P1`: P1's FPGA core, same format |
 
 | SD card (768 MB image, rest of the card unused) | |
 |---|---|
-| p1, FAT32, bootable, 128 MB | `u-boot_P1.itb`, `u-boot_FACTORY_IMAGE.itb` (the SPL loads the one of the image running), `u-boot.itb` (SPLs without multiboot), `Image`, the `.dtb`, `extlinux/extlinux.conf`, `de25_nano.core.rbf` |
+| p1, FAT32, bootable, 128 MB | `u-boot_P1.itb`, `u-boot_FACTORY_IMAGE.itb` (the SPL loads the one of the image running), `u-boot.itb` (SPLs without multiboot), `de25_nano_P1.core.rbf`, `de25_nano_FACTORY_IMAGE.core.rbf` (each image's core; `de25_nano.core.rbf` for U-Boots without `rsu running_slot`), `Image`, the `.dtb`, `extlinux/extlinux.conf` |
 | p2, ext4 | Alpine; `/opt/de25web` (web GUI), static IP `192.168.1.222`; `/lib/firmware/de25_nano.core.rbf` + the reload overlay, `/usr/sbin/fpga-reload` |
 
 ## Build and install

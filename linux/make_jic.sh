@@ -14,9 +14,11 @@
 #   0x400000  P1: application image, 1 MB (same build at first)
 #   0x500000  SSBL.FACTORY_IM, 0x600000 SSBL.P1: each image's u-boot.itb
 #             (the SPL's RSU multiboot loads the one of the image running)
+#   0xC00000  CORE.FACTORY_IM, 0xD10000 CORE.P1: each image's FPGA core
+#             (HPS-first; U-Boot's preboot, via `rsu running_slot`)
 # RSU=0: boot info + the one image from 0x000000/0x200000. Both:
 #   0xA00000  u-boot.itb (QSPI_UBOOT_OFFS, the SPL's CONFIG_SYS_SPI_U_BOOT_OFFS)
-#   0xC00000  HPS-first only: the FPGA core (QSPI_CORE_OFFS) - docs/hps_first.md
+#   0xC00000  HPS-first only: the FPGA core (QSPI_CORE_OFFS; RSU=1: CORE.FACTORY_IM) - docs/hps_first.md
 # The SPL loads u-boot.itb from the SD card's FAT partition if it can, else
 # this QSPI copy - so a blank or broken card still reaches a U-Boot prompt,
 # from which linux/tools/sd_recover.py rewrites the card over TFTP.
@@ -180,8 +182,20 @@ PYCORE
                  part SSBL.FACTORY_IM 0x500000 0x5FFFFF 0
                  part SSBL.P1 0x600000 0x6FFFFF 0
                  part UBOOT $(( QSPI_UBOOT_OFFS )) $(( QSPI_UBOOT_OFFS + 0xFFFFF )) 0)"
-        (( HPS_FIRST )) && PARTS="${PARTS}
-$(part CORE $(( QSPI_CORE_OFFS )) $(( QSPI_CORE_OFFS + 0x10FFFF )) 0)"
+        if (( HPS_FIRST )); then
+            # a core per image (R3b): U-Boot's preboot loads CORE.<image>
+            # (`rsu running_slot`); the factory image's sits where U-Boots
+            # without that look (QSPI_CORE_OFFS). Both hold this build's.
+            PARTS="${PARTS}
+$(part CORE.FACTORY_IM $(( QSPI_CORE_OFFS )) $(( QSPI_CORE_OFFS + 0x10FFFF )) 0)
+$(part CORE.P1 $(( QSPI_CORE_OFFS + 0x110000 )) $(( QSPI_CORE_OFFS + 0x21FFFF )) 0)"
+            CORE_ASSIGN="        <assignment page=\"0\" partition_id=\"CORE.FACTORY_IM\">
+            <raw_file_id>Raw_File_2</raw_file_id>
+        </assignment>
+        <assignment page=\"0\" partition_id=\"CORE.P1\">
+            <raw_file_id>Raw_File_2</raw_file_id>
+        </assignment>"
+        fi
         CORE_PART=""
         IMAGE_ASSIGN="        <assignment page=\"0\" partition_id=\"FACTORY_IMAGE\">
             <bitstream_id>Factory</bitstream_id>
