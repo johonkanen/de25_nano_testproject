@@ -246,6 +246,18 @@ ${CORE_ASSIGN}
 PFGEOF
     quartus_pfg -c "${PFG}"
     echo "   flash map: ${JIC%.jic}.map"
+    if (( RSU )); then
+        # the same image as an RSU application image for an update over the
+        # network (R3): start address 0, bitswapped - U-Boot's `rsu
+        # slot_program_buf` / librsu relocate it into the slot (it differs
+        # from the P1 copy in the .jic by two pointers and a block CRC).
+        # linux/tools/make_rsu_bundle.py packs it with its U-Boot and core.
+        APP_RPD="${JIC%.jic}_app.rpd"
+        quartus_pfg -c "${SOF}" "${APP_RPD}" -o hps_path="${SPL}" -o mode=ASX4 \
+            -o start_address=0x00 -o bitswap=ON > "${JIC%.jic}_app.log" 2>&1 || {
+            echo "quartus_pfg failed on the application image, see ${JIC%.jic}_app.log"; exit 1; }
+        echo ">> RSU application image ${APP_RPD} ($(stat -c %s "${APP_RPD}") bytes)"
+    fi
 fi
 
 echo

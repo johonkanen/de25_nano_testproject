@@ -60,6 +60,25 @@ SPT too, under their names.
 Every slot is sized from today's image plus margin; a design that grows
 past 1 MB means re-laying the flash once (from JTAG).
 
+## The update bundle (R3)
+
+```bash
+./linux/make_jic.sh                          # RSU layout, and the application image de25_nano_app.rpd
+python3 linux/tools/make_rsu_bundle.py       # build_output/de25_nano_rsu_<build>.tar.gz
+python3 linux/tools/make_rsu_bundle.py --check BUNDLE
+```
+
+A bundle holds everything one slot needs, from one build: `app.rpd`
+(phase 1 + SPL, start address 0, bitswapped), `u-boot.itb`,
+`de25_nano.core.rbf` and its manifest, plus `rsu.json` (build id,
+periphery hash, git, size and SHA-256 of each file). It is reproducible:
+the same inputs give the same bytes.
+
+The `.rpd` is the image the `.jic` puts in P1 before relocation: written
+into a slot by `rsu slot_program_buf` / librsu, which fix two pointers and
+the CRC of the first 8 KB block - compared on the board: the generated
+`.rpd` and P1 in flash differ in exactly those 8 bytes.
+
 ## Booting a slot by hand
 
 ```sh
@@ -81,7 +100,8 @@ u-boot_P1.itb`, or `RSU: found SSBL partition P1 at address 0x00600000`).
 | R0 (done) | **Kernel**: `CONFIG_INTEL_STRATIX10_RSU=y`; DE25-Nano DT: enable `&qspi`, add `flash@0` (MT25QU128) with partitions matching the layout; build script applies both (like `CONFIG_SENSORS_SOC64`) | `/proc/mtd` lists the partitions, `/sys/devices/platform/stratix10-rsu.0/` exists, `current_image` reads the running image |
 | R1 (done 2026-10-17) | **Initial RSU flash image**: `make_jic.sh` gets an RSU mode - a `.pfg` with the factory image, P1, the SSBL partitions and the RSU options (decision firmware, SPT/CPB); program once over JTAG | power-on boots the factory image; U-Boot `rsu list` shows the slots; Linux `rsu_client --log` agrees |
 | R2 (done 2026-10-18) | **U-Boot from SSBL**: SPL loads U-Boot from the running image's SSBL partition instead of the fixed 0xA00000 (U-Boot's RSU SPL support); SD card first, as now | each image boots its own U-Boot; a blank SD card still reaches U-Boot (factory SSBL) |
-| R3 | **Application images**: `quartus_pfg` writes an RSU application `.rpd` from a `.sof`; `tools/make_rsu_bundle.py` wraps it with version, git hash, SHA-256 (like the persona bundles) | a bundle for today's design builds reproducibly |
+| R3 (done 2026-10-18) | **Application images**: `quartus_pfg` writes an RSU application `.rpd` from a `.sof`; `tools/make_rsu_bundle.py` wraps it with version, git hash, SHA-256 (like the persona bundles) | a bundle for today's design builds reproducibly |
+| R3b | **A core per slot** (HPS-first): today U-Boot's preboot loads `de25_nano.core.rbf` (card) or the one QSPI copy at 0xC00000 whatever image runs, but a slot's core belongs to its phase 1. U-Boot's `rsu` command has no "running slot" subcommand; the SPL knows it (`u-boot_<slot>.itb`). Add one (`rsu running_slot <var>`, a small patch in the build script, from `rsu_spl_mmc_filename()`), then the preboot loads `de25_nano_${rsu_slot}.core.rbf` from the card, else QSPI `CORE.<slot>`; `fpga_access.py` installs the core under the running slot's name | factory and P1 boot with different cores; `fpga-reload` and `/api/fpga` keep working |
 | R4 | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
 | R5 | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |
 | R6 | **API and GUI**: `POST /api/fpga` (bundle upload, token, checks build/SHA), `GET /api/fpga` (slots, running image, last failure); a "FPGA image" card next to "GUI release"; `tools/deploy_fpga.py` like `deploy_web.py` | `deploy_fpga.py` puts a new design on the board, it reboots into it and confirms it; `--no-confirm` shows the automatic fallback |
