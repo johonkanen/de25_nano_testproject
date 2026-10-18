@@ -45,6 +45,9 @@ EOF
 
 cat > "${ROOT}/etc/rc.local" << EOF
 #!/bin/sh
+# RSU boot confirmation first: it takes over the watchdog U-Boot started
+# (linux/board/rsu-confirm.sh)
+[ -x /usr/sbin/rsu-confirm ] && /usr/sbin/rsu-confirm &
 ifconfig lo 127.0.0.1
 ifconfig eth0 ${NANO_IP} netmask 255.255.255.0 up
 route add default gw ${NANO_GW}
@@ -67,6 +70,9 @@ echo de25-nano > "${ROOT}/etc/hostname"
 # eth0 sometimes passes no traffic after a warm reboot; the watchdog bounces
 # it (linux/board/eth-watchdog.sh has the details)
 install -D -m 755 "${TOOLS}/../board/eth-watchdog.sh" "${ROOT}/usr/sbin/eth-watchdog"
+# RSU boot confirmation (R5): an image that does not come up healthy falls
+# back to the factory image (linux/board/rsu-confirm.sh)
+install -D -m 755 "${TOOLS}/../board/rsu-confirm.sh" "${ROOT}/usr/sbin/rsu-confirm"
 
 cat > "${ROOT}/etc/fstab" << 'EOF'
 /dev/mmcblk0p2  /       ext4    rw,relatime     0 1
@@ -114,6 +120,6 @@ timeout 1
 label alpine
     kernel /Image
     fdt /socfpga_agilex5_de25_nano.dtb
-    append console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait earlycon panic=-1 kvm-arm.mode=nvhe
+    append console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait earlycon panic=-1 kvm-arm.mode=nvhe watchdog.open_timeout=120
 EOF
 fi

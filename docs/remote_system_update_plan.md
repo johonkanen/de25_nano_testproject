@@ -124,6 +124,44 @@ Notes from the board (2026-10-18):
 - Tested: P1 erased, rewritten from the bundle's `app.rpd`, factory, then
   P1 again loaded from flash - current image 0x400000, no failure.
 
+## Boot confirmation (R5)
+
+An image that does not come up healthy falls back to the factory image by
+itself:
+
+1. **The FPGA design decides what a watchdog timeout does**: HPS IP
+   parameter `Rst_sdm_wd_config` ("Watchdog SDM Configuration": 0 HPS cold
+   reset, 1 warm reset, **2 trigger remote update**), set to 2 in
+   `hps/hps_subsys.tcl` and `agilex_hps.ip` (regenerate the IP after a
+   change, as for the A76 cores). With 0 - the default - a watchdog
+   timeout only reset the HPS, same image (tested). It changes the HPS
+   configuration, so the periphery hash changes: cores of older builds no
+   longer match.
+2. U-Boot starts HPS watchdog 0 (30 s) and services it; the kernel keeps
+   it alive until a program opens it - at most `watchdog.open_timeout=120`
+   s (kernel command line, extlinux.conf).
+3. `/usr/sbin/rsu-confirm` (linux/board/rsu-confirm.sh), started by the
+   first line of rc.local, opens the watchdog and pets it every 5 s while
+   it waits for `/api/board` on localhost to answer `"id_ok": true`
+   (kernel, rootfs, GUI, fpga_access.py, LWH2F and the FPGA core work).
+   Healthy: "confirmed" (kernel log, `/run/rsu-confirm`), the RSU retry
+   counter reset, petting goes on - a later hang still falls back. Not
+   healthy 300 s after boot: no more petting; the watchdog expires and
+   the SDM loads the factory image (max_retry is 0: no retry of the
+   failed one). On shutdown it disarms the watchdog.
+4. **The factory image never falls back**: it shares the root filesystem,
+   so a broken rootfs or GUI would fail it too and loop - there
+   rsu-confirm only reports.
+
+Tested on the board (2026-10-18), build 1792345846:
+
+| case | result |
+|---|---|
+| P1 normal boot | confirmed after 16-17 s |
+| rsu-confirm killed (a hang) | watchdog expired, factory loaded (its own core), `FAIL IMAGE 0x400000`, `STATE 0xF0060002`; factory: "reporting only", healthy after 26 s |
+| GUI disabled on P1 (never healthy) | "not healthy after 302 s", factory loaded; factory reports, keeps running |
+| back to P1 | `rsu_client --clear-error-status; rsu_client --request 0; reboot` - confirmed after 16 s |
+
 ## Booting a slot by hand
 
 ```sh
@@ -148,7 +186,7 @@ u-boot_P1.itb`, or `RSU: found SSBL partition P1 at address 0x00600000`).
 | R3 (done 2026-10-18) | **Application images**: `quartus_pfg` writes an RSU application `.rpd` from a `.sof`; `tools/make_rsu_bundle.py` wraps it with version, git hash, SHA-256 (like the persona bundles) | a bundle for today's design builds reproducibly |
 | R3b (done 2026-10-18) | **A core per slot** (HPS-first): today U-Boot's preboot loads `de25_nano.core.rbf` (card) or the one QSPI copy at 0xC00000 whatever image runs, but a slot's core belongs to its phase 1. U-Boot's `rsu` command has no "running slot" subcommand; the SPL knows it (`u-boot_<slot>.itb`). Add one (`rsu running_slot <var>`, a small patch in the build script, from `rsu_spl_mmc_filename()`), then the preboot loads `de25_nano_${rsu_slot}.core.rbf` from the card, else QSPI `CORE.<slot>`; `fpga_access.py` installs the core under the running slot's name | factory and P1 boot with different cores; `fpga-reload` and `/api/fpga` keep working |
 | R4 (done 2026-10-18) | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
-| R5 | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |
+| R5 (done 2026-10-18) | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |
 | R6 | **API and GUI**: `POST /api/fpga` (bundle upload, token, checks build/SHA), `GET /api/fpga` (slots, running image, last failure); a "FPGA image" card next to "GUI release"; `tools/deploy_fpga.py` like `deploy_web.py` | `deploy_fpga.py` puts a new design on the board, it reboots into it and confirms it; `--no-confirm` shows the automatic fallback |
 | R7 | **Docs and tests**: `docs/linux_boot.md` (RSU boot path), fault tests (truncated image, wrong SHA, power cut mid-write, image that never confirms) | all faults leave a booting board |
 
