@@ -195,6 +195,28 @@ Tested 2026-10-18: build 1792345846 written in 15.9 s, rebooted, confirmed
 in P1 56 s after the upload; the GUI card shows the image, the confirmation
 and the build P1 holds (`gui_test.py`).
 
+## Fault tests (R7, 2026-10-18)
+
+| fault | result |
+|---|---|
+| no token / wrong `X-Sha256` | 403 / 400, nothing touched |
+| truncated `app.rpd`, one bit flipped in the core (manifest unchanged) | 409 "does not match the manifest", nothing touched |
+| a core bundle sent to `/api/rsu` | 409 "not an RSU bundle: no rsu.json" |
+| image too big for P1 | 409 "P1 is 0x100000 bytes, the update needs ...", nothing touched |
+| power cut after P1 is erased (an update's first step) | the factory image boots with its own U-Boot and core; `deploy_rsu.py` from there rewrote P1 (13 s) and P1 was confirmed 77 s after the upload |
+| an image that hangs / never gets healthy | R5: the watchdog falls back to the factory image, P1 recorded as failed |
+| `deploy_rsu.py` on a fallback | against a fake board: reports "P1 did not come up healthy: the SDM fell back to the factory image (state ...)"; on success "confirmed in P1" |
+
+Not tested on purpose: a corrupt application image with a matching
+manifest. A damaged core hung the SDM (docs/hps_first.md), and a P1 that
+hung it would be tried at every power-on - possibly only recoverable over
+JTAG, which timed out during that hang. The SHA-256 checks before anything
+is written are the guard.
+
+`GET /api/rsu` reports P1's priority (`p1_priority`, `[disabled]` once
+erased), so the GUI and `deploy_rsu.py --status` say "nothing bootable"
+rather than the build last written there.
+
 ## Booting a slot by hand
 
 ```sh
@@ -221,7 +243,7 @@ u-boot_P1.itb`, or `RSU: found SSBL partition P1 at address 0x00600000`).
 | R4 (done 2026-10-18) | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
 | R5 (done 2026-10-18) | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |
 | R6 (done 2026-10-18; `/api/rsu`, as `/api/fpga` is the core load) | **API and GUI**: `POST /api/fpga` (bundle upload, token, checks build/SHA), `GET /api/fpga` (slots, running image, last failure); a "FPGA image" card next to "GUI release"; `tools/deploy_fpga.py` like `deploy_web.py` | `deploy_fpga.py` puts a new design on the board, it reboots into it and confirms it; `--no-confirm` shows the automatic fallback |
-| R7 | **Docs and tests**: `docs/linux_boot.md` (RSU boot path), fault tests (truncated image, wrong SHA, power cut mid-write, image that never confirms) | all faults leave a booting board |
+| R7 (done 2026-10-18) | **Docs and tests**: `docs/linux_boot.md` (RSU boot path), fault tests (truncated image, wrong SHA, power cut mid-write, image that never confirms) | all faults leave a booting board |
 
 ## Risks and open questions
 

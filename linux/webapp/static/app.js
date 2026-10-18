@@ -331,7 +331,8 @@ async function loadRsuInfo() {
   pill.textContent = c.startsWith("confirmed") ? "confirmed" : c.startsWith("factory") ? "fallback image"
     : c.startsWith("waiting") ? "on test" : c.startsWith("failed") ? "not healthy" : (c || "-");
   pill.className = "pill" + (c.startsWith("confirmed") ? "" : " pill-warn");
-  $("rsu-p1").textContent = r.installed ? buildName(r.installed.build_id) + (r.installed.git ? ", git " + r.installed.git : "")
+  $("rsu-p1").textContent = r.p1_priority === "[disabled]" ? "nothing bootable (erased or disabled)"
+    : r.installed ? buildName(r.installed.build_id) + (r.installed.git ? ", git " + r.installed.git : "")
     : "(written by the .jic)";
   $("rsu-fail").hidden = !fail;
   $("rsu-fail").textContent = fail ? `${IMAGES[fail] || "0x" + fail.toString(16)} failed (state ${st.state}) - the SDM fell back` : "";

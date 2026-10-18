@@ -60,8 +60,10 @@ def describe(rsu, fpga):
     cur, fail = image_of(rsu)
     inst = rsu.get("installed") or {}
     name = {FACTORY: "factory", P1: "P1"}.get(cur, hex(cur) if cur is not None else "?")
+    p1 = (f"P1 holds build {inst.get('build_id', '?')}" if rsu.get("p1_priority") not in ("[disabled]",)
+          else "P1 is empty (erased or disabled)")
     return (f"image {name}, build {fpga.get('running_build_id')}, confirm {rsu.get('confirm')!r}, "
-            f"P1 holds build {inst.get('build_id', '?')}" + (f", FAILED image {fail:#x}" if fail else ""))
+            f"{p1}" + (f", FAILED image {fail:#x}" if fail else ""))
 
 
 def main():

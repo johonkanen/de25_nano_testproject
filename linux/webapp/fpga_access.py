@@ -657,6 +657,8 @@ def check_rsu_bundle(path):
                      for m in tar.getmembers() if m.isfile() and m.size <= CORE_MAX}
     except (OSError, tarfile.TarError, EOFError) as e:
         raise CoreError(f"not an RSU bundle: {e}") from None
+    if RSU_MANIFEST not in files:
+        raise CoreError(f"not an RSU bundle: no {RSU_MANIFEST} (a core bundle goes to /api/fpga)")
     try:
         manifest = json.loads(files[RSU_MANIFEST])
         if manifest.get("kind") != RSU_KIND:
@@ -743,6 +745,7 @@ class Access:
         self.loading = False
         self.last_load = None
         self.last_rsu = None
+        self._p1_slot = None                 # librsu's slot number of P1, looked up once
         self._recover_install()
         self.lock = threading.Lock()
         self.paused_until = 0.0
@@ -988,6 +991,16 @@ class Access:
                 out["installed"] = json.load(f)
         except (OSError, ValueError):
             out["installed"] = None
+        # whether P1 holds a bootable image now: rsu.json says what was last
+        # written, but an update cut short leaves P1 erased ("[disabled]")
+        try:
+            if self._p1_slot is None:
+                self._p1_slot = rsu_slots()[RSU_SLOT][0]
+            ok, listing = rsu_client("--list", self._p1_slot, timeout=30)
+            prio = re.search(r"PRIORITY:\s*(\S+)", listing) if ok else None
+            out["p1_priority"] = prio.group(1) if prio else None
+        except (CoreError, KeyError):
+            out["p1_priority"] = None
         return out
 
     def install_rsu(self, bundle, reboot=True):

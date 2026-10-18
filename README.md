@@ -212,6 +212,11 @@ the FPGA core, and a running Linux can reload it in ~2 s (`fpga-reload`,
 [docs/linux_boot.md](docs/linux_boot.md);
 bring-up history: [linux/README.md](linux/README.md).
 
+**Updates over the network** - the web GUI, the FPGA core (no reboot) and
+whole images with remote system update (factory image + application slot,
+automatic fallback when a new image does not come up healthy): recipes in
+[docs/network_updates.md](docs/network_updates.md).
+
 Bare-metal bring-up programs from before Linux, kept as references:
 [hps/baremetal_uart1_test/](hps/baremetal_uart1_test/) (HPS UART1 + the
 clock-manager PLL bring-up, [docs/de25_nano_hps.md](docs/de25_nano_hps.md))
