@@ -94,6 +94,12 @@ fakeroot -- bash -euo pipefail -c '
             echo "   + /lib/firmware/de25_nano.core.json"
         fi
     fi
+    # RSU userspace (build_de25_nano_linux.sh): rsu_client, static, and its config
+    if [ -x "$7/rsu/rsu_client" ]; then
+        install -D -m 755 "$7/rsu/rsu_client" "$1/root/usr/bin/rsu_client"
+        install -D -m 644 "$7/rsu/librsu.rc" "$1/root/etc/librsu.rc"
+        echo "   + /usr/bin/rsu_client, /etc/librsu.rc"
+    fi
     mkfs.ext4 -q -F -L nano-root -E offset=$(( $4 * 512 )) -d "$1/root" "$5" "$(( $6 / 2 ))k"
 ' _ "${STAGE}" "${TARBALL}" "${HERE}" "${P2_START}" "${IMG}" "${P2_SECTORS}" "${OUT}"
 

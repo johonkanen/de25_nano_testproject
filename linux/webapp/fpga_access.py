@@ -114,9 +114,10 @@ CORE_MAX = 32 << 20
 PENDING_SUFFIXES = ("", ".prev")
 
 # RSU (docs/remote_system_update_plan.md): the running image and the flash's
-# sub-partition table (SPT) - which slot runs, and where its CORE.<slot> is
+# sub-partition table (SPT) - which slot runs, and where its CORE.<slot> is.
+# Flash addresses are absolute; read_flash() finds the MTD partition.
 RSU_SYSFS = "/sys/devices/platform/stratix10-rsu.0"
-MTD = "/dev/mtd0"
+MTD_SYSFS = "/sys/class/mtd"
 SPT_MAGIC = 0x57713427
 SPT_ENTRY = struct.Struct("<16sIIII")      # name, offset lo/hi, length, flags
 CORE_HEADER = 0x1000                        # "core_size=0x...\n", the core after it
@@ -454,18 +455,44 @@ class SimLoader:
         self.bridge.configure(build_id)
 
 
-def read_spt(mtd=MTD, sysfs=RSU_SYSFS):
+def read_flash(address, length):
+    """length bytes of the QSPI flash from address - through the MTD partition
+    that holds it (the DT splits the flash: "u-boot" below SPT0, "root" from
+    it); None if none does"""
+    try:
+        names = sorted(n for n in os.listdir(MTD_SYSFS) if n.startswith("mtd") and n[3:].isdigit())
+    except OSError:
+        return None
+    for name in names:
+        try:
+            with open(os.path.join(MTD_SYSFS, name, "offset")) as f:
+                start = int(f.read().strip(), 0)
+            with open(os.path.join(MTD_SYSFS, name, "size")) as f:
+                size = int(f.read().strip(), 0)
+        except (OSError, ValueError):
+            continue
+        if start <= address and address + length <= start + size:
+            try:
+                with open("/dev/" + name, "rb") as f:
+                    f.seek(address - start)
+                    return f.read(length)
+            except OSError:
+                return None
+    return None
+
+
+def read_spt(sysfs=RSU_SYSFS):
     """the RSU sub-partition table as {name: (offset, length)}, or None (no
     RSU driver, no flash, no valid table - SPT1 is the backup of SPT0)"""
     for which in ("spt0_address", "spt1_address"):
         try:
             with open(os.path.join(sysfs, which)) as f:
                 off = int(f.read().strip(), 0)
-            with open(mtd, "rb") as f:
-                f.seek(off)
-                raw = f.read(32 + 127 * SPT_ENTRY.size)
         except (OSError, ValueError):
             return None
+        raw = read_flash(off, 32 + 127 * SPT_ENTRY.size)
+        if raw is None:
+            continue
         magic, _version, entries = struct.unpack_from("<III", raw, 0)
         if magic != SPT_MAGIC:
             continue
@@ -495,22 +522,20 @@ def core_partition(slot):
     return "CORE." + ("FACTORY_IM" if slot.startswith("FACTORY_IM") else slot)
 
 
-def read_qspi_core(spt, slot, mtd=MTD):
+def read_qspi_core(spt, slot):
     """the core in the slot's CORE.<slot> partition (make_jic.sh's 4 KB header
     "core_size=0x..." then the core), or None"""
     part = spt.get(core_partition(slot))
-    if not part:
+    head = read_flash(part[0], CORE_HEADER) if part else None
+    if not head:
         return None
     try:
-        with open(mtd, "rb") as f:
-            f.seek(part[0])
-            head = f.read(CORE_HEADER).split(b"\0")[0].decode("ascii", "replace")
-            size = int(head.strip().split("=")[1], 16)
-            if not 0 < size <= part[1] - CORE_HEADER:
-                return None
-            return f.read(size)
-    except (OSError, ValueError, IndexError):
+        size = int(head.split(b"\0")[0].decode("ascii", "replace").strip().split("=")[1], 16)
+    except (ValueError, IndexError):
         return None
+    if not 0 < size <= part[1] - CORE_HEADER:
+        return None
+    return read_flash(part[0] + CORE_HEADER, size)
 
 
 def setup_slot_firmware(firmware, boot):

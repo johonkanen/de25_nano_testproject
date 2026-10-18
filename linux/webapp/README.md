@@ -69,7 +69,7 @@ extended by the pause. Details: [docs/hps_first.md](../../docs/hps_first.md),
 
 With an RSU flash each image has its own core (P1, FACTORY_IMAGE):
 `fpga_access.py` finds the running one (the RSU driver's `current_image`,
-the SPT in `/dev/mtd0`), keeps its core in `/lib/firmware/rsu/<image>/`
+the SPT read from the QSPI's MTD partitions), keeps its core in `/lib/firmware/rsu/<image>/`
 with `/lib/firmware/de25_nano.core.rbf` linking there, and writes the card
 copy as `de25_nano_<image>.core.rbf`. `GET /api/fpga` has `slot`. The first
 boot of an image with no core there takes the one U-Boot loaded (card,

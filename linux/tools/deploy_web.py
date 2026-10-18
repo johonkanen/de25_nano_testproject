@@ -141,7 +141,13 @@ def main():
     if args.no_confirm:
         print(">> left on test (--no-confirm): confirm from the GUI or it reverts")
         return 0
-    status, c = request(base + "/api/update/confirm", b"{}", {"Content-Type": "application/json"})
+    # the server confirms only once all three processes answer - the
+    # temperature controller can take a few seconds longer than the server
+    for _ in range(12):
+        status, c = request(base + "/api/update/confirm", b"{}", {"Content-Type": "application/json"})
+        if status != 503:
+            break
+        time.sleep(5)
     if status != 200:
         sys.exit(f"confirm failed ({status}): {c}")
     print(f">> confirmed {rel}" if c.get("confirmed") else f">> {rel} was already confirmed")

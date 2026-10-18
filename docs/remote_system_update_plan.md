@@ -34,7 +34,7 @@ Linux running.
 | U-Boot 2026.04 | `CONFIG_CMD_SOCFPGA_RSU=y`, RSU in the SPL (`rsu_spl.c`) |
 | kernel QSPI/MTD drivers | built in (`SPI_CADENCE_QUADSPI`, `MTD_SPI_NOR`) |
 | kernel `stratix10-rsu` | built in (2026-10-17); probe fails until the flash has an RSU layout (SDM error 0xc) |
-| kernel DT | upstream's QSPI flash node, with the reference clock corrected to 500 MHz: `/dev/mtd0` (16 MB, "u-boot") reads clean |
+| kernel DT | upstream's QSPI flash node, reference clock corrected to 500 MHz; two partitions (build script): `/dev/mtd0` "u-boot" 0x0-0x31FFFF read-only (boot info, factory image), `/dev/mtd1` "root" from SPT0 0x320000 - librsu's root |
 | web GUI | release upload, test-start, confirm/revert - the model for image uploads |
 
 ## Flash layout (16 MB MT25QU128) - as programmed 2026-10-17 (R1)
@@ -94,6 +94,36 @@ the card file moved aside (QSPI 0xc00000 / 0xd10000). On Linux,
 (webapp README). An install over the network writes the card copy; the
 QSPI `CORE.<name>` copy is written by an RSU update (R6) or the `.jic`.
 
+## rsu_client (R4)
+
+`build_de25_nano_linux.sh` builds altera-fpga/intel-rsu (pinned commit)
+into one static `rsu_client` (with librsu and a static zlib 1.3.1 - the
+toolchain is glibc, the rootfs musl); the SD image installs it as
+`/usr/bin/rsu_client` with `/etc/librsu.rc` (`root qspi /dev/mtd1`).
+
+```sh
+rsu_client --log                               # status: current/failed image, errors, retries
+rsu_client --count; rsu_client --list 0         # slots (librsu counts every non-reserved
+                                               # partition: P1 is slot 0; SSBL.*, UBOOT, CORE.* too)
+rsu_client --erase 0; rsu_client --add app.rpd --slot 0    # write P1 (relocates), highest priority
+rsu_client --verify app.rpd --slot 0
+rsu_client --request 0; reboot                 # load P1 at the next reboot
+rsu_client --request-factory; reboot
+```
+
+Notes from the board (2026-10-18):
+- librsu needs an MTD device that starts at SPT0 - with one partition
+  from 0x0 it reads "Bad SPT0 magic number". Hence the two partitions;
+  the lower one read-only, so nothing in Linux can write the factory image.
+- librsu's relocation differs from quartus_pfg's in two bytes (the
+  pointers' low bytes), so `--verify` against a slot written by the
+  `.jic` fails; after `--add` it passes. Both boot.
+- `--request` of the image already running does not reload it at the next
+  `reboot`; to load a rewritten P1, run another image in between (factory)
+  or power-cycle.
+- Tested: P1 erased, rewritten from the bundle's `app.rpd`, factory, then
+  P1 again loaded from flash - current image 0x400000, no failure.
+
 ## Booting a slot by hand
 
 ```sh
@@ -117,7 +147,7 @@ u-boot_P1.itb`, or `RSU: found SSBL partition P1 at address 0x00600000`).
 | R2 (done 2026-10-18) | **U-Boot from SSBL**: SPL loads U-Boot from the running image's SSBL partition instead of the fixed 0xA00000 (U-Boot's RSU SPL support); SD card first, as now | each image boots its own U-Boot; a blank SD card still reaches U-Boot (factory SSBL) |
 | R3 (done 2026-10-18) | **Application images**: `quartus_pfg` writes an RSU application `.rpd` from a `.sof`; `tools/make_rsu_bundle.py` wraps it with version, git hash, SHA-256 (like the persona bundles) | a bundle for today's design builds reproducibly |
 | R3b (done 2026-10-18) | **A core per slot** (HPS-first): today U-Boot's preboot loads `de25_nano.core.rbf` (card) or the one QSPI copy at 0xC00000 whatever image runs, but a slot's core belongs to its phase 1. U-Boot's `rsu` command has no "running slot" subcommand; the SPL knows it (`u-boot_<slot>.itb`). Add one (`rsu running_slot <var>`, a small patch in the build script, from `rsu_spl_mmc_filename()`), then the preboot loads `de25_nano_${rsu_slot}.core.rbf` from the card, else QSPI `CORE.<slot>`; `fpga_access.py` installs the core under the running slot's name | factory and P1 boot with different cores; `fpga-reload` and `/api/fpga` keep working |
-| R4 | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
+| R4 (done 2026-10-18) | **Userspace**: cross-build `librsu` + `rsu_client` (altera-fpga/intel-rsu) statically for aarch64, ship them in the rootfs; `/etc/librsu.rc` for the layout | from a shell: program P1, request it, reboot into it, read the status |
 | R5 | **Boot confirmation**: the web GUI's supervisor reports "image OK" (`rsu notify`) once the GUI answers and LWH2F reads the expected board id - the same idea as the GUI release test; until then the HPS watchdog runs, and an unconfirmed image falls back | a deliberately broken image (wrong LWH2F id, or no GUI) reverts to the previous one with no hands on the board |
 | R6 | **API and GUI**: `POST /api/fpga` (bundle upload, token, checks build/SHA), `GET /api/fpga` (slots, running image, last failure); a "FPGA image" card next to "GUI release"; `tools/deploy_fpga.py` like `deploy_web.py` | `deploy_fpga.py` puts a new design on the board, it reboots into it and confirms it; `--no-confirm` shows the automatic fallback |
 | R7 | **Docs and tests**: `docs/linux_boot.md` (RSU boot path), fault tests (truncated image, wrong SHA, power cut mid-write, image that never confirms) | all faults leave a booting board |

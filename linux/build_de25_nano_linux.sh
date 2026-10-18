@@ -43,6 +43,14 @@ LINUX_BRANCH="socfpga-6.18.20-lts"
 LINUX_DIR="linux-altera"
 LINUX_DTB="socfpga_agilex5_de25_nano.dtb"
 TOYBOX_REPO="https://github.com/landley/toybox.git"
+# RSU userspace (docs/remote_system_update_plan.md, R4): librsu + rsu_client,
+# static - the toolchain is glibc, the rootfs Alpine (musl)
+RSU_REPO="https://github.com/altera-fpga/intel-rsu"
+RSU_COMMIT="f6e0f1e15e8e77c0c1150e2df34a13d9a5bd9771"
+RSU_DIR="intel-rsu"
+ZLIB_VERSION="1.3.1"
+ZLIB_URL="https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.gz"
+ZLIB_SHA256="9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23"
 # where U-Boot proper sits in the 16 MB QSPI flash - upstream's
 # CONFIG_SYS_SPI_U_BOOT_OFFS for this board, checked below; make_jic.sh
 # uses the same default
@@ -194,11 +202,33 @@ pushd "${LINUX_DIR}" >/dev/null
     # ("90 5d 8c", is "20 bb 18") and bulk reads differ every time. At 500
     # MHz (SCLK 83 MHz, as U-Boot) reads are clean with cdns,read-delay 0..3;
     # the DTS's 2 stays (tested 2026-10-17, 1 MB read back three times each).
+    # The partitions follow the RSU layout (docs/remote_system_update_plan.md):
+    # /dev/mtd0 "u-boot" 0x0-0x31FFFF read-only (boot info, factory image),
+    # /dev/mtd1 "root" from SPT0 (0x320000) - librsu's root (librsu.rc).
     cat >> "arch/arm64/boot/dts/intel/${LINUX_DTB%.dtb}.dts" << 'DTSEOF'
 
 /* de25_nano_testproject: the SDM's QSPI reference clock (build script) */
 &qspi_clk {
 	clock-frequency = <500000000>;
+};
+
+/* de25_nano_testproject: the RSU layout (make_jic.sh) - "u-boot" is boot
+ * info + the factory image, read-only; "root" starts at SPT0, as librsu
+ * wants (it never sees the flash below SPT0) */
+&qspi_boot {
+	reg = <0x0 0x00320000>;
+	read-only;
+};
+
+&qspi {
+	flash@0 {
+		partitions {
+			qspi_rsu: partition@320000 {
+				label = "root";
+				reg = <0x00320000 0x00ce0000>;
+			};
+		};
+	};
 };
 DTSEOF
     make defconfig
@@ -226,6 +256,46 @@ DTSEOF
     cp arch/arm64/boot/Image                       "${OUT}/Image"
     cp "arch/arm64/boot/dts/intel/${LINUX_DTB}"     "${OUT}/${LINUX_DTB}"
 popd >/dev/null
+
+# ---- RSU userspace: librsu + rsu_client (altera-fpga/intel-rsu), static ---
+# rsu_client talks to the kernel's stratix10-rsu driver (sysfs) and writes
+# the QSPI through /dev/mtd0 (librsu.rc). librsu needs zlib (crc32): built
+# static with the same toolchain. Everything links into one static binary,
+# so it runs on the musl rootfs.
+if [[ ! -f "zlib-${ZLIB_VERSION}.tar.gz" ]]; then
+    wget -q -O "zlib-${ZLIB_VERSION}.tar.gz" "${ZLIB_URL}"
+fi
+echo "${ZLIB_SHA256}  zlib-${ZLIB_VERSION}.tar.gz" | sha256sum -c --quiet - || {
+    echo "ERROR: zlib-${ZLIB_VERSION}.tar.gz checksum mismatch"; exit 1; }
+rm -rf "zlib-${ZLIB_VERSION}" && tar xzf "zlib-${ZLIB_VERSION}.tar.gz"
+pushd "zlib-${ZLIB_VERSION}" >/dev/null
+    CHOST=aarch64 CC="${CROSS_PREFIX}gcc" AR="${CROSS_PREFIX}ar" RANLIB="${CROSS_PREFIX}ranlib" \
+        ./configure --static --prefix="${OUT}/zlib-aarch64" > /dev/null
+    make -j"${JOBS}" libz.a > /dev/null
+    make install > /dev/null
+popd >/dev/null
+if [[ ! -d "${RSU_DIR}" ]]; then
+    git clone -q "${RSU_REPO}" "${RSU_DIR}"
+fi
+pushd "${RSU_DIR}" >/dev/null
+    git fetch -q --depth 1 origin "${RSU_COMMIT}" 2>/dev/null || true
+    git checkout -q "${RSU_COMMIT}"
+    mkdir -p "${OUT}/rsu"
+    "${CROSS_PREFIX}gcc" -O2 -Wall -static -Iinclude -Ilib -I"${OUT}/zlib-aarch64/include" \
+        -DLIBRSU_VER=0 lib/*.c example/rsu_client.c \
+        -L"${OUT}/zlib-aarch64/lib" -lz -o "${OUT}/rsu/rsu_client"
+    "${CROSS_PREFIX}strip" "${OUT}/rsu/rsu_client"
+    # librsu's root is the "root" MTD partition starting at SPT0 (/dev/mtd1,
+    # the DT partitions above); etc/qspi.rc says /dev/mtd0
+    cat > "${OUT}/rsu/librsu.rc" << 'RCEOF'
+# /etc/librsu.rc - librsu / rsu_client (built by build_de25_nano_linux.sh)
+log med stderr
+root qspi /dev/mtd1
+rsu-dev /sys/devices/platform/stratix10-rsu.0
+RCEOF
+popd >/dev/null
+file "${OUT}/rsu/rsu_client" | grep -q "statically linked" || {
+    echo "ERROR: rsu_client is not static"; exit 1; }
 
 # ---- toybox initramfs (architecture-generic - no board-specific content) -
 if [[ ! -d toybox ]]; then git clone --depth 1 "${TOYBOX_REPO}" toybox; fi
